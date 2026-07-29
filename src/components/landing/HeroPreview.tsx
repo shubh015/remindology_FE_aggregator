@@ -127,10 +127,10 @@ export function HeroPreview() {
         </div>
 
         {/* Two-panel content */}
-        <div className="grid grid-cols-2 text-left" style={{ minHeight: 160 }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 text-left">
 
           {/* ── Left: material being typed ─────────────────────── */}
-          <div className="p-5" style={{ borderRight: '1px solid rgba(167,139,250,0.08)' }}>
+          <div className="p-5 border-b sm:border-b-0 sm:border-r" style={{ borderColor: 'rgba(167,139,250,0.08)' }}>
             <div className="flex items-center gap-2 mb-3">
               <span
                 className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"

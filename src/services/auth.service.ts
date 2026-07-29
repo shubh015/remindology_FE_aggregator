@@ -39,6 +39,14 @@ export const authService = {
     };
   },
 
+  async googleAuth(idToken: string): Promise<AuthResponse> {
+    const response = await apiClient.post<ApiResponse<{ user: User; accessToken: string; refreshToken: string }>>(
+      '/auth/google',
+      { idToken }
+    );
+    return response.data.data;
+  },
+
   async refresh(refreshToken: string): Promise<{ accessToken: string }> {
     const response = await apiClient.post<ApiResponse<{ accessToken: string }>>('/auth/refresh', {
       refreshToken,

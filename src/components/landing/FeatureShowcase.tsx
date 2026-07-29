@@ -123,14 +123,14 @@ function UploadMockup() {
       </div>
 
       <div
-        className="flex items-center justify-between pt-3"
+        className="flex items-center gap-3 pt-3"
         style={{ borderTop: '1px solid rgba(124,58,237,0.1)' }}
       >
-        <p className="text-[10px]" style={{ color: '#9D95C4' }}>
+        <p className="flex-1 min-w-0 text-[10px]" style={{ color: '#9D95C4' }}>
           AI will generate summary, notes, MCQs &amp; topics
         </p>
         <div
-          className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-xl text-white"
+          className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-xl text-white shrink-0"
           style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)', cursor: 'default' }}
         >
           <ArrowUp className="h-3.5 w-3.5" />
@@ -384,17 +384,17 @@ function ProgressMockup() {
         {stats.map(s => (
           <div
             key={s.label}
-            className="rounded-xl p-3 text-center"
+            className="rounded-xl p-2.5 text-center min-w-0 overflow-hidden"
             style={{ background: s.bg, border: `1px solid ${s.color}22` }}
           >
             <div
-              className="text-2xl font-extrabold"
+              className="text-xl font-extrabold"
               style={{ color: s.color }}
             >
               {s.value}
             </div>
             <div
-              className="text-[9px] font-medium mt-0.5 leading-tight"
+              className="text-[9px] font-medium mt-0.5 leading-tight wrap-break-word"
               style={{ color: `${s.color}99` }}
             >
               {s.label}
@@ -518,16 +518,16 @@ export function FeatureShowcase() {
       }}
     >
       <div
-        className="grid md:grid-cols-[220px_1fr]"
-        style={{ background: '#FFFFFF', minHeight: 420 }}
+        className="grid md:grid-cols-[220px_1fr] min-h-80 md:min-h-105 min-w-0"
+        style={{ background: '#FFFFFF' }}
       >
-        {/* ── Sidebar nav ─────────────────────── */}
+        {/* ── Sidebar nav — icon-only scroll on mobile, vertical list on desktop ── */}
         <div
-          className="p-4 flex flex-col"
-          style={{ background: '#FAFAFF', borderRight: '1px solid rgba(124,58,237,0.1)' }}
+          className="p-3 md:p-4 flex flex-row overflow-x-auto md:flex-col border-b md:border-b-0 md:border-r min-w-0"
+          style={{ background: '#FAFAFF', borderColor: 'rgba(124,58,237,0.1)' }}
         >
           <p
-            className="text-[10px] font-bold uppercase tracking-widest mb-3 px-2"
+            className="hidden md:block text-[10px] font-bold uppercase tracking-widest mb-3 px-2 shrink-0"
             style={{ color: '#9D95C4' }}
           >
             Dashboard Features
@@ -539,7 +539,7 @@ export function FeatureShowcase() {
               <button
                 key={f.id}
                 onClick={() => handleSelect(i)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1 text-left transition-all duration-150"
+                className="shrink-0 md:w-full flex items-center gap-0 md:gap-3 p-2 md:px-3 md:py-2.5 rounded-xl mb-0 md:mb-1 mr-1.5 md:mr-0 text-left transition-all duration-150"
                 style={{
                   background: isActive
                     ? 'linear-gradient(135deg, rgba(124,58,237,0.1), rgba(192,38,211,0.06))'
@@ -561,7 +561,8 @@ export function FeatureShowcase() {
                     style={{ color: isActive ? '#FFFFFF' : '#7C3AED' }}
                   />
                 </div>
-                <div className="min-w-0">
+                {/* Text label — hidden on mobile to keep sidebar compact */}
+                <div className="hidden md:block min-w-0 ml-3">
                   <p
                     className="text-xs font-semibold leading-tight truncate"
                     style={{ color: isActive ? '#1A1836' : '#6B63A0' }}
@@ -581,7 +582,7 @@ export function FeatureShowcase() {
         </div>
 
         {/* ── Main panel ──────────────────────── */}
-        <div className="p-7 flex flex-col">
+        <div className="p-4 md:p-7 flex flex-col min-w-0 overflow-hidden">
           {/* Progress bar */}
           <div
             className="h-0.5 rounded-full mb-6 overflow-hidden"
@@ -620,12 +621,13 @@ export function FeatureShowcase() {
             </div>
           </div>
 
-          {/* Panel content */}
+          {/* Panel content — fixed minHeight prevents layout shift when features switch */}
           <div
-            className="flex-1"
+            className="flex-1 min-w-0"
             style={{
               opacity: panelVisible ? 1 : 0,
               transition: 'opacity 0.18s ease',
+              minHeight: 260,
             }}
           >
             <Mockup id={feature.id} />
