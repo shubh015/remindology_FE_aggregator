@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { Header } from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useStudyPlan } from '@/features/study-plan/hooks/use-study-plan';
-import { CalendarDays, Sparkles, Loader2, AlertCircle, BookOpen, Zap, PenLine, Newspaper, ClipboardList, FlaskConical } from 'lucide-react';
+import { CalendarDays, Sparkles, Loader2, AlertCircle, BookOpen, Zap, PenLine, Newspaper, FlaskConical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { StudyActivity, StudyPlanDay } from '@/types/features';
 
@@ -84,12 +84,12 @@ function ExamDatePrompt({ onSubmit, isGenerating }: { onSubmit: (date: string) =
         </p>
       </div>
       <div className="flex w-full max-w-xs gap-3">
-        <Input
-          type="date"
+        <DatePicker
           value={date}
-          onChange={(e) => setDate(e.target.value)}
+          onChange={setDate}
           min={new Date().toISOString().split('T')[0]}
-          className="flex-1 text-sm"
+          placeholder="Pick your exam date"
+          className="flex-1"
         />
         <Button
           onClick={() => { if (date) onSubmit(date); }}

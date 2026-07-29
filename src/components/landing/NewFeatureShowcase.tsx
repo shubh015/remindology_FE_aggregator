@@ -11,7 +11,7 @@ const NEW_FEATURES = [
   { id: 'daily-challenge', icon: Flame,        label: 'Daily Challenge',      tagline: '5 questions every morning',    color: '#FB923C' },
   { id: 'current-affairs', icon: Newspaper,    label: 'Current Affairs',      tagline: 'Daily news with mains angle',  color: '#38BDF8' },
   { id: 'mains-writing',   icon: PenLine,      label: 'Answer Writing',       tagline: 'AI paragraph scorecard',       color: '#34D399' },
-  { id: 'weak-zones',      icon: TrendingDown, label: 'Weak Zone Radar',      tagline: 'Know where you lose marks',    color: '#F43F5E' },
+  { id: 'weak-zones',      icon: TrendingDown, label: 'Weak Zone Tracker',      tagline: 'Know where you lose marks',    color: '#F43F5E' },
   { id: 'study-plan',      icon: CalendarDays, label: '30-Day Plan',          tagline: 'AI-generated calendar',        color: '#818CF8' },
   { id: 'detective',       icon: Search,       label: 'Prelims Detective',    tagline: 'Why each wrong answer failed', color: '#F59E0B' },
   { id: 'mnemonics',       icon: Brain,        label: 'Memory Mnemonics',     tagline: 'Never forget a fact',          color: '#A78BFA' },
@@ -77,7 +77,7 @@ function CurrentAffairsMockup() {
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-1">
         <Newspaper className="h-3.5 w-3.5" style={{ color: '#38BDF8' }} />
-        <span className="text-xs font-bold" style={{ color: TEXT_DARK }}>Today's Digest</span>
+        <span className="text-xs font-bold" style={{ color: TEXT_DARK }}>Today&apos;s Digest</span>
         <span className="text-[10px] ml-auto" style={{ color: TEXT_MID }}>26 Jul 2026</span>
       </div>
       <div className="rounded-xl p-3 space-y-2" style={{ background: 'rgba(56,189,248,0.07)', border: '1px solid rgba(56,189,248,0.2)' }}>
@@ -103,7 +103,7 @@ function CurrentAffairsMockup() {
       <div className="rounded-xl p-3" style={{ background: 'rgba(124,58,237,0.04)', border: `1px solid rgba(124,58,237,0.1)` }}>
         <p className="text-[10px] font-bold mb-1" style={{ color: '#7C3AED' }}>Mains Angle (GS2)</p>
         <p className="text-[10px] leading-relaxed" style={{ color: '#4B4580' }}>
-          Analyse India's FTA strategy in the context of supply chain diversification and QUAD commitments.
+          Analyse India&apos;s FTA strategy in the context of supply chain diversification and QUAD commitments.
         </p>
       </div>
     </div>
@@ -115,13 +115,13 @@ function MainsMockup() {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-xs font-semibold" style={{ color: TEXT_DARK }}>
-          Discuss the significance of India's semiconductor policy.
+          Discuss the significance of India&apos;s semiconductor policy.
         </p>
         <span className="text-[10px] font-bold px-2 py-1 rounded-lg shrink-0 ml-3"
           style={{ background: 'rgba(52,211,153,0.12)', color: '#059669' }}>⏱ 12:44</span>
       </div>
       <div className="rounded-xl p-3 text-xs leading-relaxed" style={{ background: SURFACE, border: `1px solid ${BORDER_S}`, minHeight: 70, color: '#4B4580' }}>
-        India's semiconductor policy aims to reduce dependence on imports by building domestic fabrication capacity. The ₹76,000 crore incentive scheme targets…
+        India&apos;s semiconductor policy aims to reduce dependence on imports by building domestic fabrication capacity. The ₹76,000 crore incentive scheme targets…
         <span style={{ color: '#C4BAE8' }}> |</span>
       </div>
       <div className="flex justify-between text-[10px]" style={{ color: TEXT_MID }}>
@@ -154,7 +154,7 @@ function WeakZoneMockup() {
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-1">
         <TrendingDown className="h-3.5 w-3.5" style={{ color: '#F43F5E' }} />
-        <span className="text-xs font-bold" style={{ color: TEXT_DARK }}>Weak Zone Radar</span>
+        <span className="text-xs font-bold" style={{ color: TEXT_DARK }}>Weak Zone Tracker</span>
         <span className="text-[10px] ml-auto" style={{ color: TEXT_MID }}>124 attempts</span>
       </div>
       {zones.map((z) => (
@@ -257,7 +257,7 @@ function DetectiveMockup() {
         </div>
         <div className="px-3 py-2">
           <p className="text-[10px] leading-relaxed" style={{ color: '#4B4580' }}>
-            Article 19 guarantees 6 fundamental freedoms but does NOT provide the right to move court for remedy — that is exclusively Article 32, called 'the heart and soul of the Constitution' by Dr. Ambedkar.
+            Article 19 guarantees 6 fundamental freedoms but does NOT provide the right to move court for remedy — that is exclusively Article 32, called &lsquo;the heart and soul of the Constitution&rsquo; by Dr. Ambedkar.
           </p>
         </div>
       </div>
@@ -299,7 +299,7 @@ function MnemonicsMockup() {
 }
 
 function ExamProfileMockup() {
-  const exams = ['UPSC CSE', 'SSC CGL', 'IBPS PO', 'RRB NTPC', 'NDA / CDS', 'State PSC', 'SSC CHSL', 'IBPS Clerk'];
+  const exams = ['UPSC CSE', 'SSC CGL', 'SSC CHSL', 'State PSC'];
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-1">
@@ -389,17 +389,17 @@ export function NewFeatureShowcase() {
     >
       <div className="grid lg:grid-cols-[1fr_360px]" style={{ background: '#FFFFFF' }}>
 
-        {/* ── Left: 4×2 feature grid ── */}
+        {/* ── Left: feature grid ── */}
         <div
-          className="p-6 flex flex-col gap-4"
-          style={{ background: '#FAFAFF', borderRight: '1px solid rgba(124,58,237,0.1)' }}
+          className="p-4 sm:p-6 flex flex-col gap-4 border-b lg:border-b-0 lg:border-r"
+          style={{ background: '#FAFAFF', borderColor: 'rgba(124,58,237,0.1)' }}
         >
           <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: TEXT_MID }}>
             Click any feature to preview
           </p>
 
-          {/* 4 × 2 grid */}
-          <div className="grid grid-cols-4 gap-2">
+          {/* 2 cols on mobile → 4 cols on sm+ */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-2">
             {NEW_FEATURES.map((f, i) => {
               const Icon = f.icon;
               const isAct = i === active;
@@ -420,7 +420,7 @@ export function NewFeatureShowcase() {
                   >
                     <Icon className="h-[18px] w-[18px]" style={{ color: isAct ? '#FFFFFF' : f.color }} />
                   </div>
-                  <p className="text-[10px] font-semibold leading-tight" style={{ color: isAct ? '#1A1836' : '#6B63A0' }}>
+                  <p className="text-[11px] sm:text-[10px] font-semibold leading-tight" style={{ color: isAct ? '#1A1836' : '#6B63A0' }}>
                     {f.label}
                   </p>
                 </button>
@@ -447,7 +447,7 @@ export function NewFeatureShowcase() {
         </div>
 
         {/* ── Right: detail panel ── */}
-        <div className="p-7 flex flex-col" style={{ minHeight: 460 }}>
+        <div className="p-5 lg:p-7 flex flex-col min-w-0" style={{ minHeight: 380 }}>
           {/* Feature heading */}
           <div className="flex items-center gap-3 mb-5">
             {(() => {

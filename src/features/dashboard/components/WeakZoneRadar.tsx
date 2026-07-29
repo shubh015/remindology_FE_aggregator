@@ -30,7 +30,7 @@ export function WeakZoneRadar() {
             <Target className="h-4 w-4 text-rose-500" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-foreground">Weak Zone Radar</h3>
+            <h3 className="text-sm font-bold text-foreground">Weak Zone Tracker</h3>
             <p className="text-[10px] text-muted-foreground">AI performance analysis</p>
           </div>
         </div>

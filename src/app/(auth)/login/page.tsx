@@ -14,6 +14,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 
 import { setCookie, cn } from '@/lib/utils';
+import { GoogleAuthButton } from '@/components/auth/GoogleAuthButton';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -68,79 +69,93 @@ function LoginForm() {
   return (
     <Card className="border-border bg-card shadow-sm">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-lg font-bold">Sign In</CardTitle>
+        <CardTitle className="text-lg font-bold">Welcome back</CardTitle>
         <CardDescription className="text-xs">
-          Enter your email and password to access your dashboard
+          Sign in to continue your exam prep
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {error && (
-            <div className="flex items-start gap-2 rounded-md bg-destructive/10 p-3 text-xs text-destructive border border-destructive/20 animate-fade-in">
-              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-              <span>{error}</span>
-            </div>
-          )}
+      <CardContent className="space-y-5">
+        {/* Primary: Google */}
+        <GoogleAuthButton />
 
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider" htmlFor="email">
-              Email Address
-            </label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="candidate@remindology.com"
-              disabled={isLoading}
-              className={errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
-              {...register('email')}
-            />
-            {errors.email && (
-              <p className="text-[10px] text-destructive font-semibold mt-0.5">{errors.email.message}</p>
+        {/* Secondary: email/password — for existing accounts only */}
+        <details className="group">
+          <summary className="flex items-center justify-center gap-2 cursor-pointer select-none list-none">
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-[11px] font-medium text-muted-foreground group-open:hidden whitespace-nowrap">
+              signed up with email? sign in here
+            </span>
+            <span className="text-[11px] font-medium text-muted-foreground hidden group-open:inline whitespace-nowrap">
+              hide email sign in
+            </span>
+            <div className="flex-1 h-px bg-border" />
+          </summary>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
+            {error && (
+              <div className="flex items-start gap-2 rounded-md bg-destructive/10 p-3 text-xs text-destructive border border-destructive/20">
+                <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                <span>{error}</span>
+              </div>
             )}
-          </div>
 
-          <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider" htmlFor="password">
-                Password
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider" htmlFor="email">
+                Email Address
               </label>
-              <Link href="/forgot-password" className="text-[11px] font-semibold text-primary hover:underline">
-                Forgot password?
-              </Link>
-            </div>
-            <div className="relative">
               <Input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
+                id="email"
+                type="email"
+                placeholder="candidate@remindology.com"
                 disabled={isLoading}
-                className={cn('pr-10', errors.password ? 'border-destructive focus-visible:ring-destructive' : '')}
-                {...register('password')}
+                className={errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
+                {...register('email')}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2.5 text-muted-foreground/60 hover:text-foreground transition-colors focus:outline-none cursor-pointer"
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
+              {errors.email && (
+                <p className="text-[10px] text-destructive font-semibold mt-0.5">{errors.email.message}</p>
+              )}
             </div>
-            {errors.password && (
-              <p className="text-[10px] text-destructive font-semibold mt-0.5">{errors.password.message}</p>
-            )}
-          </div>
 
-          <Button type="submit" className="w-full font-semibold cursor-pointer mt-2" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Signing in...
-              </>
-            ) : (
-              'Sign In'
-            )}
-          </Button>
-        </form>
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider" htmlFor="password">
+                  Password
+                </label>
+                <Link href="/forgot-password" className="text-[11px] font-semibold text-primary hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  disabled={isLoading}
+                  className={cn('pr-10', errors.password ? 'border-destructive focus-visible:ring-destructive' : '')}
+                  {...register('password')}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-2.5 text-muted-foreground/60 hover:text-foreground transition-colors focus:outline-none cursor-pointer"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-[10px] text-destructive font-semibold mt-0.5">{errors.password.message}</p>
+              )}
+            </div>
+
+            <Button type="submit" className="w-full font-semibold cursor-pointer" disabled={isLoading}>
+              {isLoading ? (
+                <><Loader2 className="h-4 w-4 animate-spin" />Signing in…</>
+              ) : (
+                'Sign In with Email'
+              )}
+            </Button>
+          </form>
+        </details>
       </CardContent>
       <CardFooter className="flex flex-col items-center border-t border-border pt-4">
         <p className="text-xs text-muted-foreground">

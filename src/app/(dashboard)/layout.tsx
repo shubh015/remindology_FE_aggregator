@@ -41,10 +41,10 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-background flex">
       {/* Sidebar navigation */}
       <Sidebar />
-      
-      {/* Main workspace container */}
-      <div className="pl-64 flex-1 flex flex-col min-h-screen">
-        <main className="flex-1 flex flex-col bg-muted/10">
+
+      {/* Main workspace container — no left pad on mobile, full pad on lg+ */}
+      <div className="lg:pl-64 flex-1 flex flex-col min-h-screen min-w-0">
+        <main className="flex-1 flex flex-col bg-muted/10 min-w-0 overflow-x-hidden">
           {children}
         </main>
       </div>

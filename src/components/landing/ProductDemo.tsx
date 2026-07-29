@@ -164,10 +164,10 @@ export function ProductDemo() {
             <div key={i} style={{ background: c, width: 11, height: 11, borderRadius: '50%', opacity: 0.7 }} />
           ))}
           <span
-            className="text-xs ml-3"
+            className="text-xs ml-3 flex-1 min-w-0 truncate"
             style={{ color: 'rgba(240,238,255,0.28)', fontFamily: 'monospace' }}
           >
-            remindology.app / contents / {demo.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
+            remindology.app/contents/{demo.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
           </span>
         </div>
 
@@ -176,8 +176,8 @@ export function ProductDemo() {
 
           {/* ── Left: Material input ────────────── */}
           <div
-            className="p-7"
-            style={{ borderRight: '1px solid rgba(124,58,237,0.08)' }}
+            className="p-5 md:p-7 border-b md:border-b-0 md:border-r"
+            style={{ borderColor: 'rgba(124,58,237,0.08)' }}
           >
             <div className="flex items-center gap-2 mb-4">
               <span
@@ -214,7 +214,7 @@ export function ProductDemo() {
           </div>
 
           {/* ── Right: Output ───────────────────── */}
-          <div className="p-7 flex flex-col">
+          <div className="p-5 md:p-7 flex flex-col" style={{ minHeight: 310 }}>
 
             {phase === 'generating' ? (
               /* Generating state */
@@ -273,8 +273,8 @@ export function ProductDemo() {
                   ))}
                 </div>
 
-                {/* Tab content */}
-                <div className="flex-1">
+                {/* Tab content — fixed minHeight prevents layout shift when switching tabs */}
+                <div className="flex-1" style={{ minHeight: 230 }}>
                   {activeTab === 'summary' && (
                     <div
                       className="rounded-xl p-4"
