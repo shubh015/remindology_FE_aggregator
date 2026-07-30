@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Sidebar from '@/components/layout/sidebar';
+import { AiMentorFab } from '@/components/layout/AiMentorFab';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/use-auth-store';
 
@@ -48,6 +49,9 @@ export default function DashboardLayout({
           {children}
         </main>
       </div>
+
+      {/* AI Mentor — always one click away */}
+      <AiMentorFab />
     </div>
   );
 }

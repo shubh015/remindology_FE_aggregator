@@ -149,7 +149,7 @@ export function Sidebar() {
         )}
       >
         {/* Logo + mobile close */}
-        <div className="flex h-[68px] items-center justify-between px-6 border-b border-border">
+        <div className="flex h-17 items-center justify-between px-6 border-b border-border">
           <Link href="/dashboard" className="flex items-center gap-3 min-w-0">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-base shadow-md shadow-primary/30">
               R

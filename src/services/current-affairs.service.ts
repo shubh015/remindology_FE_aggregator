@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/api/client';
+import { publicApiClient } from '@/lib/api/public-client';
 import type { CurrentAffairsArticle } from '@/types/features';
 import type { ApiResponse } from './auth.service';
 
@@ -33,22 +33,27 @@ function normalizeList(raw: unknown): CurrentAffairsArticle[] {
 
 export const currentAffairsService = {
   async getToday(): Promise<CurrentAffairsArticle[]> {
-    const response = await apiClient.get<ApiResponse<Raw[]>>('/current-affairs/today');
+    const response = await publicApiClient.get<ApiResponse<Raw[]>>('/current-affairs/today');
     return normalizeList(response.data.data);
   },
 
   async getRecent(limit = 20): Promise<CurrentAffairsArticle[]> {
-    const response = await apiClient.get<ApiResponse<Raw[]>>(`/current-affairs/recent?limit=${limit}`);
+    const response = await publicApiClient.get<ApiResponse<Raw[]>>(`/current-affairs/recent?limit=${limit}`);
     return normalizeList(response.data.data);
   },
 
   async getByDate(date: string): Promise<CurrentAffairsArticle[]> {
-    const response = await apiClient.get<ApiResponse<Raw[]>>(`/current-affairs/date/${date}`);
+    const response = await publicApiClient.get<ApiResponse<Raw[]>>(`/current-affairs/date/${date}`);
+    return normalizeList(response.data.data);
+  },
+
+  async getByMonth(year: number, month: number): Promise<CurrentAffairsArticle[]> {
+    const response = await publicApiClient.get<ApiResponse<Raw[]>>(`/current-affairs/month/${year}/${month}`);
     return normalizeList(response.data.data);
   },
 
   async getById(id: string): Promise<CurrentAffairsArticle> {
-    const response = await apiClient.get<ApiResponse<Raw>>(`/current-affairs/${id}`);
+    const response = await publicApiClient.get<ApiResponse<Raw>>(`/current-affairs/${id}`);
     return normalize(response.data.data);
   },
 };

@@ -7,9 +7,11 @@ import { FAQAccordion } from '@/components/landing/FAQAccordion';
 import { FAQS } from '@/components/landing/faq-data';
 import { HeroPreview } from '@/components/landing/HeroPreview';
 import { MobileNav } from '@/components/landing/MobileNav';
+import { NavAuthButtons } from '@/components/landing/NavAuthButtons';
 import { WhyRemindology } from '@/components/landing/WhyRemindology';
 import { Testimonials } from '@/components/landing/Testimonials';
 import { Pricing } from '@/components/landing/Pricing';
+import { CurrentAffairsTeaser } from '@/components/landing/CurrentAffairsTeaser';
 
 // ── Style shortcuts ───────────────────────────────────────────────
 const BRAND_GRAD = 'linear-gradient(135deg, #7C3AED, #C026D3)';
@@ -75,7 +77,7 @@ export default function LandingPage() {
             </Link>
 
             <nav className="hidden md:flex items-center gap-7">
-              {[['Features', '#features'], ['How it Works', '#how-it-works'], ['Pricing', '#pricing'], ['FAQ', '#faq']].map(([label, href]) => (
+              {[['Features', '#features'], ['Current Affairs', '#current-affairs'], ['Pricing', '#pricing'], ['FAQ', '#faq']].map(([label, href]) => (
                 <a
                   key={label}
                   href={href}
@@ -87,24 +89,8 @@ export default function LandingPage() {
               ))}
             </nav>
 
-            {/* Desktop auth buttons — hidden on mobile */}
-            <div className="hidden md:flex items-center gap-3">
-              <Link
-                href="/login"
-                className="text-sm font-medium transition-colors hover:text-white px-3 py-1.5 rounded-lg"
-                style={{ color: 'rgba(240,238,255,0.58)' }}
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/signup"
-                className="inline-flex items-center gap-1.5 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-opacity whitespace-nowrap"
-                style={{ background: BRAND_GRAD, boxShadow: '0 4px 20px rgba(124,58,237,0.4)' }}
-              >
-                Get Started
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
+            {/* Desktop auth buttons — auth-aware */}
+            <NavAuthButtons dark />
 
             {/* Mobile hamburger menu */}
             <MobileNav />
@@ -539,6 +525,11 @@ export default function LandingPage() {
       </section>
 
       {/* ════════════════════════════════════════════════════════
+          CURRENT AFFAIRS TEASER  ·  public, no auth needed
+      ════════════════════════════════════════════════════════ */}
+      <CurrentAffairsTeaser />
+
+      {/* ════════════════════════════════════════════════════════
           TESTIMONIALS  ·  dual marquee
       ════════════════════════════════════════════════════════ */}
       <section id="testimonials" className="py-24 overflow-hidden" style={{ background: '#FFFFFF' }}>
@@ -737,7 +728,7 @@ export default function LandingPage() {
                 Product
               </h4>
               <ul className="space-y-2.5">
-                {[['Features', '#features'], ['How it Works', '#how-it-works'], ['Pricing', '#pricing'], ['FAQ', '#faq']].map(([l, h]) => (
+                {[['Features', '#features'], ['Current Affairs', '#current-affairs'], ['Pricing', '#pricing'], ['FAQ', '#faq']].map(([l, h]) => (
                   <li key={l}>
                     <a
                       href={h}

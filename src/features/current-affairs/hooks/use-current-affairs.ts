@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { currentAffairsService } from '@/services/current-affairs.service';
+import type { CurrentAffairsArticle } from '@/types/features';
 
 export function useTodaysCurrentAffairs() {
   return useQuery({
@@ -10,7 +12,7 @@ export function useTodaysCurrentAffairs() {
   });
 }
 
-export function useRecentCurrentAffairs(limit = 20) {
+export function useRecentCurrentAffairs(limit = 30) {
   return useQuery({
     queryKey: ['current-affairs', 'recent', limit],
     queryFn: () => currentAffairsService.getRecent(limit),
@@ -26,4 +28,29 @@ export function useCurrentAffairsByDate(date: string) {
     staleTime: 60 * 60 * 1000,
     retry: false,
   });
+}
+
+export function useCurrentAffairsByMonth(year: number, month: number) {
+  return useQuery({
+    queryKey: ['current-affairs', 'month', year, month],
+    queryFn: () => currentAffairsService.getByMonth(year, month),
+    staleTime: 60 * 60 * 1000,
+    retry: false,
+  });
+}
+
+// Client-side filter helper
+export function useFilteredArticles(
+  articles: CurrentAffairsArticle[] | undefined,
+  paper: string,
+  subject: string,
+) {
+  return useMemo(() => {
+    if (!articles) return [];
+    return articles.filter((a) => {
+      const paperMatch  = !paper  || a.gsPaperTags.includes(paper);
+      const subjectMatch = !subject || a.topicTags.some((t) => t.toLowerCase().includes(subject.toLowerCase()));
+      return paperMatch && subjectMatch;
+    });
+  }, [articles, paper, subject]);
 }
