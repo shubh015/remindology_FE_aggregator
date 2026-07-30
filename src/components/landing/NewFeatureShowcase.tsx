@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Flame, PenLine, TrendingDown, Newspaper, CalendarDays, Search, Brain, BadgeCheck,
   Check, X, Zap, BookOpen, FlaskConical, Trophy,
@@ -346,17 +346,33 @@ function NewMockup({ id }: { id: NewFeatureId }) {
 
 // ── NewFeatureShowcase — grid layout (different from FeatureShowcase sidebar) ──
 export function NewFeatureShowcase() {
-  const [active, setActive]           = useState(0);
-  const [progress, setProgress]       = useState(0);
+  const [active, setActive]             = useState(0);
+  const [progress, setProgress]         = useState(0);
   const [panelVisible, setPanelVisible] = useState(true);
-  const progressRef = useRef(0);
-  const activeRef   = useRef(0);
+  const progressRef  = useRef(0);
+  const activeRef    = useRef(0);
+  const isVisibleRef = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { activeRef.current = active; }, [active]);
+
+  // Pause while off-screen so mobile scroll doesn't fight 25 React updates/sec
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { isVisibleRef.current = entry.isIntersecting; },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const TICK = 40;
     const timer = setInterval(() => {
+      if (!isVisibleRef.current) return;
+
       progressRef.current = Math.min(progressRef.current + (TICK / AUTO_ROTATE_MS) * 100, 100);
       setProgress(progressRef.current);
       if (progressRef.current >= 100) {
@@ -372,18 +388,19 @@ export function NewFeatureShowcase() {
     return () => clearInterval(timer);
   }, []);
 
-  function handleSelect(i: number) {
-    if (i === active) return;
+  const handleSelect = useCallback((i: number) => {
+    if (i === activeRef.current) return;
     progressRef.current = 0;
     setProgress(0);
     setPanelVisible(false);
     setTimeout(() => { setActive(i); setPanelVisible(true); }, 160);
-  }
+  }, []);
 
   const feature = NEW_FEATURES[active];
 
   return (
     <div
+      ref={containerRef}
       className="rounded-3xl overflow-hidden"
       style={{ border: '1px solid rgba(124,58,237,0.12)', boxShadow: '0 20px 60px rgba(124,58,237,0.1)' }}
     >

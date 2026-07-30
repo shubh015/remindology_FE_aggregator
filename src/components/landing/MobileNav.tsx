@@ -1,10 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Menu, X, ArrowRight } from 'lucide-react';
-
-const BRAND_GRAD = 'linear-gradient(135deg, #7C3AED, #C026D3)';
+import { Menu, X } from 'lucide-react';
+import { MobileNavAuthButtons } from './NavAuthButtons';
 
 const NAV_LINKS = [
   ['Features', '#features'],
@@ -73,26 +71,8 @@ export function MobileNav() {
                 </a>
               ))}
 
-              {/* Auth buttons */}
-              <div className="flex flex-col gap-3 py-5">
-                <Link
-                  href="/login"
-                  onClick={() => setOpen(false)}
-                  className="text-center text-sm font-semibold py-3 px-4 rounded-xl transition-colors hover:bg-white/5"
-                  style={{ border: '1px solid rgba(167,139,250,0.28)', color: '#C4B5FD' }}
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/signup"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center justify-center gap-2 text-white text-sm font-bold py-3.5 px-4 rounded-xl"
-                  style={{ background: BRAND_GRAD, boxShadow: '0 4px 20px rgba(124,58,237,0.4)' }}
-                >
-                  Get Started Free
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
+              {/* Auth buttons — auth-aware */}
+              <MobileNavAuthButtons onClose={() => setOpen(false)} />
             </nav>
           </div>
         </>

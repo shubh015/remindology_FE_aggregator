@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Upload,
   Brain,
@@ -464,16 +464,30 @@ export function FeatureShowcase() {
   const [active, setActive] = useState(0);
   const [progress, setProgress] = useState(0);
   const [panelVisible, setPanelVisible] = useState(true);
-  const progressRef = useRef(0);
-  const activeRef = useRef(0);
+  const progressRef  = useRef(0);
+  const activeRef    = useRef(0);
+  const isVisibleRef = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => { activeRef.current = active; }, [active]);
+
+  // Pause the timer while the section is off-screen so mobile scroll stays smooth
   useEffect(() => {
-    activeRef.current = active;
-  }, [active]);
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { isVisibleRef.current = entry.isIntersecting; },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const TICK = 40;
     const timer = setInterval(() => {
+      if (!isVisibleRef.current) return; // don't update state while off-screen
+
       progressRef.current = Math.min(
         progressRef.current + (TICK / AUTO_ROTATE_MS) * 100,
         100
@@ -482,7 +496,6 @@ export function FeatureShowcase() {
 
       if (progressRef.current >= 100) {
         progressRef.current = 0;
-        // Fade out panel, swap, fade in
         setPanelVisible(false);
         setTimeout(() => {
           const next = (activeRef.current + 1) % FEATURES.length;
@@ -496,8 +509,8 @@ export function FeatureShowcase() {
     return () => clearInterval(timer);
   }, []);
 
-  function handleSelect(i: number) {
-    if (i === active) return;
+  const handleSelect = useCallback((i: number) => {
+    if (i === activeRef.current) return;
     progressRef.current = 0;
     setProgress(0);
     setPanelVisible(false);
@@ -505,12 +518,13 @@ export function FeatureShowcase() {
       setActive(i);
       setPanelVisible(true);
     }, 160);
-  }
+  }, []);
 
   const feature = FEATURES[active];
 
   return (
     <div
+      ref={containerRef}
       className="rounded-3xl overflow-hidden"
       style={{
         border: '1px solid rgba(124,58,237,0.12)',
