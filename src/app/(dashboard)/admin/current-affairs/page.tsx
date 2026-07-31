@@ -12,6 +12,7 @@ import { currentAffairsService } from '@/services/current-affairs.service';
 import {
   Send, Trash2, AlertCircle, CheckCircle2, X,
   Loader2, Newspaper, ShieldCheck, BookOpen, Tag,
+  FileText, CheckCheck, XCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -26,6 +27,14 @@ const GS_COLORS: Record<string, { color: string; bg: string; border: string }> =
   GS4:   { color: '#DC2626', bg: 'rgba(220,38,38,0.1)',   border: 'rgba(220,38,38,0.3)'   },
   ESSAY: { color: '#D97706', bg: 'rgba(217,119,6,0.1)',   border: 'rgba(217,119,6,0.3)'   },
 };
+
+type TabId = 'new' | 'drafts' | 'published';
+
+const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
+  { id: 'new',       label: 'New Article', icon: Send      },
+  { id: 'drafts',    label: 'Drafts',      icon: FileText  },
+  { id: 'published', label: 'Published',   icon: Newspaper },
+];
 
 // ── Toast ─────────────────────────────────────────────────────────
 
@@ -131,12 +140,21 @@ function TagInput({
   );
 }
 
-// ── Delete confirmation dialog ────────────────────────────────────
+// ── Confirm dialog (generic) ──────────────────────────────────────
 
-function DeleteDialog({
-  title, onConfirm, onCancel, loading,
+function ConfirmDialog({
+  icon, iconBg, iconColor,
+  heading, body,
+  confirmLabel, confirmBg,
+  onConfirm, onCancel, loading,
 }: {
-  title: string;
+  icon: React.ReactNode;
+  iconBg: string;
+  iconColor: string;
+  heading: string;
+  body: string;
+  confirmLabel: string;
+  confirmBg: string;
   onConfirm: () => void;
   onCancel: () => void;
   loading: boolean;
@@ -146,14 +164,15 @@ function DeleteDialog({
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} />
       <div className="relative bg-card border border-border rounded-2xl p-6 shadow-xl max-w-sm w-full space-y-4">
         <div className="flex items-start gap-3">
-          <div className="h-10 w-10 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
-            <Trash2 className="h-5 w-5 text-destructive" />
+          <div
+            className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: iconBg, color: iconColor }}
+          >
+            {icon}
           </div>
           <div>
-            <p className="font-semibold text-foreground">Delete article?</p>
-            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-              &ldquo;{title}&rdquo; will be permanently removed and disappear from the public feed.
-            </p>
+            <p className="font-semibold text-foreground">{heading}</p>
+            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{body}</p>
           </div>
         </div>
         <div className="flex gap-2 justify-end">
@@ -167,10 +186,11 @@ function DeleteDialog({
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="px-4 py-2 text-sm font-semibold rounded-xl bg-destructive text-destructive-foreground hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 text-sm font-semibold rounded-xl text-white hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 flex items-center gap-2"
+            style={{ background: confirmBg }}
           >
             {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-            Delete
+            {confirmLabel}
           </button>
         </div>
       </div>
@@ -178,13 +198,133 @@ function DeleteDialog({
   );
 }
 
-// ── Article row ───────────────────────────────────────────────────
+// ── GS tag chips (shared render) ──────────────────────────────────
+
+function GsTags({ tags }: { tags: string[] }) {
+  return (
+    <>
+      {tags.map((tag) => {
+        const cfg = GS_COLORS[tag];
+        return cfg ? (
+          <span
+            key={tag}
+            className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+            style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}
+          >
+            {tag}
+          </span>
+        ) : null;
+      })}
+    </>
+  );
+}
+
+// ── Draft card ────────────────────────────────────────────────────
+
+type ArticleLike = {
+  id: string;
+  title: string;
+  publishedDate: string;
+  gsPaperTags: string[];
+  topicTags: string[];
+  sourceName: string;
+  summary: string;
+};
+
+function DraftCard({
+  draft,
+  onPublish,
+  onReject,
+  publishingId,
+  rejectingId,
+}: {
+  draft: ArticleLike;
+  onPublish: (id: string, title: string) => void;
+  onReject: (id: string, title: string) => void;
+  publishingId: string | null;
+  rejectingId: string | null;
+}) {
+  const dateStr = draft.publishedDate
+    ? new Date(draft.publishedDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    : '—';
+
+  const isPublishing = publishingId === draft.id;
+  const isRejecting  = rejectingId  === draft.id;
+  const busy         = isPublishing || isRejecting;
+
+  return (
+    <div
+      className="rounded-2xl border border-border bg-card p-5 space-y-4 transition-opacity"
+      style={{ opacity: busy ? 0.6 : 1, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
+    >
+      {/* Header row */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0 space-y-1">
+          <p className="text-sm font-bold text-foreground leading-snug">{draft.title}</p>
+          <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+            {draft.sourceName && <span>{draft.sourceName}</span>}
+            {draft.sourceName && <span>·</span>}
+            <span>{dateStr}</span>
+          </div>
+        </div>
+        <div
+          className="h-7 px-2.5 rounded-lg flex items-center text-[10px] font-bold shrink-0"
+          style={{ background: 'rgba(217,119,6,0.1)', color: '#D97706', border: '1px solid rgba(217,119,6,0.25)' }}
+        >
+          Draft
+        </div>
+      </div>
+
+      {/* Tags */}
+      <div className="flex flex-wrap gap-1.5">
+        <GsTags tags={draft.gsPaperTags} />
+        {draft.topicTags.slice(0, 5).map((tag) => (
+          <span key={tag} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      {/* Summary preview */}
+      {draft.summary && (
+        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 border-l-2 border-primary/20 pl-3">
+          {draft.summary}
+        </p>
+      )}
+
+      {/* Actions */}
+      <div className="flex items-center gap-2 pt-1">
+        <button
+          onClick={() => onPublish(draft.id, draft.title)}
+          disabled={busy}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:opacity-90 disabled:cursor-not-allowed cursor-pointer"
+          style={{ background: 'linear-gradient(135deg, #059669, #0891B2)', boxShadow: '0 2px 8px rgba(5,150,105,0.25)' }}
+        >
+          {isPublishing
+            ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Publishing…</>
+            : <><CheckCheck className="h-3.5 w-3.5" />Publish</>}
+        </button>
+        <button
+          onClick={() => onReject(draft.id, draft.title)}
+          disabled={busy}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border border-destructive/30 text-destructive hover:bg-destructive/8 transition-colors disabled:cursor-not-allowed cursor-pointer"
+        >
+          {isRejecting
+            ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Rejecting…</>
+            : <><XCircle className="h-3.5 w-3.5" />Reject</>}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Published article row ─────────────────────────────────────────
 
 function ArticleRow({
   article,
   onDelete,
 }: {
-  article: { id: string; title: string; publishedDate: string; gsPaperTags: string[]; topicTags: string[] };
+  article: ArticleLike;
   onDelete: (id: string, title: string) => void;
 }) {
   const dateStr = article.publishedDate
@@ -202,18 +342,7 @@ function ArticleRow({
           <span className="text-[11px] text-muted-foreground shrink-0">{dateStr}</span>
         </div>
         <div className="flex flex-wrap gap-1.5">
-          {article.gsPaperTags.map((tag) => {
-            const cfg = GS_COLORS[tag];
-            return cfg ? (
-              <span
-                key={tag}
-                className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}
-              >
-                {tag}
-              </span>
-            ) : null;
-          })}
+          <GsTags tags={article.gsPaperTags} />
           {article.topicTags.slice(0, 4).map((tag) => (
             <span key={tag} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">
               {tag}
@@ -228,6 +357,27 @@ function ArticleRow({
       >
         <Trash2 className="h-4 w-4" />
       </button>
+    </div>
+  );
+}
+
+// ── Skeleton list ─────────────────────────────────────────────────
+
+function SkeletonList({ count = 3 }: { count?: number }) {
+  return (
+    <div className="space-y-3">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="flex gap-4 p-4 rounded-2xl border border-border">
+          <Skeleton className="h-9 w-9 rounded-xl shrink-0" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-4 w-3/4" />
+            <div className="flex gap-2">
+              <Skeleton className="h-4 w-12 rounded-full" />
+              <Skeleton className="h-4 w-16 rounded-full" />
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -248,23 +398,32 @@ const EMPTY_FORM = {
 // ── Main page ─────────────────────────────────────────────────────
 
 export default function AdminCurrentAffairsPage() {
-  const { user } = useAuthStore();
-  const router   = useRouter();
-  const qc       = useQueryClient();
+  const { user }  = useAuthStore();
+  const router    = useRouter();
+  const qc        = useQueryClient();
   const { toasts, show: showToast, dismiss } = useToast();
 
-  // Guard — redirect non-admins immediately
   useEffect(() => {
-    if (user !== null && !user.is_admin) {
-      router.replace('/dashboard');
-    }
+    if (user !== null && !user.is_admin) router.replace('/dashboard');
   }, [user, router]);
 
-  const [form, setForm] = useState({ ...EMPTY_FORM });
+  const [activeTab,   setActiveTab]   = useState<TabId>('new');
+  const [form,        setForm]        = useState({ ...EMPTY_FORM });
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
+  const [rejectTarget, setRejectTarget] = useState<{ id: string; title: string } | null>(null);
+  const [publishingDraftId, setPublishingDraftId] = useState<string | null>(null);
+  const [rejectingDraftId,  setRejectingDraftId]  = useState<string | null>(null);
 
-  // ── Recent articles query ──────────────────────────────────────
-  const { data: articles, isLoading: listLoading } = useQuery({
+  // ── Queries ────────────────────────────────────────────────────
+  const { data: drafts, isLoading: draftsLoading } = useQuery({
+    queryKey: ['admin', 'current-affairs', 'drafts'],
+    queryFn: () => currentAffairsService.getDrafts(),
+    enabled: !!user?.is_admin,
+    staleTime: 0,
+    retry: false,
+  });
+
+  const { data: articles, isLoading: publishedLoading } = useQuery({
     queryKey: ['admin', 'current-affairs', 'recent'],
     queryFn: () => currentAffairsService.getRecent(20),
     enabled: !!user?.is_admin,
@@ -272,20 +431,20 @@ export default function AdminCurrentAffairsPage() {
     retry: false,
   });
 
-  // ── Publish mutation ───────────────────────────────────────────
+  // ── New-article publish mutation ───────────────────────────────
   const publishMutation = useMutation({
     mutationFn: () => currentAffairsService.publish({
       title:         form.title,
       content:       form.content,
       publishedDate: form.publishedDate || undefined,
       gsPaperTags:   form.gsPaperTags.length ? form.gsPaperTags : undefined,
-      topicTags:     form.topicTags.length ? form.topicTags : undefined,
-      mainsAngle:    form.mainsAngle || undefined,
-      sourceName:    form.sourceName || undefined,
-      sourceUrl:     form.sourceUrl  || undefined,
+      topicTags:     form.topicTags.length   ? form.topicTags   : undefined,
+      mainsAngle:    form.mainsAngle  || undefined,
+      sourceName:    form.sourceName  || undefined,
+      sourceUrl:     form.sourceUrl   || undefined,
     }),
     onSuccess: () => {
-      showToast('success', 'Article published successfully! AI processing complete.');
+      showToast('success', 'Article published! AI processing complete.');
       setForm({ ...EMPTY_FORM });
       qc.invalidateQueries({ queryKey: ['admin', 'current-affairs', 'recent'] });
       qc.invalidateQueries({ queryKey: ['current-affairs'] });
@@ -297,7 +456,33 @@ export default function AdminCurrentAffairsPage() {
     },
   });
 
-  // ── Delete mutation ────────────────────────────────────────────
+  // ── Publish-draft mutation ─────────────────────────────────────
+  const publishDraftMutation = useMutation({
+    mutationFn: (id: string) => currentAffairsService.publishDraft(id),
+    onMutate: (id) => setPublishingDraftId(id),
+    onSettled: () => setPublishingDraftId(null),
+    onSuccess: () => {
+      showToast('success', 'Draft published to the public feed.');
+      qc.invalidateQueries({ queryKey: ['admin', 'current-affairs', 'drafts'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'current-affairs', 'recent'] });
+      qc.invalidateQueries({ queryKey: ['current-affairs'] });
+    },
+    onError: () => showToast('error', 'Could not publish draft. Try again.'),
+  });
+
+  // ── Reject (delete) draft mutation ────────────────────────────
+  const rejectMutation = useMutation({
+    mutationFn: (id: string) => currentAffairsService.deleteById(id),
+    onMutate: (id) => setRejectingDraftId(id),
+    onSettled: () => { setRejectingDraftId(null); setRejectTarget(null); },
+    onSuccess: () => {
+      showToast('success', 'Draft rejected and removed.');
+      qc.invalidateQueries({ queryKey: ['admin', 'current-affairs', 'drafts'] });
+    },
+    onError: () => showToast('error', 'Could not reject draft. Try again.'),
+  });
+
+  // ── Delete published article mutation ─────────────────────────
   const deleteMutation = useMutation({
     mutationFn: (id: string) => currentAffairsService.deleteById(id),
     onSuccess: () => {
@@ -306,9 +491,7 @@ export default function AdminCurrentAffairsPage() {
       qc.invalidateQueries({ queryKey: ['admin', 'current-affairs', 'recent'] });
       qc.invalidateQueries({ queryKey: ['current-affairs'] });
     },
-    onError: () => {
-      showToast('error', 'Could not delete the article. Try again.');
-    },
+    onError: () => showToast('error', 'Could not delete the article. Try again.'),
   });
 
   const set = (field: keyof typeof EMPTY_FORM, value: unknown) =>
@@ -320,22 +503,23 @@ export default function AdminCurrentAffairsPage() {
     publishMutation.mutate();
   };
 
-  const toggleGS = (tag: string) => {
+  const toggleGS = (tag: string) =>
     set('gsPaperTags', form.gsPaperTags.includes(tag)
       ? form.gsPaperTags.filter((t) => t !== tag)
       : [...form.gsPaperTags, tag]);
-  };
 
   if (!user?.is_admin) return null;
 
+  const draftCount = drafts?.length ?? 0;
+
   return (
     <div className="flex-1 flex flex-col">
-      <Header title="Publish Current Affairs" />
+      <Header title="Current Affairs Admin" />
 
-      <div className="flex-1 p-5 lg:p-6 max-w-4xl w-full mx-auto space-y-8">
+      <div className="flex-1 p-5 lg:p-6 max-w-4xl w-full mx-auto space-y-6">
 
         {/* Admin badge */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20">
             <ShieldCheck className="h-3.5 w-3.5" />
             Admin · Current Affairs Publisher
@@ -345,19 +529,41 @@ export default function AdminCurrentAffairsPage() {
           </span>
         </div>
 
-        {/* ── Publish form ── */}
-        <section>
-          <h2 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-            <Send className="h-4 w-4 text-primary" />
-            Publish New Article
-          </h2>
+        {/* ── Tab bar ── */}
+        <div className="flex gap-1 p-1 rounded-2xl bg-secondary/60 border border-border w-fit">
+          {TABS.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setActiveTab(id)}
+              className={cn(
+                'relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer',
+                activeTab === id
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground',
+              )}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {label}
+              {id === 'drafts' && draftCount > 0 && (
+                <span
+                  className="ml-0.5 h-4.5 min-w-4.5 px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center"
+                  style={{ background: '#D97706' }}
+                >
+                  {draftCount}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
 
+        {/* ══ NEW ARTICLE TAB ══ */}
+        {activeTab === 'new' && (
           <form onSubmit={handleSubmit}>
             <div
               className="rounded-2xl border border-border bg-card p-6 space-y-5"
               style={{ boxShadow: '0 2px 12px rgba(124,58,237,0.06)' }}
             >
-              {/* Title */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Title <span className="text-destructive">*</span>
@@ -371,7 +577,6 @@ export default function AdminCurrentAffairsPage() {
                 />
               </div>
 
-              {/* Content */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Article Content <span className="text-destructive">*</span>
@@ -390,12 +595,9 @@ export default function AdminCurrentAffairsPage() {
                 </p>
               </div>
 
-              {/* Date + Source row */}
               <div className="grid sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    Published Date
-                  </label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Published Date</label>
                   <Input
                     type="date"
                     value={form.publishedDate}
@@ -404,9 +606,7 @@ export default function AdminCurrentAffairsPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    Source Name
-                  </label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Source Name</label>
                   <Input
                     value={form.sourceName}
                     onChange={(e) => set('sourceName', e.target.value)}
@@ -415,9 +615,7 @@ export default function AdminCurrentAffairsPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    Source URL
-                  </label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Source URL</label>
                   <Input
                     type="url"
                     value={form.sourceUrl}
@@ -428,7 +626,6 @@ export default function AdminCurrentAffairsPage() {
                 </div>
               </div>
 
-              {/* GS Paper Tags */}
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
                   <BookOpen className="h-3.5 w-3.5" />
@@ -436,7 +633,7 @@ export default function AdminCurrentAffairsPage() {
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {GS_OPTIONS.map((tag) => {
-                    const cfg     = GS_COLORS[tag];
+                    const cfg      = GS_COLORS[tag];
                     const isActive = form.gsPaperTags.includes(tag);
                     return (
                       <button
@@ -457,12 +654,11 @@ export default function AdminCurrentAffairsPage() {
                 </div>
               </div>
 
-              {/* Topic Tags */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
                   <Tag className="h-3.5 w-3.5" />
                   Topic Tags
-                  <span className="font-normal normal-case tracking-normal text-muted-foreground/60 ml-1">(press Enter or comma to add)</span>
+                  <span className="font-normal normal-case tracking-normal text-muted-foreground/60 ml-1">(Enter or comma to add)</span>
                 </label>
                 <TagInput
                   tags={form.topicTags}
@@ -471,11 +667,10 @@ export default function AdminCurrentAffairsPage() {
                 />
               </div>
 
-              {/* Mains Angle */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Mains Angle
-                  <span className="font-normal normal-case tracking-normal text-muted-foreground/60 ml-1">(optional prompt for aspirants)</span>
+                  <span className="font-normal normal-case tracking-normal text-muted-foreground/60 ml-1">(optional)</span>
                 </label>
                 <Input
                   value={form.mainsAngle}
@@ -485,12 +680,11 @@ export default function AdminCurrentAffairsPage() {
                 />
               </div>
 
-              {/* Submit */}
               <div className="pt-1 flex items-center justify-between gap-4">
                 {publishMutation.isPending && (
                   <p className="text-xs text-muted-foreground flex items-center gap-2">
                     <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
-                    AI is processing the article… this takes 5–10 seconds
+                    AI is processing… this takes 5–10 seconds
                   </p>
                 )}
                 <div className="ml-auto flex items-center gap-3">
@@ -517,66 +711,104 @@ export default function AdminCurrentAffairsPage() {
               </div>
             </div>
           </form>
-        </section>
+        )}
 
-        {/* ── Recent articles ── */}
-        <section>
-          <h2 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-            <Newspaper className="h-4 w-4 text-primary" />
-            Recent Articles
-            {articles && (
-              <span className="text-xs font-medium text-muted-foreground ml-1">
-                ({articles.length} loaded)
-              </span>
+        {/* ══ DRAFTS TAB ══ */}
+        {activeTab === 'drafts' && (
+          <section>
+            {draftsLoading ? (
+              <SkeletonList count={3} />
+            ) : !drafts || drafts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card p-12 text-center gap-3">
+                <FileText className="h-10 w-10 text-muted-foreground/25" />
+                <p className="text-sm font-semibold text-foreground">No drafts pending review</p>
+                <p className="text-xs text-muted-foreground">Drafts from the AI pipeline will appear here for approval.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {drafts.map((d) => (
+                  <DraftCard
+                    key={d.id}
+                    draft={d}
+                    onPublish={(id, title) => {
+                      setRejectTarget(null);
+                      publishDraftMutation.mutate(id);
+                      void title;
+                    }}
+                    onReject={(id, title) => setRejectTarget({ id, title })}
+                    publishingId={publishingDraftId}
+                    rejectingId={rejectingDraftId}
+                  />
+                ))}
+              </div>
             )}
-          </h2>
+          </section>
+        )}
 
-          {listLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex gap-4 p-4 rounded-2xl border border-border">
-                  <Skeleton className="h-9 w-9 rounded-xl shrink-0" />
-                  <div className="flex-1 space-y-2">
-                    <Skeleton className="h-4 w-3/4" />
-                    <div className="flex gap-2">
-                      <Skeleton className="h-4 w-12 rounded-full" />
-                      <Skeleton className="h-4 w-16 rounded-full" />
-                    </div>
-                  </div>
-                </div>
-              ))}
+        {/* ══ PUBLISHED TAB ══ */}
+        {activeTab === 'published' && (
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs text-muted-foreground">
+                {articles ? `${articles.length} most recent published articles` : ''}
+              </p>
             </div>
-          ) : !articles || articles.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card p-12 text-center gap-3">
-              <Newspaper className="h-10 w-10 text-muted-foreground/25" />
-              <p className="text-sm font-semibold text-foreground">No articles yet</p>
-              <p className="text-xs text-muted-foreground">Publish your first article using the form above.</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {articles.map((a) => (
-                <ArticleRow
-                  key={a.id}
-                  article={a}
-                  onDelete={(id, title) => setDeleteTarget({ id, title })}
-                />
-              ))}
-            </div>
-          )}
-        </section>
+
+            {publishedLoading ? (
+              <SkeletonList count={3} />
+            ) : !articles || articles.length === 0 ? (
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card p-12 text-center gap-3">
+                <Newspaper className="h-10 w-10 text-muted-foreground/25" />
+                <p className="text-sm font-semibold text-foreground">No articles yet</p>
+                <p className="text-xs text-muted-foreground">Publish your first article from the New Article tab.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {articles.map((a) => (
+                  <ArticleRow
+                    key={a.id}
+                    article={a}
+                    onDelete={(id, title) => setDeleteTarget({ id, title })}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        )}
       </div>
 
-      {/* Delete confirmation */}
+      {/* Delete published article confirmation */}
       {deleteTarget && (
-        <DeleteDialog
-          title={deleteTarget.title}
+        <ConfirmDialog
+          icon={<Trash2 className="h-5 w-5" />}
+          iconBg="rgba(220,38,38,0.1)"
+          iconColor="#DC2626"
+          heading="Delete article?"
+          body={`"${deleteTarget.title}" will be permanently removed from the public feed.`}
+          confirmLabel="Delete"
+          confirmBg="#DC2626"
           onConfirm={() => deleteMutation.mutate(deleteTarget.id)}
           onCancel={() => setDeleteTarget(null)}
           loading={deleteMutation.isPending}
         />
       )}
 
-      {/* Toasts */}
+      {/* Reject draft confirmation */}
+      {rejectTarget && (
+        <ConfirmDialog
+          icon={<XCircle className="h-5 w-5" />}
+          iconBg="rgba(220,38,38,0.1)"
+          iconColor="#DC2626"
+          heading="Reject this draft?"
+          body={`"${rejectTarget.title}" will be permanently deleted and won't be published.`}
+          confirmLabel="Reject"
+          confirmBg="#DC2626"
+          onConfirm={() => rejectMutation.mutate(rejectTarget.id)}
+          onCancel={() => setRejectTarget(null)}
+          loading={rejectMutation.isPending}
+        />
+      )}
+
       <ToastList toasts={toasts} onDismiss={dismiss} />
     </div>
   );
