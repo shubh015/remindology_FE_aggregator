@@ -19,6 +19,7 @@ export interface User {
   target_exam?: TargetExam;
   exam_date?: string;
   optional_subject?: string;
+  is_admin?: boolean;
 }
 
 export interface AuthResponse {

@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import {
   LayoutDashboard, FileText, User, LogOut,
-  Newspaper, BookOpenCheck, BarChart2, Flame, PenLine, CalendarDays, X,
+  Newspaper, BookOpenCheck, BarChart2, Flame, PenLine, CalendarDays, X, ShieldCheck,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/use-auth-store';
 import { useSidebarStore } from '@/store/use-sidebar-store';
@@ -191,6 +191,22 @@ export function Sidebar() {
               </div>
             </div>
           ))}
+
+          {/* Admin-only group */}
+          {user?.is_admin && (
+            <div>
+              <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-amber-500/70">
+                Admin
+              </p>
+              <div className="space-y-0.5">
+                <ActiveNavItem
+                  item={{ name: 'Publish Articles', href: '/admin/current-affairs', icon: ShieldCheck }}
+                  active={isActive('/admin/current-affairs', pathname)}
+                  onNavigate={close}
+                />
+              </div>
+            </div>
+          )}
         </nav>
 
         {/* User footer */}

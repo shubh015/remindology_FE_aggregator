@@ -1,6 +1,18 @@
 import { publicApiClient } from '@/lib/api/public-client';
+import { apiClient } from '@/lib/api/client';
 import type { CurrentAffairsArticle } from '@/types/features';
 import type { ApiResponse } from './auth.service';
+
+export interface PublishArticleInput {
+  title: string;
+  content: string;
+  publishedDate?: string;
+  gsPaperTags?: string[];
+  topicTags?: string[];
+  mainsAngle?: string;
+  sourceName?: string;
+  sourceUrl?: string;
+}
 
 type Raw = Record<string, unknown>;
 
@@ -55,6 +67,17 @@ export const currentAffairsService = {
   async getById(id: string): Promise<CurrentAffairsArticle> {
     const response = await publicApiClient.get<ApiResponse<Raw>>(`/current-affairs/${id}`);
     return normalize(response.data.data);
+  },
+
+  // ── Admin-only (require auth) ────────────────────────────────────
+
+  async publish(input: PublishArticleInput): Promise<CurrentAffairsArticle> {
+    const response = await apiClient.post<ApiResponse<Raw>>('/current-affairs/publish', input);
+    return normalize(response.data.data);
+  },
+
+  async deleteById(id: string): Promise<void> {
+    await apiClient.delete(`/current-affairs/${id}`);
   },
 };
 
