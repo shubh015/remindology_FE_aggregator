@@ -71,8 +71,18 @@ export const currentAffairsService = {
 
   // ── Admin-only (require auth) ────────────────────────────────────
 
+  async getDrafts(): Promise<CurrentAffairsArticle[]> {
+    const response = await apiClient.get<ApiResponse<Raw[]>>('/current-affairs/drafts');
+    return normalizeList(response.data.data);
+  },
+
   async publish(input: PublishArticleInput): Promise<CurrentAffairsArticle> {
     const response = await apiClient.post<ApiResponse<Raw>>('/current-affairs/publish', input);
+    return normalize(response.data.data);
+  },
+
+  async publishDraft(id: string): Promise<CurrentAffairsArticle> {
+    const response = await apiClient.patch<ApiResponse<Raw>>(`/current-affairs/${id}/publish`);
     return normalize(response.data.data);
   },
 

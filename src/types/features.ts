@@ -92,6 +92,7 @@ export interface MainsSubmitResponse {
   outOf: number;
   wordCount: number;
   evaluation: MainsEvaluation;
+  extractedText?: string;
 }
 
 export interface MyMainsAnswer {

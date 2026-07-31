@@ -1,6 +1,14 @@
 import { apiClient } from '@/lib/api/client';
-import type { MainsQuestion, MainsSubmitResponse, MyMainsAnswer } from '@/types/features';
+import type { MainsQuestion, MainsSubmitResponse, MainsEvaluation, MyMainsAnswer } from '@/types/features';
 import type { ApiResponse } from './auth.service';
+
+// Shape returned by POST /mains/submit-pdf (custom question, no questionId)
+interface CustomPdfResponse {
+  extractedText: string;
+  wordCount: number;
+  timeTakenSecs: number;
+  evaluation: MainsEvaluation;
+}
 
 export const mainsService = {
   async getQuestions(params?: { examType?: string; topicTag?: string }): Promise<MainsQuestion[]> {
@@ -17,6 +25,47 @@ export const mainsService = {
     const response = await apiClient.post<ApiResponse<MainsSubmitResponse>>(
       `/mains/questions/${questionId}/submit`,
       { answerText, timeTakenSecs }
+    );
+    return response.data.data;
+  },
+
+  async submitCustomHandwrittenAnswer(
+    questionText: string,
+    files: File[],
+    timeTakenSecs: number,
+    marks?: number,
+    wordLimit?: number,
+  ): Promise<MainsSubmitResponse> {
+    const formData = new FormData();
+    files.forEach((f) => formData.append('file', f));
+    formData.append('questionText', questionText);
+    formData.append('timeTakenSecs', String(timeTakenSecs));
+    if (marks)     formData.append('marks',     String(marks));
+    if (wordLimit) formData.append('wordLimit',  String(wordLimit));
+    const response = await apiClient.post<ApiResponse<CustomPdfResponse>>(
+      '/mains/submit-pdf',
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } },
+    );
+    const d = response.data.data;
+    // Normalize to MainsSubmitResponse — backend returns score inside evaluation.totalScore
+    return {
+      score:        d.evaluation.totalScore,
+      outOf:        marks ?? 15,
+      wordCount:    d.wordCount,
+      evaluation:   { ...d.evaluation, missingKeywords: d.evaluation.missingKeywords ?? [] },
+      extractedText: d.extractedText,
+    };
+  },
+
+  async submitHandwrittenAnswer(questionId: string, files: File[], timeTakenSecs: number): Promise<MainsSubmitResponse> {
+    const formData = new FormData();
+    files.forEach((f) => formData.append('file', f));
+    formData.append('timeTakenSecs', String(timeTakenSecs));
+    const response = await apiClient.post<ApiResponse<MainsSubmitResponse>>(
+      `/mains/questions/${questionId}/submit-pdf`,
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } },
     );
     return response.data.data;
   },

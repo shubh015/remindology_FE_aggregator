@@ -17,6 +17,25 @@ export function useMainsSubmit() {
   });
 }
 
+export function useMainsPdfSubmit() {
+  return useMutation({
+    mutationFn: ({ questionId, files, timeTakenSecs }: { questionId: string; files: File[]; timeTakenSecs: number }) =>
+      mainsService.submitHandwrittenAnswer(questionId, files, timeTakenSecs),
+  });
+}
+
+export function useMainsCustomPdfSubmit() {
+  return useMutation({
+    mutationFn: ({ questionText, files, timeTakenSecs, marks, wordLimit }: {
+      questionText: string;
+      files: File[];
+      timeTakenSecs: number;
+      marks?: number;
+      wordLimit?: number;
+    }) => mainsService.submitCustomHandwrittenAnswer(questionText, files, timeTakenSecs, marks, wordLimit),
+  });
+}
+
 export function useMyMainsAnswers() {
   return useQuery({
     queryKey: ['mains-my-answers'],
