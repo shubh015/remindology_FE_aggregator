@@ -1,6 +1,9 @@
 import { publicApiClient } from '@/lib/api/public-client';
 import { apiClient } from '@/lib/api/client';
-import type { CurrentAffairsArticle } from '@/types/features';
+import type {
+  CurrentAffairsArticle, EnrichedData,
+  PrelimsFact, KeyTerm, PracticeQuestion,
+} from '@/types/features';
 import type { ApiResponse } from './auth.service';
 
 export interface PublishArticleInput {
@@ -20,22 +23,44 @@ function asArray(v: unknown): string[] {
   return Array.isArray(v) ? (v as string[]) : [];
 }
 
+function asTypedArray<T>(v: unknown): T[] {
+  return Array.isArray(v) ? (v as T[]) : [];
+}
+
+function normalizeEnrichedData(raw: unknown): EnrichedData | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = raw as Record<string, unknown>;
+  return {
+    whyInNews:               (r.whyInNews            as string | undefined) ?? undefined,
+    historicalBackground:    (r.historicalBackground as string | undefined) ?? undefined,
+    // Backend has a typo "prelisFacts" — accept both spellings
+    prelimsFacts:            asTypedArray<PrelimsFact>(r.prelisFacts ?? r.prelimsFacts),
+    keyTerms:                asTypedArray<KeyTerm>(r.keyTerms),
+    mainsAngles:             asArray(r.mainsAngles as unknown),
+    wayForward:              asArray(r.wayForward  as unknown),
+    constitutionalProvisions: asArray(r.constitutionalProvisions as unknown),
+    syllabusDetail:          (r.syllabusDetail as string | undefined) ?? undefined,
+  };
+}
+
 // Backend may send snake_case or camelCase, and may omit array fields.
 // Guarantee every field exists so the UI never hits `undefined.map`.
 function normalize(raw: Raw | null | undefined): CurrentAffairsArticle {
   const r = raw ?? {};
   return {
-    id:            String(r.id ?? ''),
-    title:         (r.title as string) ?? '',
-    sourceName:    (r.sourceName    ?? r.source_name    ?? '') as string,
-    sourceUrl:     (r.sourceUrl     ?? r.source_url     ?? '') as string,
-    publishedDate: (r.publishedDate ?? r.published_date ?? '') as string,
-    summary:       (r.summary as string) ?? '',
-    keyFacts:      asArray(r.keyFacts     ?? r.key_facts),
-    gsPaperTags:   asArray(r.gsPaperTags  ?? r.gs_paper_tags),
-    topicTags:     asArray(r.topicTags    ?? r.topic_tags),
-    mainsAngle:    (r.mainsAngle    ?? r.mains_angle    ?? '') as string,
-    examRelevance: (r.examRelevance ?? r.exam_relevance ?? {}) as Record<string, boolean>,
+    id:                String(r.id ?? ''),
+    title:             (r.title as string) ?? '',
+    sourceName:        (r.sourceName    ?? r.source_name    ?? '') as string,
+    sourceUrl:         (r.sourceUrl     ?? r.source_url     ?? '') as string,
+    publishedDate:     (r.publishedDate ?? r.published_date ?? '') as string,
+    summary:           (r.summary as string) ?? '',
+    keyFacts:          asArray(r.keyFacts     ?? r.key_facts),
+    gsPaperTags:       asArray(r.gsPaperTags  ?? r.gs_paper_tags),
+    topicTags:         asArray(r.topicTags    ?? r.topic_tags),
+    mainsAngle:        (r.mainsAngle    ?? r.mains_angle    ?? '') as string,
+    examRelevance:     (r.examRelevance ?? r.exam_relevance ?? {}) as Record<string, boolean>,
+    enrichedData:      normalizeEnrichedData(r.enriched_data ?? r.enrichedData),
+    practiceQuestions: asTypedArray<PracticeQuestion>(r.practice_questions ?? r.practiceQuestions),
   };
 }
 
@@ -49,23 +74,28 @@ export const currentAffairsService = {
     return normalizeList(response.data.data);
   },
 
-  async getRecent(limit = 20): Promise<CurrentAffairsArticle[]> {
-    const response = await publicApiClient.get<ApiResponse<Raw[]>>(`/current-affairs/recent?limit=${limit}`);
+  async getRecent(limit = 20, exam?: string): Promise<CurrentAffairsArticle[]> {
+    const params = new URLSearchParams({ limit: String(limit) });
+    if (exam) params.set('exam', exam);
+    const response = await publicApiClient.get<ApiResponse<Raw[]>>(`/current-affairs/recent?${params}`);
     return normalizeList(response.data.data);
   },
 
-  async getByDate(date: string): Promise<CurrentAffairsArticle[]> {
-    const response = await publicApiClient.get<ApiResponse<Raw[]>>(`/current-affairs/date/${date}`);
+  async getByDate(date: string, exam?: string): Promise<CurrentAffairsArticle[]> {
+    const params = exam ? `?exam=${exam}` : '';
+    const response = await publicApiClient.get<ApiResponse<Raw[]>>(`/current-affairs/date/${date}${params}`);
     return normalizeList(response.data.data);
   },
 
-  async getByMonth(year: number, month: number): Promise<CurrentAffairsArticle[]> {
-    const response = await publicApiClient.get<ApiResponse<Raw[]>>(`/current-affairs/month/${year}/${month}`);
+  async getByMonth(year: number, month: number, exam?: string): Promise<CurrentAffairsArticle[]> {
+    const params = exam ? `?exam=${exam}` : '';
+    const response = await publicApiClient.get<ApiResponse<Raw[]>>(`/current-affairs/month/${year}/${month}${params}`);
     return normalizeList(response.data.data);
   },
 
-  async getById(id: string): Promise<CurrentAffairsArticle> {
-    const response = await publicApiClient.get<ApiResponse<Raw>>(`/current-affairs/${id}`);
+  async getById(id: string, brief = false): Promise<CurrentAffairsArticle> {
+    const url = brief ? `/current-affairs/${id}?view=brief` : `/current-affairs/${id}`;
+    const response = await publicApiClient.get<ApiResponse<Raw>>(url);
     return normalize(response.data.data);
   },
 
@@ -88,6 +118,14 @@ export const currentAffairsService = {
 
   async deleteById(id: string): Promise<void> {
     await apiClient.delete(`/current-affairs/${id}`);
+  },
+
+  // Publishes all drafts whose published_date matches :date
+  async publishDay(date: string): Promise<{ published: number; date: string }> {
+    const response = await apiClient.patch<ApiResponse<{ published: number; date: string }>>(
+      `/current-affairs/publish-day/${date}`,
+    );
+    return response.data.data;
   },
 };
 

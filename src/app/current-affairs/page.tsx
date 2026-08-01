@@ -2,16 +2,15 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
-  useTodaysCurrentAffairs,
   useRecentCurrentAffairs,
   useCurrentAffairsByMonth,
   useFilteredArticles,
 } from '@/features/current-affairs/hooks/use-current-affairs';
+import { useAuthStore } from '@/store/use-auth-store';
 import {
-  Newspaper, Search, X, AlertCircle, ChevronRight,
-  CalendarDays, BookOpen, ArrowRight,
+  Newspaper, Search, X, AlertCircle,
+  CalendarDays, ArrowRight, BookOpen, Zap, Layers, ChevronDown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { CurrentAffairsArticle } from '@/types/features';
@@ -24,7 +23,6 @@ const TEXT_GRAD = {
   WebkitBackgroundClip: 'text' as const,
   WebkitTextFillColor: 'transparent',
 };
-const BORDER_D = '1px solid rgba(124,58,237,0.2)';
 
 const GS_CONFIG: Record<string, { color: string; bg: string; border: string; label: string }> = {
   GS1: { color: '#7C3AED', bg: 'rgba(124,58,237,0.1)',  border: 'rgba(124,58,237,0.25)', label: 'GS1 · Indian Heritage & Society' },
@@ -33,7 +31,59 @@ const GS_CONFIG: Record<string, { color: string; bg: string; border: string; lab
   GS4: { color: '#DC2626', bg: 'rgba(220,38,38,0.1)',   border: 'rgba(220,38,38,0.25)',  label: 'GS4 · Ethics & Integrity' },
 };
 
-type ViewMode = 'today' | 'recent' | 'archive';
+type ViewMode = 'recent' | 'archive';
+
+const PAGE_SIZE = 10;
+
+// ── Timezone helper ───────────────────────────────────────────────
+// Backend stores dates as UTC timestamps (e.g. 2026-07-25T18:30:00Z = 2026-07-26 IST midnight).
+// Always extract the IST (UTC+5:30) calendar date, not the raw UTC date.
+function toISTDateKey(isoStr: string): string {
+  const d = new Date(isoStr);
+  if (isNaN(d.getTime())) return isoStr.slice(0, 10);
+  const istMs = d.getTime() + (5 * 60 + 30) * 60 * 1000;
+  return new Date(istMs).toISOString().slice(0, 10);
+}
+
+// ── Group helpers ─────────────────────────────────────────────────
+
+interface DateGroup {
+  dateKey: string;          // YYYY-MM-DD
+  displayDate: string;      // "31 July 2026"
+  dayOfWeek: string;        // "Thursday"
+  articles: CurrentAffairsArticle[];
+  gsPapers: string[];       // unique, sorted
+  totalFacts: number;
+  hasMCQ: boolean;
+}
+
+function groupByDate(articles: CurrentAffairsArticle[]): DateGroup[] {
+  const map = new Map<string, CurrentAffairsArticle[]>();
+  for (const a of articles) {
+    const key = a.publishedDate ? toISTDateKey(a.publishedDate) : 'unknown';
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(a);
+  }
+  return Array.from(map.entries())
+    .sort(([a], [b]) => b.localeCompare(a))
+    .map(([key, items]) => {
+      const d = new Date(`${key}T00:00:00`);
+      const allGS = items.flatMap((a) => a.gsPaperTags);
+      const uniqueGS = Array.from(new Set(allGS)).sort();
+      const totalFacts = items.reduce(
+        (acc, a) => acc + a.keyFacts.length + (a.enrichedData?.prelimsFacts?.length ?? 0), 0,
+      );
+      return {
+        dateKey:     key,
+        displayDate: isNaN(d.getTime()) ? key : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+        dayOfWeek:   isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-IN', { weekday: 'long' }),
+        articles:    items,
+        gsPapers:    uniqueGS,
+        totalFacts,
+        hasMCQ:      items.some((a) => (a.practiceQuestions?.length ?? 0) > 0),
+      };
+    });
+}
 
 function getMonthOptions() {
   const opts: { label: string; year: number; month: number; key: string }[] = [];
@@ -54,97 +104,161 @@ function getMonthOptions() {
 
 function CardSkeleton() {
   return (
-    <div className="rounded-2xl border border-border bg-card overflow-hidden animate-pulse">
-      <div className="h-[3px] bg-muted" />
-      <div className="p-6 space-y-3">
-        <div className="flex gap-2">
-          <div className="h-5 w-12 rounded-full bg-muted" />
+    <div className="rounded-2xl bg-white overflow-hidden animate-pulse" style={{ border: '1px solid rgba(124,58,237,0.1)' }}>
+      <div className="h-0.75 bg-muted" />
+      <div className="p-5 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="h-7 w-32 rounded bg-muted" />
           <div className="h-5 w-20 rounded-full bg-muted" />
         </div>
-        <div className="h-6 w-full rounded bg-muted" />
-        <div className="h-6 w-4/5 rounded bg-muted" />
-        <div className="h-4 w-full rounded bg-muted/70" />
-        <div className="h-4 w-3/4 rounded bg-muted/70" />
-        <div className="h-4 w-2/3 rounded bg-muted/50" />
+        <div className="flex gap-1.5 pt-1">
+          <div className="h-5 w-10 rounded-full bg-muted/70" />
+          <div className="h-5 w-10 rounded-full bg-muted/70" />
+          <div className="h-5 w-10 rounded-full bg-muted/70" />
+        </div>
+        <div className="space-y-1.5 pt-1">
+          <div className="h-3.5 w-full rounded bg-muted/60" />
+          <div className="h-3.5 w-4/5 rounded bg-muted/50" />
+          <div className="h-3.5 w-3/4 rounded bg-muted/40" />
+        </div>
+        <div className="flex items-center justify-between pt-2 border-t border-muted/40">
+          <div className="h-4 w-24 rounded bg-muted/60" />
+          <div className="h-6 w-20 rounded-lg bg-muted/60" />
+        </div>
       </div>
     </div>
   );
 }
 
-// ── Article card ──────────────────────────────────────────────────
+// ── Date card ─────────────────────────────────────────────────────
+// One card per calendar date — shows all articles for that day as a digest tile
 
-function ArticleCard({ article }: { article: CurrentAffairsArticle }) {
-  const primaryGS   = article.gsPaperTags[0];
+function DateCard({ group }: { group: DateGroup }) {
+  // Pick the dominant GS colour (first GS found)
+  const primaryGS   = group.gsPapers[0];
   const gsCfg       = primaryGS ? GS_CONFIG[primaryGS] : null;
-  const accentColor = gsCfg?.color ?? '#7C3AED';
+  const accentColor = gsCfg?.color  ?? '#7C3AED';
+  const accentBg    = gsCfg?.bg     ?? 'rgba(124,58,237,0.08)';
+  const accentBorder = gsCfg?.border ?? 'rgba(124,58,237,0.2)';
 
-  const dateStr = article.publishedDate
-    ? new Date(article.publishedDate).toLocaleDateString('en-IN', {
-        day: 'numeric', month: 'short', year: 'numeric',
-      })
-    : '';
+  // Top 6 unique topic tags across all articles
+  const allTopics = Array.from(
+    new Set(group.articles.flatMap((a) => a.topicTags)),
+  ).slice(0, 5);
+
+  // First 3 article titles as a preview list
+  const titlePreview = group.articles.slice(0, 3);
 
   return (
     <Link
-      href={`/current-affairs/${article.id}`}
-      className="group block rounded-2xl border border-border bg-card overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+      href={`/current-affairs/date/${group.dateKey}`}
+      className="group block rounded-2xl bg-white overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(124,58,237,0.14)]"
+      style={{ border: `1px solid ${accentBorder}` }}
     >
-      {/* Colored top accent */}
-      <div className="h-[3px]" style={{ background: accentColor }} />
+      {/* Colored top bar */}
+      <div className="h-0.75" style={{ background: accentColor }} />
 
-      <div className="p-6 flex flex-col h-full">
-        {/* GS tags + date */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex flex-wrap gap-1.5">
-            {article.gsPaperTags.map((tag) => {
-              const cfg = GS_CONFIG[tag];
-              return cfg ? (
-                <span
-                  key={tag}
-                  className="text-[10px] font-bold px-2.5 py-0.5 rounded-full"
-                  style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}
-                >
-                  {tag}
-                </span>
-              ) : null;
-            })}
+      <div className="p-5 flex flex-col gap-3">
+
+        {/* Row 1: date block + article count badge */}
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <p className="text-[10px] font-extrabold uppercase tracking-widest mb-0.5" style={{ color: accentColor, opacity: 0.7 }}>
+              {group.dayOfWeek}
+            </p>
+            <p className="text-lg font-extrabold leading-none" style={{ color: '#111827' }}>
+              {group.displayDate}
+            </p>
           </div>
-          {dateStr && (
-            <span className="text-[10px] text-muted-foreground shrink-0">{dateStr}</span>
-          )}
+          <div
+            className="flex items-center gap-1.5 text-[11px] font-extrabold px-2.5 py-1 rounded-full shrink-0"
+            style={{ background: `${accentColor}12`, color: accentColor, border: `1px solid ${accentBorder}` }}
+          >
+            <Layers className="h-3 w-3" />
+            {group.articles.length} {group.articles.length === 1 ? 'story' : 'stories'}
+          </div>
         </div>
 
-        {/* Title */}
-        <h2 className="text-[15px] font-semibold text-foreground leading-snug mb-2 group-hover:text-primary transition-colors">
-          {article.title}
-        </h2>
-
-        {/* Summary */}
-        <p className="text-[13px] text-muted-foreground leading-relaxed line-clamp-3 flex-1 mb-4">
-          {article.summary}
-        </p>
-
-        {/* Footer: topic chips + key facts count + arrow */}
-        <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/60">
-          <div className="flex gap-1.5 flex-wrap">
-            {article.topicTags.slice(0, 2).map((tag) => (
+        {/* Row 2: GS paper chips */}
+        <div className="flex flex-wrap gap-1.5">
+          {group.gsPapers.map((tag) => {
+            const cfg = GS_CONFIG[tag];
+            return cfg ? (
               <span
                 key={tag}
-                className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground"
+                className="text-[10px] font-extrabold px-2 py-0.5 rounded-full"
+                style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}
+              >
+                {tag}
+              </span>
+            ) : null;
+          })}
+        </div>
+
+        {/* Row 3: article title preview */}
+        <ul className="space-y-1.5" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+          {titlePreview.map((a) => (
+            <li key={a.id} className="flex items-start gap-2">
+              <span
+                className="rounded-full shrink-0 mt-1.25"
+                style={{ width: 5, height: 5, background: accentColor, opacity: 0.5, flexShrink: 0 }}
+              />
+              <span
+                className="text-[12px] leading-snug line-clamp-1"
+                style={{ color: '#374151' }}
+              >
+                {a.title}
+              </span>
+            </li>
+          ))}
+          {group.articles.length > 3 && (
+            <li className="text-[11px] font-semibold pl-4" style={{ color: accentColor, opacity: 0.7 }}>
+              +{group.articles.length - 3} more stories
+            </li>
+          )}
+        </ul>
+
+        {/* Row 4: topic chips */}
+        {allTopics.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {allTopics.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] font-medium px-2 py-0.5 rounded-full"
+                style={{ background: accentBg, color: '#4B5563', border: `1px solid ${accentBorder}` }}
               >
                 {tag}
               </span>
             ))}
           </div>
-          <div className="flex items-center gap-1 text-xs font-semibold text-primary shrink-0">
-            {article.keyFacts.length > 0 && (
-              <span className="text-[10px] text-muted-foreground mr-1">
-                {article.keyFacts.length} facts
+        )}
+
+        {/* Row 5: footer stats + CTA */}
+        <div
+          className="flex items-center justify-between pt-2.5 mt-auto"
+          style={{ borderTop: `1px solid ${accentBorder}` }}
+        >
+          <div className="flex items-center gap-3">
+            {group.totalFacts > 0 && (
+              <span className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: '#6B7280' }}>
+                <BookOpen className="h-3 w-3" style={{ color: accentColor }} />
+                {group.totalFacts} facts
               </span>
             )}
-            Read more
-            <ChevronRight className="h-3.5 w-3.5" />
+            {group.hasMCQ && (
+              <span className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: '#6B7280' }}>
+                <Zap className="h-3 w-3" style={{ color: accentColor }} />
+                MCQ
+              </span>
+            )}
           </div>
+          <span
+            className="inline-flex items-center gap-1.5 text-[11px] font-extrabold px-3 py-1.5 rounded-lg transition-all group-hover:opacity-90"
+            style={{ background: accentColor, color: '#FFFFFF' }}
+          >
+            Study
+            <ArrowRight className="h-3 w-3" />
+          </span>
         </div>
       </div>
     </Link>
@@ -174,34 +288,36 @@ function EmptyState({ filtered }: { filtered?: boolean }) {
 // ── Main page ─────────────────────────────────────────────────────
 
 export default function CurrentAffairsPublicPage() {
-  const [view, setView]                   = useState<ViewMode>('today');
+  const [view, setView]                   = useState<ViewMode>('recent');
   const [paperFilter, setPaperFilter]     = useState('');
   const [subjectSearch, setSubjectSearch] = useState('');
+  const [visibleCount, setVisibleCount]   = useState(PAGE_SIZE);
   const monthOptions                      = useMemo(() => getMonthOptions(), []);
   const [archiveMonth, setArchiveMonth]   = useState(monthOptions[0]);
 
-  const todayQ   = useTodaysCurrentAffairs();
-  const recentQ  = useRecentCurrentAffairs(40);
-  const archiveQ = useCurrentAffairsByMonth(archiveMonth.year, archiveMonth.month);
+  const userExam = useAuthStore((s) => s.user?.target_exam);
 
-  const rawArticles =
-    view === 'today'  ? todayQ.data  :
-    view === 'recent' ? recentQ.data :
-    archiveQ.data;
+  // Fetch 150 articles upfront — enough for ~10–15 date groups without extra API calls
+  const recentQ  = useRecentCurrentAffairs(150, userExam);
+  const archiveQ = useCurrentAffairsByMonth(archiveMonth.year, archiveMonth.month, userExam);
 
-  const isLoading =
-    view === 'today'  ? todayQ.isLoading  :
-    view === 'recent' ? recentQ.isLoading :
-    archiveQ.isLoading;
-
-  const isError =
-    view === 'today'  ? todayQ.isError  :
-    view === 'recent' ? recentQ.isError :
-    archiveQ.isError;
+  const rawArticles = view === 'recent' ? recentQ.data : archiveQ.data;
+  const isLoading   = view === 'recent' ? recentQ.isLoading : archiveQ.isLoading;
+  const isError     = view === 'recent' ? recentQ.isError   : archiveQ.isError;
 
   const filtered   = useFilteredArticles(rawArticles, paperFilter, subjectSearch);
-  const totalCount = filtered.length;
+  const dateGroups = useMemo(() => groupByDate(filtered), [filtered]);
   const hasFilter  = !!(paperFilter || subjectSearch);
+
+  // When filters are active show everything; otherwise paginate
+  const visibleGroups = hasFilter ? dateGroups : dateGroups.slice(0, visibleCount);
+  const hasMore       = !hasFilter && visibleCount < dateGroups.length;
+
+  // Reset pagination when view or filters change
+  const handleViewChange = (v: ViewMode) => { setView(v); setVisibleCount(PAGE_SIZE); };
+  const handleFilterChange = (paper: string, search: string) => {
+    setPaperFilter(paper); setSubjectSearch(search);
+  };
 
   const todayFull = new Date().toLocaleDateString('en-IN', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
@@ -230,7 +346,7 @@ export default function CurrentAffairsPublicPage() {
           }}
         />
 
-        <div className="relative max-w-6xl mx-auto px-6 pt-14 pb-16">
+        <div className="relative max-w-7xl mx-auto px-6 pt-14 pb-16">
           <div className="max-w-2xl">
             {/* Badge */}
             <div
@@ -280,8 +396,8 @@ export default function CurrentAffairsPublicPage() {
       </section>
 
       {/* ── Content area ── */}
-      <section style={{ background: '#F5F4FF', minHeight: '60vh' }}>
-        <div className="max-w-6xl mx-auto px-6 py-10">
+      <section style={{ background: '#FFFFFF', minHeight: '60vh' }}>
+        <div className="max-w-7xl mx-auto px-6 py-10">
 
           {/* ── Filter card ── */}
           <div className="rounded-2xl border border-border bg-white shadow-sm p-5 mb-8 space-y-5">
@@ -293,14 +409,13 @@ export default function CurrentAffairsPublicPage() {
               <div className="flex items-center gap-1 bg-secondary/70 rounded-xl p-1">
                 {(
                   [
-                    { id: 'today',   label: 'Today',   Icon: Newspaper    },
-                    { id: 'recent',  label: 'Recent',  Icon: CalendarDays },
+                    { id: 'recent',  label: 'Latest',  Icon: Newspaper    },
                     { id: 'archive', label: 'Archive', Icon: CalendarDays },
                   ] as { id: ViewMode; label: string; Icon: React.ElementType }[]
                 ).map(({ id, label, Icon }) => (
                   <button
                     key={id}
-                    onClick={() => setView(id)}
+                    onClick={() => handleViewChange(id)}
                     className={cn(
                       'flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer',
                       view === id
@@ -317,7 +432,7 @@ export default function CurrentAffairsPublicPage() {
               {/* Date + count */}
               <div className="flex items-center gap-3">
                 <span className="text-xs text-muted-foreground hidden sm:block">{todayFull}</span>
-                {!isLoading && rawArticles && rawArticles.length > 0 && (
+                {!isLoading && dateGroups.length > 0 && (
                   <span
                     className="text-[11px] font-bold px-3 py-1 rounded-full"
                     style={{
@@ -326,7 +441,9 @@ export default function CurrentAffairsPublicPage() {
                       border: '1px solid rgba(124,58,237,0.15)',
                     }}
                   >
-                    {totalCount} article{totalCount !== 1 ? 's' : ''}
+                    {hasMore
+                      ? `${visibleCount} of ${dateGroups.length} days`
+                      : `${dateGroups.length} day${dateGroups.length !== 1 ? 's' : ''}`}
                   </span>
                 )}
               </div>
@@ -366,7 +483,7 @@ export default function CurrentAffairsPublicPage() {
                   return (
                     <button
                       key={p}
-                      onClick={() => setPaperFilter(p === 'All' ? '' : paperFilter === p ? '' : p)}
+                      onClick={() => handleFilterChange(p === 'All' ? '' : paperFilter === p ? '' : p, subjectSearch)}
                       className={cn(
                         'text-[11px] font-bold px-3 py-1.5 rounded-xl border transition-all cursor-pointer',
                         isActive
@@ -390,13 +507,13 @@ export default function CurrentAffairsPublicPage() {
                 <input
                   type="text"
                   value={subjectSearch}
-                  onChange={(e) => setSubjectSearch(e.target.value)}
+                  onChange={(e) => handleFilterChange(paperFilter, e.target.value)}
                   placeholder="Search topics…"
                   className="text-xs bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none flex-1 min-w-0"
                 />
                 {subjectSearch && (
                   <button
-                    onClick={() => setSubjectSearch('')}
+                    onClick={() => handleFilterChange(paperFilter, '')}
                     className="text-muted-foreground hover:text-foreground cursor-pointer"
                   >
                     <X className="h-3 w-3" />
@@ -406,7 +523,7 @@ export default function CurrentAffairsPublicPage() {
 
               {hasFilter && (
                 <button
-                  onClick={() => { setPaperFilter(''); setSubjectSearch(''); }}
+                  onClick={() => handleFilterChange('', '')}
                   className="flex items-center gap-1 text-[11px] font-semibold text-destructive hover:underline cursor-pointer"
                 >
                   <X className="h-3 w-3" />Clear
@@ -449,16 +566,45 @@ export default function CurrentAffairsPublicPage() {
               {[1, 2, 3, 4, 5, 6].map((i) => <CardSkeleton key={i} />)}
             </div>
           ) : (
-            <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start">
-              {filtered.length === 0
-                ? <EmptyState filtered={hasFilter} />
-                : filtered.map((a) => <ArticleCard key={a.id} article={a} />)
-              }
-            </div>
+            <>
+              <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start">
+                {visibleGroups.length === 0
+                  ? <EmptyState filtered={hasFilter} />
+                  : visibleGroups.map((g) => <DateCard key={g.dateKey} group={g} />)
+                }
+              </div>
+
+              {/* Load More */}
+              {hasMore && (
+                <div className="flex flex-col items-center gap-3 mt-8">
+                  <button
+                    onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                    className="inline-flex items-center gap-2 text-sm font-bold px-7 py-3 rounded-2xl border-2 transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer"
+                    style={{
+                      borderColor: 'rgba(124,58,237,0.3)',
+                      color: '#7C3AED',
+                      background: '#FFFFFF',
+                    }}
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                    Load More
+                    <span
+                      className="text-[10px] font-extrabold px-2 py-0.5 rounded-full"
+                      style={{ background: 'rgba(124,58,237,0.1)', color: '#7C3AED' }}
+                    >
+                      {Math.min(PAGE_SIZE, dateGroups.length - visibleCount)} more days
+                    </span>
+                  </button>
+                  <p className="text-[11px]" style={{ color: '#9CA3AF' }}>
+                    Showing {visibleCount} of {dateGroups.length} days
+                  </p>
+                </div>
+              )}
+            </>
           )}
 
           {/* ── Sign-up nudge at bottom ── */}
-          {!isLoading && !isError && filtered.length > 0 && (
+          {!isLoading && !isError && dateGroups.length > 0 && (
             <div
               className="mt-12 rounded-2xl overflow-hidden relative"
               style={{ background: 'linear-gradient(135deg, #5B21B6 0%, #7C3AED 50%, #C026D3 100%)' }}

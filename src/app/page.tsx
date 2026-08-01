@@ -12,6 +12,7 @@ import { WhyRemindology } from '@/components/landing/WhyRemindology';
 import { Testimonials } from '@/components/landing/Testimonials';
 import { Pricing } from '@/components/landing/Pricing';
 import { CurrentAffairsTeaser } from '@/components/landing/CurrentAffairsTeaser';
+import { OCRCopyCheckShowcase } from '@/components/landing/OCRCopyCheckShowcase';
 
 // ── Style shortcuts ───────────────────────────────────────────────
 const BRAND_GRAD = 'linear-gradient(135deg, #7C3AED, #C026D3)';
@@ -408,6 +409,44 @@ export default function LandingPage() {
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════
+          OCR COPY CHECK  ·  answer writing feature spotlight
+      ════════════════════════════════════════════════════════ */}
+      <section className="relative py-24 overflow-hidden" style={{ background: MIDNIGHT }}>
+        {/* Dot grid */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: 'radial-gradient(circle, rgba(167,139,250,0.07) 1px, transparent 1px)', backgroundSize: '36px 36px' }}
+        />
+        <div className="relative max-w-5xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <div
+              className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
+              style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.25)', color: '#34D399' }}
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: '#34D399' }} />
+                <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: '#34D399' }} />
+              </span>
+              Just Shipped · Answer Writing
+            </div>
+            <h2
+              className="font-bold tracking-tight mb-3"
+              style={{ fontSize: '2.2rem', color: '#F0EEFF', lineHeight: 1.15 }}
+            >
+              Stop copying.{' '}
+              <span style={TEXT_GRAD}>Start thinking.</span>
+            </h2>
+            <p style={{ color: TEXT_MUTED_D, maxWidth: 440, margin: '0 auto', fontSize: '0.9rem', lineHeight: 1.75 }}>
+              The UPSC examiner rewards original analysis — not textbook regurgitation.
+              Our OCR copy check catches it before they do.
+            </p>
+          </div>
+
+          <OCRCopyCheckShowcase />
         </div>
       </section>
 

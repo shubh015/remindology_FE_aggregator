@@ -2,19 +2,18 @@
 
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useAuthStore } from '@/store/use-auth-store';
 import { authService } from '@/services/auth.service';
 import { setCookie } from '@/lib/utils';
+import { isOnboardingComplete } from '@/lib/onboarding';
 
 interface GoogleAuthButtonProps {
   redirectTo?: string;
 }
 
 export function GoogleAuthButton({ redirectTo = '/dashboard' }: GoogleAuthButtonProps) {
-  const router = useRouter();
-  const setAuth = useAuthStore((s) => s.setAuth);
+  const { setAuth, setNeedsOnboarding, setPostAuthRedirect } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,9 +26,12 @@ export function GoogleAuthButton({ redirectTo = '/dashboard' }: GoogleAuthButton
     setError(null);
     try {
       const response = await authService.googleAuth(credentialResponse.credential);
+      // Set flags BEFORE setAuth so the auth layout reads them on the same render cycle
+      setNeedsOnboarding(!isOnboardingComplete(response.user.id));
+      setPostAuthRedirect(redirectTo !== '/dashboard' ? redirectTo : null);
       setAuth(response.user, response.accessToken, response.refreshToken);
       setCookie('remindology_logged_in', 'true', 604800);
-      router.replace(redirectTo);
+      // No router.replace here — auth layout is the single redirect controller
     } catch (err: unknown) {
       const apiError = err as { response?: { data?: { message?: string } }; message?: string };
       setError(apiError.response?.data?.message || 'Google sign-in failed. Please try again.');

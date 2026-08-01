@@ -58,6 +58,15 @@ export const authService = {
     const response = await apiClient.get<ApiResponse<User>>('/users/me');
     return response.data.data;
   },
+
+  async updateProfile(data: {
+    targetExam?: string | null;
+    examDate?: string | null;
+    optionalSubject?: string | null;
+  }): Promise<User> {
+    const response = await apiClient.patch<ApiResponse<User>>('/users/profile', data);
+    return response.data.data;
+  },
 };
 
 export default authService;

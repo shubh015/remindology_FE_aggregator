@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '@/store/use-auth-store';
 
 export default function AuthLayout({
@@ -10,7 +11,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, needsOnboarding, postAuthRedirect, setPostAuthRedirect } = useAuthStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -18,12 +19,18 @@ export default function AuthLayout({
     setMounted(true);
   }, []);
 
-  // Sync client-side check with middleware state
+  // Single redirect controller — fires once when the user becomes authenticated
   useEffect(() => {
     if (mounted && isAuthenticated) {
-      router.replace('/dashboard');
+      if (needsOnboarding) {
+        router.replace('/onboarding');
+      } else {
+        const dest = postAuthRedirect || '/dashboard';
+        setPostAuthRedirect(null);
+        router.replace(dest);
+      }
     }
-  }, [mounted, isAuthenticated, router]);
+  }, [mounted, isAuthenticated, needsOnboarding, postAuthRedirect, setPostAuthRedirect, router]);
 
   if (!mounted || isAuthenticated) {
     return (
@@ -54,7 +61,7 @@ export default function AuthLayout({
       <div className="relative w-full max-w-sm space-y-6">
         {/* Brand */}
         <div className="flex flex-col items-center space-y-2 text-center">
-          <a href="/" className="flex items-center gap-2.5 mb-1">
+          <Link href="/" className="flex items-center gap-2.5 mb-1">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl text-white font-bold text-lg shadow-lg"
               style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)' }}>
               R
@@ -63,7 +70,7 @@ export default function AuthLayout({
               style={{ background: 'linear-gradient(135deg, #A78BFA, #E879F9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Remindology
             </span>
-          </a>
+          </Link>
           <p className="text-xs" style={{ color: 'rgba(196,181,253,0.55)' }}>
             AI study tool for every exam &amp; every student
           </p>
