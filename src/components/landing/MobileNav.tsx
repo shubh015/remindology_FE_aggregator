@@ -6,7 +6,7 @@ import { MobileNavAuthButtons } from './NavAuthButtons';
 
 const NAV_LINKS = [
   ['Features', '#features'],
-  ['How it Works', '#how-it-works'],
+  ['Current Affairs', '#current-affairs'],
   ['Pricing', '#pricing'],
   ['FAQ', '#faq'],
 ] as const;
