@@ -461,61 +461,43 @@ function Mockup({ id }: { id: FeatureId }) {
 const AUTO_ROTATE_MS = 4500;
 
 export function FeatureShowcase() {
-  const [active, setActive] = useState(0);
-  const [progress, setProgress] = useState(0);
+  const [active, setActive]             = useState(0);
   const [panelVisible, setPanelVisible] = useState(true);
-  const progressRef  = useRef(0);
+  const [animKey, setAnimKey]           = useState(0);
+  const [isVisible, setIsVisible]       = useState(false);
   const activeRef    = useRef(0);
-  const isVisibleRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { activeRef.current = active; }, [active]);
 
-  // Pause the timer while the section is off-screen so mobile scroll stays smooth
+  // Flip animationPlayState so the CSS animation pauses when scrolled off-screen
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { isVisibleRef.current = entry.isIntersecting; },
+      ([entry]) => setIsVisible(entry.isIntersecting),
       { threshold: 0.15 }
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    const TICK = 40;
-    const timer = setInterval(() => {
-      if (!isVisibleRef.current) return; // don't update state while off-screen
-
-      progressRef.current = Math.min(
-        progressRef.current + (TICK / AUTO_ROTATE_MS) * 100,
-        100
-      );
-      setProgress(progressRef.current);
-
-      if (progressRef.current >= 100) {
-        progressRef.current = 0;
-        setPanelVisible(false);
-        setTimeout(() => {
-          const next = (activeRef.current + 1) % FEATURES.length;
-          setActive(next);
-          setPanelVisible(true);
-        }, 200);
-        setProgress(0);
-      }
-    }, TICK);
-
-    return () => clearInterval(timer);
+  // Called by onAnimationEnd — no setInterval needed
+  const advanceTab = useCallback(() => {
+    setPanelVisible(false);
+    setTimeout(() => {
+      setActive((activeRef.current + 1) % FEATURES.length);
+      setAnimKey(k => k + 1);
+      setPanelVisible(true);
+    }, 200);
   }, []);
 
   const handleSelect = useCallback((i: number) => {
     if (i === activeRef.current) return;
-    progressRef.current = 0;
-    setProgress(0);
     setPanelVisible(false);
     setTimeout(() => {
       setActive(i);
+      setAnimKey(k => k + 1);
       setPanelVisible(true);
     }, 160);
   }, []);
@@ -531,6 +513,12 @@ export function FeatureShowcase() {
         boxShadow: '0 20px 60px rgba(124,58,237,0.1)',
       }}
     >
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes rmProgressSweepFS {
+          from { transform: scaleX(0); }
+          to   { transform: scaleX(1); }
+        }
+      `}} />
       <div
         className="grid md:grid-cols-[220px_1fr] min-h-80 md:min-h-105 min-w-0"
         style={{ background: '#FFFFFF' }}
@@ -597,18 +585,22 @@ export function FeatureShowcase() {
 
         {/* ── Main panel ──────────────────────── */}
         <div className="p-4 md:p-7 flex flex-col min-w-0 overflow-hidden">
-          {/* Progress bar */}
+          {/* CSS-animated progress bar — no JS ticking, GPU-composited */}
           <div
             className="h-0.5 rounded-full mb-6 overflow-hidden"
             style={{ background: 'rgba(124,58,237,0.1)' }}
           >
             <div
-              className="h-full rounded-full"
+              key={animKey}
+              className="h-full w-full rounded-full"
               style={{
-                width: `${progress}%`,
+                transformOrigin: 'left center',
                 background: 'linear-gradient(to right, #7C3AED, #C026D3)',
-                transition: `width ${40}ms linear`,
+                animation: `rmProgressSweepFS ${AUTO_ROTATE_MS}ms linear forwards`,
+                animationPlayState: isVisible ? 'running' : 'paused',
+                willChange: 'transform',
               }}
+              onAnimationEnd={advanceTab}
             />
           </div>
 
@@ -642,6 +634,7 @@ export function FeatureShowcase() {
               opacity: panelVisible ? 1 : 0,
               transition: 'opacity 0.18s ease',
               minHeight: 260,
+              willChange: 'opacity',
             }}
           >
             <Mockup id={feature.id} />
