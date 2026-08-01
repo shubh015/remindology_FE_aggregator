@@ -347,53 +347,44 @@ function NewMockup({ id }: { id: NewFeatureId }) {
 // ── NewFeatureShowcase — grid layout (different from FeatureShowcase sidebar) ──
 export function NewFeatureShowcase() {
   const [active, setActive]             = useState(0);
-  const [progress, setProgress]         = useState(0);
   const [panelVisible, setPanelVisible] = useState(true);
-  const progressRef  = useRef(0);
+  const [animKey, setAnimKey]           = useState(0);
+  const [isVisible, setIsVisible]       = useState(false);
   const activeRef    = useRef(0);
-  const isVisibleRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { activeRef.current = active; }, [active]);
 
-  // Pause while off-screen so mobile scroll doesn't fight 25 React updates/sec
+  // Flip animationPlayState so the CSS animation pauses when scrolled off-screen
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { isVisibleRef.current = entry.isIntersecting; },
+      ([entry]) => setIsVisible(entry.isIntersecting),
       { threshold: 0.15 }
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    const TICK = 40;
-    const timer = setInterval(() => {
-      if (!isVisibleRef.current) return;
-
-      progressRef.current = Math.min(progressRef.current + (TICK / AUTO_ROTATE_MS) * 100, 100);
-      setProgress(progressRef.current);
-      if (progressRef.current >= 100) {
-        progressRef.current = 0;
-        setPanelVisible(false);
-        setTimeout(() => {
-          setActive((activeRef.current + 1) % NEW_FEATURES.length);
-          setPanelVisible(true);
-        }, 200);
-        setProgress(0);
-      }
-    }, TICK);
-    return () => clearInterval(timer);
+  // Called by onAnimationEnd — no setInterval needed
+  const advanceTab = useCallback(() => {
+    setPanelVisible(false);
+    setTimeout(() => {
+      setActive((activeRef.current + 1) % NEW_FEATURES.length);
+      setAnimKey(k => k + 1);
+      setPanelVisible(true);
+    }, 200);
   }, []);
 
   const handleSelect = useCallback((i: number) => {
     if (i === activeRef.current) return;
-    progressRef.current = 0;
-    setProgress(0);
     setPanelVisible(false);
-    setTimeout(() => { setActive(i); setPanelVisible(true); }, 160);
+    setTimeout(() => {
+      setActive(i);
+      setAnimKey(k => k + 1);
+      setPanelVisible(true);
+    }, 160);
   }, []);
 
   const feature = NEW_FEATURES[active];
@@ -404,6 +395,12 @@ export function NewFeatureShowcase() {
       className="rounded-3xl overflow-hidden"
       style={{ border: '1px solid rgba(124,58,237,0.12)', boxShadow: '0 20px 60px rgba(124,58,237,0.1)' }}
     >
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes rmProgressSweepNFS {
+          from { transform: scaleX(0); }
+          to   { transform: scaleX(1); }
+        }
+      `}} />
       <div className="grid lg:grid-cols-[1fr_360px]" style={{ background: '#FFFFFF' }}>
 
         {/* ── Left: feature grid ── */}
@@ -449,12 +446,16 @@ export function NewFeatureShowcase() {
           <div className="space-y-2">
             <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(124,58,237,0.1)' }}>
               <div
-                className="h-full rounded-full"
+                key={animKey}
+                className="h-full w-full rounded-full"
                 style={{
-                  width: `${progress}%`,
+                  transformOrigin: 'left center',
                   background: `linear-gradient(to right, ${feature.color}, ${feature.color}CC)`,
-                  transition: '40ms linear',
+                  animation: `rmProgressSweepNFS ${AUTO_ROTATE_MS}ms linear forwards`,
+                  animationPlayState: isVisible ? 'running' : 'paused',
+                  willChange: 'transform',
                 }}
+                onAnimationEnd={advanceTab}
               />
             </div>
             <p className="text-[10px] text-center" style={{ color: TEXT_MID }}>
@@ -495,7 +496,7 @@ export function NewFeatureShowcase() {
           {/* Mockup */}
           <div
             className="flex-1 overflow-y-auto"
-            style={{ opacity: panelVisible ? 1 : 0, transition: 'opacity 0.18s ease' }}
+            style={{ opacity: panelVisible ? 1 : 0, transition: 'opacity 0.18s ease', willChange: 'opacity' }}
           >
             <NewMockup id={feature.id} />
           </div>
