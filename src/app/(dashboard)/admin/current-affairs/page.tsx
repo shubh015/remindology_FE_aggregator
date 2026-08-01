@@ -12,7 +12,7 @@ import { currentAffairsService } from '@/services/current-affairs.service';
 import {
   Send, Trash2, AlertCircle, CheckCircle2, X,
   Loader2, Newspaper, ShieldCheck, BookOpen, Tag,
-  FileText, CheckCheck, XCircle,
+  FileText, CheckCheck, XCircle, Layers,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -409,10 +409,11 @@ export default function AdminCurrentAffairsPage() {
 
   const [activeTab,   setActiveTab]   = useState<TabId>('new');
   const [form,        setForm]        = useState({ ...EMPTY_FORM });
-  const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
-  const [rejectTarget, setRejectTarget] = useState<{ id: string; title: string } | null>(null);
+  const [deleteTarget,      setDeleteTarget]      = useState<{ id: string; title: string } | null>(null);
+  const [rejectTarget,      setRejectTarget]      = useState<{ id: string; title: string } | null>(null);
   const [publishingDraftId, setPublishingDraftId] = useState<string | null>(null);
   const [rejectingDraftId,  setRejectingDraftId]  = useState<string | null>(null);
+  const [publishingDay,     setPublishingDay]     = useState<string | null>(null);  // YYYY-MM-DD
 
   // ── Queries ────────────────────────────────────────────────────
   const { data: drafts, isLoading: draftsLoading } = useQuery({
@@ -482,6 +483,24 @@ export default function AdminCurrentAffairsPage() {
     onError: () => showToast('error', 'Could not reject draft. Try again.'),
   });
 
+  // ── Publish all drafts for a date ─────────────────────────────
+  const publishDayMutation = useMutation({
+    mutationFn: (date: string) => currentAffairsService.publishDay(date),
+    onMutate: (date) => setPublishingDay(date),
+    onSettled: () => setPublishingDay(null),
+    onSuccess: (data) => {
+      showToast('success', `${data.published} article${data.published !== 1 ? 's' : ''} published for ${data.date}.`);
+      qc.invalidateQueries({ queryKey: ['admin', 'current-affairs', 'drafts'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'current-affairs', 'recent'] });
+      qc.invalidateQueries({ queryKey: ['current-affairs'] });
+    },
+    onError: (err: unknown) => {
+      const msg = (err as { response?: { data?: { message?: string } } })
+        ?.response?.data?.message ?? 'Could not publish day. Try again.';
+      showToast('error', msg);
+    },
+  });
+
   // ── Delete published article mutation ─────────────────────────
   const deleteMutation = useMutation({
     mutationFn: (id: string) => currentAffairsService.deleteById(id),
@@ -497,7 +516,7 @@ export default function AdminCurrentAffairsPage() {
   const set = (field: keyof typeof EMPTY_FORM, value: unknown) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.title.trim() || !form.content.trim()) return;
     publishMutation.mutate();
@@ -725,21 +744,69 @@ export default function AdminCurrentAffairsPage() {
                 <p className="text-xs text-muted-foreground">Drafts from the AI pipeline will appear here for approval.</p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {drafts.map((d) => (
-                  <DraftCard
-                    key={d.id}
-                    draft={d}
-                    onPublish={(id, title) => {
-                      setRejectTarget(null);
-                      publishDraftMutation.mutate(id);
-                      void title;
-                    }}
-                    onReject={(id, title) => setRejectTarget({ id, title })}
-                    publishingId={publishingDraftId}
-                    rejectingId={rejectingDraftId}
-                  />
-                ))}
+              <div className="space-y-8">
+                {/* Group drafts by publishedDate */}
+                {Array.from(
+                  drafts.reduce((map, d) => {
+                    const key = d.publishedDate?.slice(0, 10) ?? 'unknown';
+                    if (!map.has(key)) map.set(key, []);
+                    map.get(key)!.push(d);
+                    return map;
+                  }, new Map<string, typeof drafts>()),
+                )
+                  .sort(([a], [b]) => b.localeCompare(a))
+                  .map(([dateKey, group]) => {
+                    const d = new Date(`${dateKey}T00:00:00`);
+                    const dateLabel = isNaN(d.getTime())
+                      ? dateKey
+                      : d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                    const isPublishingThisDay = publishingDay === dateKey;
+                    return (
+                      <div key={dateKey} className="space-y-3">
+                        {/* Date group header */}
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-2">
+                            <Layers className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className="text-sm font-bold text-foreground">{dateLabel}</span>
+                            <span
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                              style={{ background: 'rgba(217,119,6,0.1)', color: '#D97706', border: '1px solid rgba(217,119,6,0.25)' }}
+                            >
+                              {group.length} draft{group.length !== 1 ? 's' : ''}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => publishDayMutation.mutate(dateKey)}
+                            disabled={isPublishingThisDay || publishDraftMutation.isPending}
+                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                            style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)', boxShadow: '0 2px 8px rgba(124,58,237,0.25)' }}
+                          >
+                            {isPublishingThisDay
+                              ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Publishing all…</>
+                              : <><CheckCheck className="h-3.5 w-3.5" />Publish All for this Day</>}
+                          </button>
+                        </div>
+
+                        {/* Individual drafts */}
+                        <div className="space-y-3 pl-1 border-l-2" style={{ borderColor: 'rgba(124,58,237,0.15)' }}>
+                          {group.map((d) => (
+                            <DraftCard
+                              key={d.id}
+                              draft={d}
+                              onPublish={(id, title) => {
+                                setRejectTarget(null);
+                                publishDraftMutation.mutate(id);
+                                void title;
+                              }}
+                              onReject={(id, title) => setRejectTarget({ id, title })}
+                              publishingId={publishingDraftId}
+                              rejectingId={rejectingDraftId}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
               </div>
             )}
           </section>

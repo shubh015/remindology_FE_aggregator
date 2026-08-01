@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/use-auth-store';
 import { authService } from '@/services/auth.service';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 
 import { setCookie, cn } from '@/lib/utils';
 import { GoogleAuthButton } from '@/components/auth/GoogleAuthButton';
+import { isOnboardingComplete } from '@/lib/onboarding';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -24,9 +25,8 @@ const loginSchema = z.object({
 type LoginSchema = z.infer<typeof loginSchema>;
 
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const setAuth = useAuthStore((state) => state.setAuth);
+  const { setAuth, setNeedsOnboarding, setPostAuthRedirect } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -45,15 +45,12 @@ function LoginForm() {
     try {
       const response = await authService.login(data);
       
-      // Store user details & token
+      // Set flags BEFORE setAuth so auth layout reads them on the same render cycle
+      setNeedsOnboarding(!isOnboardingComplete(response.user.id));
+      setPostAuthRedirect(searchParams.get('redirect'));
       setAuth(response.user, response.accessToken, response.refreshToken);
-      
-      // Set simple client auth cookie for Middleware redirect checks
       setCookie('remindology_logged_in', 'true', 604800);
-      
-      // Navigate to intended page
-      const redirectPath = searchParams.get('redirect') || '/dashboard';
-      router.replace(redirectPath);
+      // No router.replace — auth layout is the single redirect controller
     } catch (err: unknown) {
       const apiError = err as { response?: { data?: { message?: string } }; message?: string };
       setError(

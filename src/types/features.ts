@@ -45,6 +45,34 @@ export interface ChallengeSubmitResponse {
 
 // ── Current Affairs ───────────────────────────────────────────────
 
+export interface PrelimsFact {
+  label: string;
+  value: string;
+}
+
+export interface KeyTerm {
+  term: string;
+  definition: string;
+}
+
+export interface PracticeQuestion {
+  question: string;
+  options: string[];
+  correct_answer: string;
+  explanation: string;
+}
+
+export interface EnrichedData {
+  whyInNews?: string;
+  historicalBackground?: string;
+  prelimsFacts?: PrelimsFact[];
+  keyTerms?: KeyTerm[];
+  mainsAngles?: string[];
+  wayForward?: string[];
+  constitutionalProvisions?: string[];
+  syllabusDetail?: string;
+}
+
 export interface CurrentAffairsArticle {
   id: string;
   title: string;
@@ -57,6 +85,8 @@ export interface CurrentAffairsArticle {
   topicTags: string[];
   mainsAngle: string;
   examRelevance: Record<string, boolean>;
+  enrichedData?: EnrichedData;
+  practiceQuestions?: PracticeQuestion[];
 }
 
 // ── Mains Answer Writing ──────────────────────────────────────────
