@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api/client';
-import type { MainsQuestion, MainsSubmitResponse, MainsEvaluation, MyMainsAnswer } from '@/types/features';
+import type { MainsQuestion, MainsSubmitResponse, MainsEvaluation, MyMainsAnswer, MainsAnalytics } from '@/types/features';
 import type { ApiResponse } from './auth.service';
 
 // Shape returned by POST /mains/submit-pdf (custom question, no questionId)
@@ -70,9 +70,16 @@ export const mainsService = {
     return response.data.data;
   },
 
-  async getMyAnswers(): Promise<MyMainsAnswer[]> {
-    const response = await apiClient.get<ApiResponse<MyMainsAnswer[]>>('/mains/my-answers');
+  async getMyAnswers(limit = 20, offset = 0): Promise<MyMainsAnswer[]> {
+    const response = await apiClient.get<ApiResponse<MyMainsAnswer[]>>(
+      `/mains/my-answers?limit=${limit}&offset=${offset}`,
+    );
     return response.data.data || [];
+  },
+
+  async getAnalytics(): Promise<MainsAnalytics> {
+    const response = await apiClient.get<ApiResponse<MainsAnalytics>>('/mains/analytics');
+    return response.data.data;
   },
 };
 

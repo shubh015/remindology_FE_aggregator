@@ -39,6 +39,16 @@ export function useCurrentAffairsByMonth(year: number, month: number, exam?: str
   });
 }
 
+export function useCurrentAffairsSearch(query: string, exam?: string) {
+  return useQuery({
+    queryKey: ['current-affairs', 'search', query, exam ?? null],
+    queryFn: () => currentAffairsService.search(query, exam),
+    enabled: query.length >= 2,
+    staleTime: 60_000,
+    retry: false,
+  });
+}
+
 // Client-side filter helper
 export function useFilteredArticles(
   articles: CurrentAffairsArticle[] | undefined,

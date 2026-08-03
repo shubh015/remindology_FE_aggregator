@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import { Header } from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,10 +9,13 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { useMainsQuestions, useMainsSubmit, useMainsPdfSubmit, useMainsCustomPdfSubmit } from '@/features/mains/hooks/use-mains';
+import { useAiLimitStore } from '@/store/use-ai-limit-store';
+import { AiUsageIndicator } from '@/components/ai/AiUsageIndicator';
+import { streakService } from '@/services/streak.service';
 import {
   PenLine, Timer, Loader2, AlertCircle, CheckCircle2, ChevronLeft,
   Sparkles, TrendingUp, Upload, FileText, X,
-  ChevronDown, ScanLine, FileUp, Plus,
+  ChevronDown, ScanLine, FileUp, Plus, BarChart3,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { MainsQuestion, MainsSubmitResponse } from '@/types/features';
@@ -418,7 +422,7 @@ function MultiFileZone({
 
 // ── Answer editor ─────────────────────────────────────────────────
 
-function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, isSubmittingPdf, pdfError, retrySecondsLeft = 0, initialMode = 'type' }: {
+function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, isSubmittingPdf, pdfError, retrySecondsLeft = 0, initialMode = 'type', isAiLimitReached = false }: {
   question: MainsQuestion;
   onTextSubmit: (text: string, secs: number) => void;
   onPdfSubmit: (files: File[], secs: number) => void;
@@ -427,6 +431,7 @@ function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, i
   pdfError?: string | null;
   retrySecondsLeft?: number;
   initialMode?: InputMode;
+  isAiLimitReached?: boolean;
 }) {
   type PageEntry = { file: File; url: string | null };
 
@@ -549,13 +554,16 @@ function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, i
           </div>
           <Button
             onClick={() => onTextSubmit(text, elapsed)}
-            disabled={isSubmitting || wordCount < 30}
+            disabled={isSubmitting || wordCount < 30 || isAiLimitReached}
             className="w-full cursor-pointer font-semibold text-sm h-11 rounded-xl gap-2"
           >
             {isSubmittingText
               ? <><Loader2 className="h-4 w-4 animate-spin" />Evaluating…</>
               : <><Sparkles className="h-4 w-4" />Submit for AI Evaluation</>}
           </Button>
+          {isAiLimitReached && (
+            <p className="text-center text-[11px] text-muted-foreground">Daily AI limit reached · Resets at midnight</p>
+          )}
         </div>
       )}
 
@@ -653,23 +661,28 @@ function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, i
 
           {/* Submit */}
           {!isSubmittingPdf && (
-            <Button
-              onClick={() => files.length > 0 && retrySecondsLeft === 0 && onPdfSubmit(files, elapsed)}
-              disabled={isSubmitting || files.length === 0 || retrySecondsLeft > 0}
-              className="w-full cursor-pointer font-semibold text-sm h-11 rounded-xl gap-2"
-            >
-              {retrySecondsLeft > 0 ? (
-                <>
-                  <Timer className="h-4 w-4" />
-                  Retry in 0:{String(retrySecondsLeft).padStart(2, '0')}
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4" />
-                  Submit {files.length > 0 ? `${files.length} page${files.length > 1 ? 's' : ''}` : 'answer'} for AI Evaluation
-                </>
+            <>
+              <Button
+                onClick={() => files.length > 0 && retrySecondsLeft === 0 && !isAiLimitReached && onPdfSubmit(files, elapsed)}
+                disabled={isSubmitting || files.length === 0 || retrySecondsLeft > 0 || isAiLimitReached}
+                className="w-full cursor-pointer font-semibold text-sm h-11 rounded-xl gap-2"
+              >
+                {retrySecondsLeft > 0 ? (
+                  <>
+                    <Timer className="h-4 w-4" />
+                    Retry in 0:{String(retrySecondsLeft).padStart(2, '0')}
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4" />
+                    Submit {files.length > 0 ? `${files.length} page${files.length > 1 ? 's' : ''}` : 'answer'} for AI Evaluation
+                  </>
+                )}
+              </Button>
+              {isAiLimitReached && (
+                <p className="text-center text-[11px] text-muted-foreground">Daily AI limit reached · Resets at midnight</p>
               )}
-            </Button>
+            </>
           )}
         </div>
       )}
@@ -776,6 +789,7 @@ export default function MainsPage() {
   const textMutation      = useMainsSubmit();
   const pdfMutation       = useMainsPdfSubmit();
   const customPdfMutation = useMainsCustomPdfSubmit();
+  const aiRemaining       = useAiLimitStore((s) => s.remaining);
 
   const [selected,          setSelected]         = useState<MainsQuestion | null>(null);
   const [isCustomQuestion,  setIsCustomQuestion]  = useState(false);
@@ -797,8 +811,17 @@ export default function MainsPage() {
     return () => clearTimeout(id);
   }, [retrySecondsLeft]);
 
+  // Record streak activity after a successful answer submission
+  useEffect(() => {
+    if (isSuccess) {
+      streakService.recordActivity().catch(() => undefined);
+    }
+  }, [isSuccess]);
+
   const handlePdfError = (error: unknown) => {
-    const msg = (error as { response?: { data?: { message?: string } } }).response?.data?.message ?? '';
+    const data = (error as { response?: { data?: { code?: string; message?: string } } }).response?.data;
+    if (data?.code === 'AI_DAILY_LIMIT_REACHED') return;
+    const msg = data?.message ?? '';
     if (/limit|minute/i.test(msg)) setRetrySecondsLeft(60);
   };
 
@@ -838,7 +861,15 @@ export default function MainsPage() {
           <button onClick={handleBack} className="flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer">
             <ChevronLeft className="h-3.5 w-3.5" />Back
           </button>
-        ) : undefined}
+        ) : (
+          <Link
+            href="/mains/analytics"
+            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <BarChart3 className="h-3.5 w-3.5" />
+            Progress
+          </Link>
+        )}
       />
 
       <div className="flex-1 p-6 sm:p-8 max-w-3xl w-full mx-auto space-y-5">
@@ -847,16 +878,22 @@ export default function MainsPage() {
           <ScoreCard result={result} onBack={handleBack} />
 
         ) : selected ? (
-          <AnswerEditor
-            question={selected}
-            onTextSubmit={handleTextSubmit}
-            onPdfSubmit={handlePdfSubmit}
-            isSubmittingText={textMutation.isPending}
-            isSubmittingPdf={pdfMutation.isPending || customPdfMutation.isPending}
-            pdfError={pdfError}
-            retrySecondsLeft={retrySecondsLeft}
-            initialMode={isCustomQuestion ? 'upload' : 'type'}
-          />
+          <>
+            <div className="flex justify-end">
+              <AiUsageIndicator />
+            </div>
+            <AnswerEditor
+              question={selected}
+              onTextSubmit={handleTextSubmit}
+              onPdfSubmit={handlePdfSubmit}
+              isSubmittingText={textMutation.isPending}
+              isSubmittingPdf={pdfMutation.isPending || customPdfMutation.isPending}
+              pdfError={pdfError}
+              retrySecondsLeft={retrySecondsLeft}
+              initialMode={isCustomQuestion ? 'upload' : 'type'}
+              isAiLimitReached={aiRemaining === 0}
+            />
+          </>
 
         ) : (
           <>

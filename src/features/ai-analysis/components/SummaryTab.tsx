@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FileText, Sparkles, Loader2, AlertCircle } from 'lucide-react';
 import type { ContentTabProps } from '@/types/props';
+import { useAiLimitStore } from '@/store/use-ai-limit-store';
 
 export function SummaryTab({ contentId }: ContentTabProps) {
   const { data, isLoading, generate, isGenerating, isGenerateError, generateError } = useSummary(contentId);
+  const isAiLimitReached = useAiLimitStore((s) => s.remaining === 0);
 
   if (isLoading) {
     return (
@@ -57,7 +59,7 @@ export function SummaryTab({ contentId }: ContentTabProps) {
       )}
       <Button
         onClick={() => generate()}
-        disabled={isGenerating}
+        disabled={isGenerating || isAiLimitReached}
         className="cursor-pointer text-sm font-semibold gap-2 rounded-xl px-5"
       >
         {isGenerating ? (
@@ -72,6 +74,9 @@ export function SummaryTab({ contentId }: ContentTabProps) {
           </>
         )}
       </Button>
+      {isAiLimitReached && (
+        <p className="text-[11px] text-muted-foreground mt-2">Daily AI limit reached · Resets at midnight</p>
+      )}
     </div>
   );
 }

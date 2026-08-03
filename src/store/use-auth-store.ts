@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { User } from '@/types/auth';
+import { useAiLimitStore } from './use-ai-limit-store';
+
+function syncAiUsage(user: User) {
+  const { aiUsage } = user;
+  if (aiUsage) {
+    useAiLimitStore.getState().updateFromHeaders(aiUsage.used, aiUsage.remaining, aiUsage.limit);
+  }
+}
 
 interface AuthState {
   user: User | null;
@@ -26,14 +34,19 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       needsOnboarding: false,
       postAuthRedirect: null,
-      setAuth: (user, accessToken, refreshToken) =>
-        set({ user, accessToken, refreshToken, isAuthenticated: true }),
+      setAuth: (user, accessToken, refreshToken) => {
+        set({ user, accessToken, refreshToken, isAuthenticated: true });
+        syncAiUsage(user);
+      },
       clearAuth: () =>
         set({
           user: null, accessToken: null, refreshToken: null,
           isAuthenticated: false, needsOnboarding: false, postAuthRedirect: null,
         }),
-      updateUser: (user) => set({ user }),
+      updateUser: (user) => {
+        set({ user });
+        syncAiUsage(user);
+      },
       setNeedsOnboarding: (v) => set({ needsOnboarding: v }),
       setPostAuthRedirect: (path) => set({ postAuthRedirect: path }),
     }),

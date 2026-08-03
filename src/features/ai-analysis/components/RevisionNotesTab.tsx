@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { BookOpen, Sparkles, Loader2, AlertCircle, Download, Brain } from 'lucide-react';
 import type { ContentTabProps } from '@/types/props';
 import type { RevisionNote } from '@/types/content';
+import { useAiLimitStore } from '@/store/use-ai-limit-store';
 
 // ── Accent palette (cycles per note, matches the mind-map screenshot's gradient lines) ──
 
@@ -155,6 +156,7 @@ function MindMapSkeleton() {
 export function RevisionNotesTab({ contentId }: ContentTabProps) {
   const { notes, isLoading, generate, isGenerating, isGenerateError, generateError } =
     useRevisionNotes(contentId);
+  const isAiLimitReached = useAiLimitStore((s) => s.remaining === 0);
 
   if (isLoading) return <MindMapSkeleton />;
 
@@ -180,7 +182,7 @@ export function RevisionNotesTab({ contentId }: ContentTabProps) {
         )}
         <Button
           onClick={() => generate()}
-          disabled={isGenerating}
+          disabled={isGenerating || isAiLimitReached}
           className="cursor-pointer text-sm font-semibold gap-2 rounded-xl px-5"
         >
           {isGenerating ? (
@@ -195,6 +197,9 @@ export function RevisionNotesTab({ contentId }: ContentTabProps) {
             </>
           )}
         </Button>
+        {isAiLimitReached && (
+          <p className="text-[11px] text-muted-foreground mt-2">Daily AI limit reached · Resets at midnight</p>
+        )}
       </div>
     );
   }

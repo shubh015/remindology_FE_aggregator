@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useInfiniteQuery } from '@tanstack/react-query';
 import { mainsService } from '@/services/mains.service';
 
 export function useMainsQuestions(params?: { examType?: string; topicTag?: string }) {
@@ -37,9 +37,21 @@ export function useMainsCustomPdfSubmit() {
 }
 
 export function useMyMainsAnswers() {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ['mains-my-answers'],
-    queryFn: () => mainsService.getMyAnswers(),
+    queryFn: ({ pageParam = 0 }) => mainsService.getMyAnswers(20, pageParam as number),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.length === 20 ? allPages.length * 20 : undefined,
+    retry: false,
+  });
+}
+
+export function useMainsAnalytics() {
+  return useQuery({
+    queryKey: ['mains-analytics'],
+    queryFn: () => mainsService.getAnalytics(),
+    staleTime: 5 * 60 * 1000,
     retry: false,
   });
 }

@@ -99,6 +99,15 @@ export const currentAffairsService = {
     return normalize(response.data.data);
   },
 
+  async search(q: string, exam?: string, limit = 20): Promise<CurrentAffairsArticle[]> {
+    const params = new URLSearchParams({ q, limit: String(limit) });
+    if (exam) params.set('exam', exam);
+    const response = await publicApiClient.get<{ success: boolean; query: string; count: number; data: Raw[] }>(
+      `/current-affairs/search?${params}`,
+    );
+    return normalizeList(response.data.data);
+  },
+
   // ── Admin-only (require auth) ────────────────────────────────────
 
   async getDrafts(): Promise<CurrentAffairsArticle[]> {

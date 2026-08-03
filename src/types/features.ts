@@ -135,6 +135,32 @@ export interface MyMainsAnswer {
   submittedAt: string;
 }
 
+export interface MainsAnalyticsTrend {
+  date: string;
+  score: number;
+  outOf: number;
+  pct: number;
+  topic: string;
+}
+
+export interface MainsAnalyticsByTopic {
+  topic: string;
+  count: number;
+  avgPct: number;
+}
+
+export interface MainsAnalytics {
+  totalAnswers: number;
+  avgPct: number;
+  bestPct: number;
+  totalTimeMins: number;
+  improvementPct: number | null;
+  trend: MainsAnalyticsTrend[];
+  byTopic: MainsAnalyticsByTopic[];
+  weakAreas: string[];
+  strongAreas: string[];
+}
+
 // ── Study Plan ────────────────────────────────────────────────────
 
 export type StudyActivity =
