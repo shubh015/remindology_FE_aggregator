@@ -1,10 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Sidebar from '@/components/layout/sidebar';
 import { AiMentorFab } from '@/components/layout/AiMentorFab';
+import { AiLimitModal } from '@/components/ai/AiLimitModal';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/use-auth-store';
+import { authService } from '@/services/auth.service';
+import { streakService } from '@/services/streak.service';
 
 export default function DashboardLayout({
   children,
@@ -14,6 +18,26 @@ export default function DashboardLayout({
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
   const [mounted, setMounted] = useState(false);
+
+  // Fetch /user/me on dashboard load — populates streak + AI usage in one round-trip
+  useQuery({
+    queryKey: ['user-me'],
+    queryFn: async () => {
+      const user = await authService.getMe();
+      useAuthStore.getState().updateUser(user);
+      return user;
+    },
+    enabled: isAuthenticated && mounted,
+    staleTime: 30_000,
+    retry: 1,
+  });
+
+  // Record streak activity on app open (fire-and-forget)
+  useEffect(() => {
+    if (mounted && isAuthenticated) {
+      streakService.recordActivity().catch(() => undefined);
+    }
+  }, [mounted, isAuthenticated]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -52,6 +76,9 @@ export default function DashboardLayout({
 
       {/* AI Mentor — always one click away */}
       <AiMentorFab />
+
+      {/* AI daily limit modal */}
+      <AiLimitModal />
     </div>
   );
 }

@@ -1,16 +1,17 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import {
   useRecentCurrentAffairs,
   useCurrentAffairsByMonth,
   useFilteredArticles,
+  useCurrentAffairsSearch,
 } from '@/features/current-affairs/hooks/use-current-affairs';
 import { useAuthStore } from '@/store/use-auth-store';
 import {
   Newspaper, Search, X, AlertCircle,
-  CalendarDays, ArrowRight, BookOpen, Zap, Layers, ChevronDown,
+  CalendarDays, ArrowRight, BookOpen, Zap, Layers, ChevronDown, Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { CurrentAffairsArticle } from '@/types/features';
@@ -285,6 +286,111 @@ function EmptyState({ filtered }: { filtered?: boolean }) {
   );
 }
 
+// ── Individual article card (search results) ──────────────────────
+
+function ArticleCard({ article }: { article: CurrentAffairsArticle }) {
+  const primaryGS    = article.gsPaperTags[0];
+  const gsCfg        = primaryGS ? GS_CONFIG[primaryGS] : null;
+  const accentColor  = gsCfg?.color  ?? '#7C3AED';
+  const accentBg     = gsCfg?.bg     ?? 'rgba(124,58,237,0.08)';
+  const accentBorder = gsCfg?.border ?? 'rgba(124,58,237,0.2)';
+
+  const dateLabel = article.publishedDate
+    ? new Date(`${toISTDateKey(article.publishedDate)}T00:00:00`).toLocaleDateString('en-IN', {
+        day: 'numeric', month: 'short', year: 'numeric',
+      })
+    : '';
+
+  return (
+    <Link
+      href={`/current-affairs/${article.id}`}
+      className="group block rounded-2xl bg-white overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(124,58,237,0.14)]"
+      style={{ border: `1px solid ${accentBorder}` }}
+    >
+      <div className="h-0.75" style={{ background: accentColor }} />
+      <div className="p-5 flex flex-col gap-3">
+
+        {/* Date + GS tags */}
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[10px] font-semibold text-muted-foreground">{dateLabel}</span>
+          <div className="flex gap-1">
+            {article.gsPaperTags.slice(0, 2).map((tag) => {
+              const cfg = GS_CONFIG[tag];
+              return cfg ? (
+                <span
+                  key={tag}
+                  className="text-[10px] font-extrabold px-2 py-0.5 rounded-full"
+                  style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}
+                >
+                  {tag}
+                </span>
+              ) : null;
+            })}
+          </div>
+        </div>
+
+        {/* Title */}
+        <p className="text-[13px] font-bold leading-snug group-hover:text-primary transition-colors line-clamp-2" style={{ color: '#111827' }}>
+          {article.title}
+        </p>
+
+        {/* Summary */}
+        {article.summary && (
+          <p className="text-[12px] leading-relaxed line-clamp-2" style={{ color: '#6B7280' }}>
+            {article.summary}
+          </p>
+        )}
+
+        {/* Topic chips */}
+        {article.topicTags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {article.topicTags.slice(0, 4).map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] font-medium px-2 py-0.5 rounded-full"
+                style={{ background: accentBg, color: '#4B5563', border: `1px solid ${accentBorder}` }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* CTA */}
+        <div
+          className="flex items-center justify-end pt-2 mt-auto"
+          style={{ borderTop: `1px solid ${accentBorder}` }}
+        >
+          <span
+            className="inline-flex items-center gap-1.5 text-[11px] font-extrabold px-3 py-1.5 rounded-lg transition-all group-hover:opacity-90"
+            style={{ background: accentColor, color: '#FFFFFF' }}
+          >
+            Read <ArrowRight className="h-3 w-3" />
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+// ── Search empty state ────────────────────────────────────────────
+
+function SearchEmptyState({ query }: { query: string }) {
+  return (
+    <div className="col-span-full flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card p-16 text-center gap-4">
+      <Search className="h-12 w-12 text-muted-foreground/25" />
+      <div>
+        <p className="text-sm font-semibold text-foreground">
+          No articles found for &quot;{query}&quot;
+        </p>
+        <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">
+          Try a different search term, or browse by date below.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // ── Main page ─────────────────────────────────────────────────────
 
 export default function CurrentAffairsPublicPage() {
@@ -295,11 +401,23 @@ export default function CurrentAffairsPublicPage() {
   const monthOptions                      = useMemo(() => getMonthOptions(), []);
   const [archiveMonth, setArchiveMonth]   = useState(monthOptions[0]);
 
-  const userExam = useAuthStore((s) => s.user?.target_exam);
+  // Search state
+  const [searchQuery,    setSearchQuery]    = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 400);
+    return () => clearTimeout(id);
+  }, [searchQuery]);
+
+  const isSearchMode = debouncedSearch.length >= 2;
+
+  const userExam = useAuthStore((s) => s.user?.target_exam ?? s.user?.targetExam);
 
   // Fetch 150 articles upfront — enough for ~10–15 date groups without extra API calls
   const recentQ  = useRecentCurrentAffairs(150, userExam);
   const archiveQ = useCurrentAffairsByMonth(archiveMonth.year, archiveMonth.month, userExam);
+  const searchQ  = useCurrentAffairsSearch(debouncedSearch, userExam);
 
   const rawArticles = view === 'recent' ? recentQ.data : archiveQ.data;
   const isLoading   = view === 'recent' ? recentQ.isLoading : archiveQ.isLoading;
@@ -402,135 +520,185 @@ export default function CurrentAffairsPublicPage() {
           {/* ── Filter card ── */}
           <div className="rounded-2xl border border-border bg-white shadow-sm p-5 mb-8 space-y-5">
 
-            {/* Row 1: view tabs + date + article count */}
-            <div className="flex flex-wrap items-center justify-between gap-4">
-
-              {/* View tabs */}
-              <div className="flex items-center gap-1 bg-secondary/70 rounded-xl p-1">
-                {(
-                  [
-                    { id: 'recent',  label: 'Latest',  Icon: Newspaper    },
-                    { id: 'archive', label: 'Archive', Icon: CalendarDays },
-                  ] as { id: ViewMode; label: string; Icon: React.ElementType }[]
-                ).map(({ id, label, Icon }) => (
-                  <button
-                    key={id}
-                    onClick={() => handleViewChange(id)}
-                    className={cn(
-                      'flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer',
-                      view === id
-                        ? 'bg-background text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground',
-                    )}
-                  >
-                    <Icon className="h-3.5 w-3.5" />
-                    {label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Date + count */}
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground hidden sm:block">{todayFull}</span>
-                {!isLoading && dateGroups.length > 0 && (
-                  <span
-                    className="text-[11px] font-bold px-3 py-1 rounded-full"
-                    style={{
-                      background: 'rgba(124,58,237,0.08)',
-                      color: '#7C3AED',
-                      border: '1px solid rgba(124,58,237,0.15)',
-                    }}
-                  >
-                    {hasMore
-                      ? `${visibleCount} of ${dateGroups.length} days`
-                      : `${dateGroups.length} day${dateGroups.length !== 1 ? 's' : ''}`}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Month picker (archive mode) */}
-            {view === 'archive' && (
-              <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground shrink-0">Month:</span>
-                {monthOptions.map((opt) => (
-                  <button
-                    key={opt.key}
-                    onClick={() => setArchiveMonth(opt)}
-                    className={cn(
-                      'shrink-0 text-xs font-semibold px-3 py-1.5 rounded-xl border transition-all cursor-pointer whitespace-nowrap',
-                      archiveMonth.key === opt.key
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'border-border text-muted-foreground hover:border-primary/40 hover:text-foreground',
-                    )}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <div className="border-t border-border" />
-
-            {/* Row 2: GS chips + search */}
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">GS Paper:</span>
-
-              <div className="flex gap-1.5 flex-wrap">
-                {(['All', 'GS1', 'GS2', 'GS3', 'GS4'] as const).map((p) => {
-                  const cfg      = p !== 'All' ? GS_CONFIG[p] : null;
-                  const isActive = p === 'All' ? !paperFilter : paperFilter === p;
-                  return (
-                    <button
-                      key={p}
-                      onClick={() => handleFilterChange(p === 'All' ? '' : paperFilter === p ? '' : p, subjectSearch)}
-                      className={cn(
-                        'text-[11px] font-bold px-3 py-1.5 rounded-xl border transition-all cursor-pointer',
-                        isActive
-                          ? 'text-white border-transparent'
-                          : 'text-muted-foreground border-border bg-background hover:border-primary/30 hover:text-foreground',
-                      )}
-                      style={isActive ? {
-                        background: cfg ? cfg.color : '#7C3AED',
-                      } : {}}
-                      title={cfg?.label}
-                    >
-                      {p}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Topic search */}
-              <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-1.5 min-w-45 ml-auto">
-                <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                <input
-                  type="text"
-                  value={subjectSearch}
-                  onChange={(e) => handleFilterChange(paperFilter, e.target.value)}
-                  placeholder="Search topics…"
-                  className="text-xs bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none flex-1 min-w-0"
-                />
-                {subjectSearch && (
-                  <button
-                    onClick={() => handleFilterChange(paperFilter, '')}
-                    className="text-muted-foreground hover:text-foreground cursor-pointer"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                )}
-              </div>
-
-              {hasFilter && (
+            {/* Search bar */}
+            <div className="relative">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search articles… e.g. 'budget', 'ISRO mission'"
+                className="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl border border-border bg-background focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all"
+              />
+              {searchQuery && (
                 <button
-                  onClick={() => handleFilterChange('', '')}
-                  className="flex items-center gap-1 text-[11px] font-semibold text-destructive hover:underline cursor-pointer"
+                  onClick={() => { setSearchQuery(''); setDebouncedSearch(''); }}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+                  aria-label="Clear search"
                 >
-                  <X className="h-3 w-3" />Clear
+                  <X className="h-4 w-4" />
                 </button>
               )}
             </div>
+
+            {/* Filters — hidden while search is active */}
+            {!isSearchMode && (
+              <>
+                {/* Row 1: view tabs + date + article count */}
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center gap-1 bg-secondary/70 rounded-xl p-1">
+                    {(
+                      [
+                        { id: 'recent',  label: 'Latest',  Icon: Newspaper    },
+                        { id: 'archive', label: 'Archive', Icon: CalendarDays },
+                      ] as { id: ViewMode; label: string; Icon: React.ElementType }[]
+                    ).map(({ id, label, Icon }) => (
+                      <button
+                        key={id}
+                        onClick={() => handleViewChange(id)}
+                        className={cn(
+                          'flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer',
+                          view === id
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground',
+                        )}
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-muted-foreground hidden sm:block">{todayFull}</span>
+                    {!isLoading && dateGroups.length > 0 && (
+                      <span
+                        className="text-[11px] font-bold px-3 py-1 rounded-full"
+                        style={{ background: 'rgba(124,58,237,0.08)', color: '#7C3AED', border: '1px solid rgba(124,58,237,0.15)' }}
+                      >
+                        {hasMore
+                          ? `${visibleCount} of ${dateGroups.length} days`
+                          : `${dateGroups.length} day${dateGroups.length !== 1 ? 's' : ''}`}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Month picker (archive mode) */}
+                {view === 'archive' && (
+                  <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground shrink-0">Month:</span>
+                    {monthOptions.map((opt) => (
+                      <button
+                        key={opt.key}
+                        onClick={() => setArchiveMonth(opt)}
+                        className={cn(
+                          'shrink-0 text-xs font-semibold px-3 py-1.5 rounded-xl border transition-all cursor-pointer whitespace-nowrap',
+                          archiveMonth.key === opt.key
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'border-border text-muted-foreground hover:border-primary/40 hover:text-foreground',
+                        )}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <div className="border-t border-border" />
+
+                {/* Row 2: GS chips + topic filter */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">GS Paper:</span>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {(['All', 'GS1', 'GS2', 'GS3', 'GS4'] as const).map((p) => {
+                      const cfg      = p !== 'All' ? GS_CONFIG[p] : null;
+                      const isActive = p === 'All' ? !paperFilter : paperFilter === p;
+                      return (
+                        <button
+                          key={p}
+                          onClick={() => handleFilterChange(p === 'All' ? '' : paperFilter === p ? '' : p, subjectSearch)}
+                          className={cn(
+                            'text-[11px] font-bold px-3 py-1.5 rounded-xl border transition-all cursor-pointer',
+                            isActive
+                              ? 'text-white border-transparent'
+                              : 'text-muted-foreground border-border bg-background hover:border-primary/30 hover:text-foreground',
+                          )}
+                          style={isActive ? { background: cfg ? cfg.color : '#7C3AED' } : {}}
+                          title={cfg?.label}
+                        >
+                          {p}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-1.5 min-w-45 ml-auto">
+                    <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                    <input
+                      type="text"
+                      value={subjectSearch}
+                      onChange={(e) => handleFilterChange(paperFilter, e.target.value)}
+                      placeholder="Filter by topic…"
+                      className="text-xs bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none flex-1 min-w-0"
+                    />
+                    {subjectSearch && (
+                      <button onClick={() => handleFilterChange(paperFilter, '')} className="text-muted-foreground hover:text-foreground cursor-pointer">
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
+                  {hasFilter && (
+                    <button
+                      onClick={() => handleFilterChange('', '')}
+                      className="flex items-center gap-1 text-[11px] font-semibold text-destructive hover:underline cursor-pointer"
+                    >
+                      <X className="h-3 w-3" />Clear
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
           </div>
+
+          {/* ── Search results ── */}
+          {isSearchMode ? (
+            <div>
+              <div className="flex items-center gap-2 mb-5">
+                {searchQ.isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                ) : (
+                  <Search className="h-4 w-4 text-primary" />
+                )}
+                <span className="text-sm font-semibold text-foreground">
+                  {searchQ.isLoading
+                    ? `Searching for "${debouncedSearch}"…`
+                    : searchQ.data?.length
+                    ? `${searchQ.data.length} result${searchQ.data.length !== 1 ? 's' : ''} for "${debouncedSearch}"`
+                    : `Results for "${debouncedSearch}"`}
+                </span>
+              </div>
+              {searchQ.isError ? (
+                <div className="flex items-center gap-3 rounded-2xl bg-destructive/10 border border-destructive/20 p-5 text-sm text-destructive">
+                  <AlertCircle className="h-5 w-5 shrink-0" />
+                  <span>Search failed — please try again.</span>
+                </div>
+              ) : searchQ.isLoading ? (
+                <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start">
+                  {[1, 2, 3, 4, 5, 6].map((i) => <CardSkeleton key={i} />)}
+                </div>
+              ) : (searchQ.data?.length ?? 0) === 0 ? (
+                <div className="grid gap-5 grid-cols-1">
+                  <SearchEmptyState query={debouncedSearch} />
+                </div>
+              ) : (
+                <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start">
+                  {searchQ.data!.map((article) => (
+                    <ArticleCard key={article.id} article={article} />
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
 
           {/* ── GS legend ── */}
           {!isLoading && !isError && !hasFilter && (
@@ -603,7 +771,7 @@ export default function CurrentAffairsPublicPage() {
             </>
           )}
 
-          {/* ── Sign-up nudge at bottom ── */}
+          {/* ── Sign-up nudge ── */}
           {!isLoading && !isError && dateGroups.length > 0 && (
             <div
               className="mt-12 rounded-2xl overflow-hidden relative"
@@ -633,6 +801,9 @@ export default function CurrentAffairsPublicPage() {
                 </Link>
               </div>
             </div>
+          )}
+
+            </>
           )}
         </div>
       </section>

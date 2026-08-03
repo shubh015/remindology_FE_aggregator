@@ -19,18 +19,34 @@ export const TARGET_EXAM_LABELS: Record<TargetExam, string> = {
   STATE_PSC:  'State PSC',
 };
 
+export interface UserStreak {
+  current: number;
+  longest: number;
+  lastActiveDate: string;
+  isActiveToday: boolean;
+}
+
+export interface UserAiUsage {
+  used: number;
+  remaining: number;
+  limit: number;
+}
+
 export interface User {
   id: string;
   name: string;
   email: string;
-  // Backend returns snake_case; accept both for safety
+  // Backend returns snake_case or camelCase; accept both for safety
   createdAt?: string;
   created_at?: string;
   profile_picture_url?: string;
   target_exam?: TargetExam;
+  targetExam?: TargetExam;
   exam_date?: string;
   optional_subject?: string;
   is_admin?: boolean;
+  streak?: UserStreak;
+  aiUsage?: UserAiUsage;
 }
 
 export interface AuthResponse {

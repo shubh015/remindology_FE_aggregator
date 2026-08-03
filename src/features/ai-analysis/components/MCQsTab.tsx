@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { HelpCircle, Sparkles, Loader2, AlertCircle, Check, X, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ContentTabProps } from '@/types/props';
+import { useAiLimitStore } from '@/store/use-ai-limit-store';
 
 type SelectedAnswers = Record<string, string>;
 
@@ -40,6 +41,7 @@ function DetectivePanel({ wrongExplanations, selected }: {
 
 export function MCQsTab({ contentId }: ContentTabProps) {
   const { mcqs, isLoading, generate, isGenerating, isGenerateError, generateError } = useMCQs(contentId);
+  const isAiLimitReached = useAiLimitStore((s) => s.remaining === 0);
   const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswers>({});
 
   const handleSelectOption = (mcqId: string, option: string) => {
@@ -81,9 +83,12 @@ export function MCQsTab({ contentId }: ContentTabProps) {
             </span>
           </div>
         )}
-        <Button onClick={() => generate()} disabled={isGenerating} className="cursor-pointer text-sm font-semibold gap-2 rounded-xl px-5">
+        <Button onClick={() => generate()} disabled={isGenerating || isAiLimitReached} className="cursor-pointer text-sm font-semibold gap-2 rounded-xl px-5">
           {isGenerating ? <><Loader2 className="h-4 w-4 animate-spin" />Generating MCQs…</> : <><Sparkles className="h-4 w-4" />Generate MCQs</>}
         </Button>
+        {isAiLimitReached && (
+          <p className="text-[11px] text-muted-foreground mt-2">Daily AI limit reached · Resets at midnight</p>
+        )}
       </div>
     );
   }

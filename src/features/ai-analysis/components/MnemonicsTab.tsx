@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Lightbulb, Sparkles, Loader2, AlertCircle, Brain } from 'lucide-react';
 import type { ContentTabProps } from '@/types/props';
+import { useAiLimitStore } from '@/store/use-ai-limit-store';
 
 const TYPE_COLORS: Record<string, { bg: string; text: string; label: string }> = {
   pattern:      { bg: 'bg-amber-500/10',   text: 'text-amber-600',   label: 'Pattern'      },
@@ -20,6 +21,7 @@ function typeStyle(type: string) {
 
 export function MnemonicsTab({ contentId }: ContentTabProps) {
   const { mnemonics, isLoading, generate, isGenerating, isGenerateError, generateError } = useMnemonics(contentId);
+  const isAiLimitReached = useAiLimitStore((s) => s.remaining === 0);
 
   if (isLoading) {
     return (
@@ -57,7 +59,7 @@ export function MnemonicsTab({ contentId }: ContentTabProps) {
         )}
         <Button
           onClick={() => generate()}
-          disabled={isGenerating}
+          disabled={isGenerating || isAiLimitReached}
           className="cursor-pointer text-sm font-semibold gap-2 rounded-xl px-5 bg-amber-500 hover:bg-amber-600 text-white"
         >
           {isGenerating ? (
@@ -66,6 +68,9 @@ export function MnemonicsTab({ contentId }: ContentTabProps) {
             <><Sparkles className="h-4 w-4" />Generate Memory Tricks</>
           )}
         </Button>
+        {isAiLimitReached && (
+          <p className="text-[11px] text-muted-foreground mt-2">Daily AI limit reached · Resets at midnight</p>
+        )}
       </div>
     );
   }

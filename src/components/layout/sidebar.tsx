@@ -5,11 +5,12 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import {
   LayoutDashboard, FileText, User, LogOut,
-  Newspaper, BookOpenCheck, BarChart2, Flame, PenLine, CalendarDays, X, ShieldCheck,
+  Newspaper, BookOpenCheck, BarChart2, Flame, PenLine, CalendarDays, X, ShieldCheck, Database,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/use-auth-store';
 import { useSidebarStore } from '@/store/use-sidebar-store';
 import { cn, deleteCookie } from '@/lib/utils';
+import { StreakBadge } from './StreakBadge';
 
 // ── Nav data ──────────────────────────────────────────────────────────────────
 
@@ -204,10 +205,18 @@ export function Sidebar() {
                   active={isActive('/admin/current-affairs', pathname)}
                   onNavigate={close}
                 />
+                <ActiveNavItem
+                  item={{ name: 'Knowledge Base', href: '/admin/rag', icon: Database }}
+                  active={isActive('/admin/rag', pathname)}
+                  onNavigate={close}
+                />
               </div>
             </div>
           )}
         </nav>
+
+        {/* Streak */}
+        <StreakBadge />
 
         {/* User footer */}
         <div className="border-t border-border p-4">

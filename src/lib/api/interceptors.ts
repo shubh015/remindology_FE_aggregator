@@ -1,5 +1,15 @@
 import { apiClient } from './client';
 import { useAuthStore } from '@/store/use-auth-store';
+import { useAiLimitStore } from '@/store/use-ai-limit-store';
+
+function parseAiHeaders(headers: Record<string, string>) {
+  const used      = parseInt(headers['x-ai-calls-used']      ?? '', 10);
+  const remaining = parseInt(headers['x-ai-calls-remaining'] ?? '', 10);
+  const limit     = parseInt(headers['x-ai-calls-limit']     ?? '', 10);
+  if (!isNaN(used) && !isNaN(remaining) && !isNaN(limit)) {
+    useAiLimitStore.getState().updateFromHeaders(used, remaining, limit);
+  }
+}
 
 let isRefreshing = false;
 let failedQueue: Array<{
@@ -33,13 +43,26 @@ export const setupInterceptors = () => {
 
   // Response Interceptor: Intercept 401s to refresh token
   apiClient.interceptors.response.use(
-    (response) => response,
+    (response) => {
+      parseAiHeaders(response.headers as Record<string, string>);
+      return response;
+    },
     async (error) => {
       const originalRequest = error.config;
 
       // Prevent circular loops on auth endpoints or missing request configs
       if (!originalRequest) {
         return Promise.reject(error);
+      }
+
+      // Handle AI daily limit — show modal, do NOT retry
+      if (error.response?.status === 429) {
+        const data = error.response.data as { code?: string } | undefined;
+        if (data?.code === 'AI_DAILY_LIMIT_REACHED') {
+          parseAiHeaders(error.response.headers as Record<string, string>);
+          useAiLimitStore.getState().showLimitModal();
+          return Promise.reject(error);
+        }
       }
 
       // Check for 401 errors and verify that we haven't already retried

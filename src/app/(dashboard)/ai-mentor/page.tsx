@@ -10,8 +10,10 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/use-auth-store';
+import { useAiLimitStore } from '@/store/use-ai-limit-store';
 import { TARGET_EXAM_LABELS } from '@/types/auth';
 import { mentorService } from '@/services/mentor.service';
+import { AiUsageIndicator } from '@/components/ai/AiUsageIndicator';
 
 // ── Types ─────────────────────────────────────────────────────────
 
@@ -249,6 +251,7 @@ function MessageBubble({ msg }: { msg: Message }) {
 
 export default function AiMentorPage() {
   const { user } = useAuthStore();
+  const remaining = useAiLimitStore((s) => s.remaining);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput]       = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -271,7 +274,7 @@ export default function AiMentorPage() {
 
   const sendMessage = useCallback(async (question: string) => {
     const text = question.trim();
-    if (!text || isLoading) return;
+    if (!text || isLoading || remaining === 0) return;
 
     const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: text };
     setMessages((prev) => [...prev, userMsg]);
@@ -296,16 +299,19 @@ export default function AiMentorPage() {
           examRelevance: res.examRelevance,
         },
       ]);
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          content: 'Something went wrong. Please try again.',
-          error: true,
-        },
-      ]);
+    } catch (err) {
+      const code = (err as { response?: { data?: { code?: string } } }).response?.data?.code;
+      if (code !== 'AI_DAILY_LIMIT_REACHED') {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: 'Something went wrong. Please try again.',
+            error: true,
+          },
+        ]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -416,13 +422,11 @@ export default function AiMentorPage() {
                 <Brain className="h-3 w-3" />
                 {examLabel}
               </span>
-              <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/8 text-emerald-600 border border-emerald-500/15">
-                AI
-              </span>
+              <AiUsageIndicator />
               <div className="flex-1" />
               <button
                 onClick={() => sendMessage(input)}
-                disabled={!input.trim() || isLoading}
+                disabled={!input.trim() || isLoading || remaining === 0}
                 className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold text-white transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{
                   background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',

@@ -14,6 +14,7 @@ import { RevisionNotesTab } from '@/features/ai-analysis/components/RevisionNote
 import { MnemonicsTab } from '@/features/ai-analysis/components/MnemonicsTab';
 import { ArrowLeft, Calendar, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { AiUsageIndicator } from '@/components/ai/AiUsageIndicator';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -85,6 +86,10 @@ export default function ContentDetailPage({ params }: PageProps) {
             </div>
           </div>
           <h2 className="text-lg font-bold text-foreground leading-tight">{content.title}</h2>
+        </div>
+
+        <div className="flex justify-end">
+          <AiUsageIndicator />
         </div>
 
         {/* 5-tab learning suite */}

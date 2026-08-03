@@ -59,6 +59,11 @@ export const authService = {
     return response.data.data;
   },
 
+  async getMe(): Promise<User> {
+    const response = await apiClient.get<ApiResponse<User>>('/user/me');
+    return response.data.data;
+  },
+
   async updateProfile(data: {
     targetExam?: string | null;
     examDate?: string | null;
