@@ -194,7 +194,7 @@ export function Sidebar() {
           ))}
 
           {/* Admin-only group */}
-          {user?.is_admin && (
+          {(user?.is_admin || user?.isAdmin) && (
             <div>
               <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-amber-500/70">
                 Admin

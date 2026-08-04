@@ -197,10 +197,10 @@ export default function AdminRagPage() {
 
   // Admin guard
   useEffect(() => {
-    if (user !== null && !user.is_admin) router.replace('/dashboard');
+    if (user !== null && !user.is_admin && !user.isAdmin) router.replace('/dashboard');
   }, [user, router]);
 
-  if (!user?.is_admin) return null;
+  if (!user?.is_admin && !user?.isAdmin) return null;
 
   return (
     <AdminRagContent showToast={showToast} toasts={toasts} dismiss={dismiss} />
