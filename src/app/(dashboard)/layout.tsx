@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import Sidebar from '@/components/layout/sidebar';
 import { AiMentorFab } from '@/components/layout/AiMentorFab';
 import { AiLimitModal } from '@/components/ai/AiLimitModal';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/use-auth-store';
 import { authService } from '@/services/auth.service';
 import { streakService } from '@/services/streak.service';
@@ -16,7 +16,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
+  const pathname = usePathname();
+  const { isAuthenticated, user } = useAuthStore();
   const [mounted, setMounted] = useState(false);
 
   // Fetch /user/me on dashboard load — populates streak + AI usage in one round-trip
@@ -50,6 +51,20 @@ export default function DashboardLayout({
       router.replace('/login');
     }
   }, [mounted, isAuthenticated, router]);
+
+  // Onboarding guard — bounce users without a target exam to /onboarding
+  useEffect(() => {
+    if (
+      mounted &&
+      isAuthenticated &&
+      user !== null &&
+      !user.target_exam &&
+      !user.targetExam &&
+      pathname !== '/onboarding'
+    ) {
+      router.replace('/onboarding');
+    }
+  }, [mounted, isAuthenticated, user, pathname, router]);
 
   if (!mounted || !isAuthenticated) {
     return (

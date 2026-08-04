@@ -15,7 +15,6 @@ import { AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 
 import { setCookie, cn } from '@/lib/utils';
 import { GoogleAuthButton } from '@/components/auth/GoogleAuthButton';
-import { isOnboardingComplete } from '@/lib/onboarding';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -46,7 +45,7 @@ function LoginForm() {
       const response = await authService.login(data);
       
       // Set flags BEFORE setAuth so auth layout reads them on the same render cycle
-      setNeedsOnboarding(!isOnboardingComplete(response.user.id));
+      setNeedsOnboarding(!response.user.target_exam && !response.user.targetExam);
       setPostAuthRedirect(searchParams.get('redirect'));
       setAuth(response.user, response.accessToken, response.refreshToken);
       setCookie('remindology_logged_in', 'true', 604800);

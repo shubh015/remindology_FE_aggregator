@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api/client';
-import type { WeakZone } from '@/types/features';
+import type { WeakZone, McqAnalytics } from '@/types/features';
 import type { ApiResponse } from './auth.service';
 
 export const analyticsService = {
@@ -16,6 +16,11 @@ export const analyticsService = {
   async getWeakZones(): Promise<WeakZone[]> {
     const response = await apiClient.get<ApiResponse<WeakZone[]>>('/analytics/weak-zones');
     return response.data.data || [];
+  },
+
+  async getMCQAnalytics(): Promise<McqAnalytics> {
+    const response = await apiClient.get<ApiResponse<McqAnalytics>>('/ai-analysis/mcqs/analytics');
+    return response.data.data;
   },
 };
 

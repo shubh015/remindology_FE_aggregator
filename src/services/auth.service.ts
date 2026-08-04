@@ -69,7 +69,7 @@ export const authService = {
     examDate?: string | null;
     optionalSubject?: string | null;
   }): Promise<User> {
-    const response = await apiClient.patch<ApiResponse<User>>('/users/profile', data);
+    const response = await apiClient.patch<ApiResponse<User>>('/user/profile', data);
     return response.data.data;
   },
 };
