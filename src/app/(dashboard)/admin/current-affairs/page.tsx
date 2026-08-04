@@ -404,7 +404,7 @@ export default function AdminCurrentAffairsPage() {
   const { toasts, show: showToast, dismiss } = useToast();
 
   useEffect(() => {
-    if (user !== null && !user.is_admin) router.replace('/dashboard');
+    if (user !== null && !user.is_admin && !user.isAdmin) router.replace('/dashboard');
   }, [user, router]);
 
   const [activeTab,   setActiveTab]   = useState<TabId>('new');
@@ -419,7 +419,7 @@ export default function AdminCurrentAffairsPage() {
   const { data: drafts, isLoading: draftsLoading } = useQuery({
     queryKey: ['admin', 'current-affairs', 'drafts'],
     queryFn: () => currentAffairsService.getDrafts(),
-    enabled: !!user?.is_admin,
+    enabled: !!user?.is_admin || !!user?.isAdmin,
     staleTime: 0,
     retry: false,
   });
@@ -427,7 +427,7 @@ export default function AdminCurrentAffairsPage() {
   const { data: articles, isLoading: publishedLoading } = useQuery({
     queryKey: ['admin', 'current-affairs', 'recent'],
     queryFn: () => currentAffairsService.getRecent(20),
-    enabled: !!user?.is_admin,
+    enabled: !!user?.is_admin || !!user?.isAdmin,
     staleTime: 0,
     retry: false,
   });
@@ -527,7 +527,7 @@ export default function AdminCurrentAffairsPage() {
       ? form.gsPaperTags.filter((t) => t !== tag)
       : [...form.gsPaperTags, tag]);
 
-  if (!user?.is_admin) return null;
+  if (!user?.is_admin && !user?.isAdmin) return null;
 
   const draftCount = drafts?.length ?? 0;
 

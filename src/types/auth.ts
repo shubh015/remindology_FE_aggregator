@@ -45,6 +45,7 @@ export interface User {
   exam_date?: string;
   optional_subject?: string;
   is_admin?: boolean;
+  isAdmin?: boolean;
   streak?: UserStreak;
   aiUsage?: UserAiUsage;
 }
