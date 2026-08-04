@@ -6,7 +6,6 @@ import { Loader2 } from 'lucide-react';
 import { useAuthStore } from '@/store/use-auth-store';
 import { authService } from '@/services/auth.service';
 import { setCookie } from '@/lib/utils';
-import { isOnboardingComplete } from '@/lib/onboarding';
 
 interface GoogleAuthButtonProps {
   redirectTo?: string;
@@ -27,7 +26,7 @@ export function GoogleAuthButton({ redirectTo = '/dashboard' }: GoogleAuthButton
     try {
       const response = await authService.googleAuth(credentialResponse.credential);
       // Set flags BEFORE setAuth so the auth layout reads them on the same render cycle
-      setNeedsOnboarding(!isOnboardingComplete(response.user.id));
+      setNeedsOnboarding(!response.user.target_exam && !response.user.targetExam);
       setPostAuthRedirect(redirectTo !== '/dashboard' ? redirectTo : null);
       setAuth(response.user, response.accessToken, response.refreshToken);
       setCookie('remindology_logged_in', 'true', 604800);

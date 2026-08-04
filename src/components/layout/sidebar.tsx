@@ -41,7 +41,7 @@ const NAV_GROUPS: NavGroup[] = [
       { name: 'Daily Challenge', href: '/daily-challenge', icon: Flame          },
       { name: 'Current Affairs', href: '/current-affairs', icon: Newspaper      },
       { name: 'Answer Writing',  href: '/mains',           icon: PenLine        },
-      { name: 'Subject MCQs',    href: '/subject-mcqs',    icon: BookOpenCheck, soon: true },
+      { name: 'MCQ Analytics',   href: '/subject-mcqs',    icon: BookOpenCheck },
     ],
   },
   {

@@ -15,7 +15,7 @@ import { streakService } from '@/services/streak.service';
 import {
   PenLine, Timer, Loader2, AlertCircle, CheckCircle2, ChevronLeft,
   Sparkles, TrendingUp, Upload, FileText, X,
-  ChevronDown, ScanLine, FileUp, Plus, BarChart3,
+  ChevronDown, ScanLine, FileUp, Plus, BarChart3, Zap, Lock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { MainsQuestion, MainsSubmitResponse } from '@/types/features';
@@ -782,6 +782,70 @@ function CustomQuestionForm({ onStart }: { onStart: (q: MainsQuestion) => void }
   );
 }
 
+// ── Mains limit modal ─────────────────────────────────────────────
+
+function MainsLimitModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-sm space-y-5 p-6">
+
+        {/* Icon + close */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+            style={{ background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.25)' }}>
+            <Lock className="h-5 w-5" style={{ color: '#7C3AED' }} />
+          </div>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer mt-0.5">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Copy */}
+        <div className="space-y-1.5">
+          <p className="text-base font-bold text-foreground leading-snug">
+            You&apos;ve used your free evaluation
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            The free tier includes 1 mains evaluation. Upgrade to Pro for unlimited AI-scored answer evaluations, detailed feedback, and more.
+          </p>
+        </div>
+
+        {/* Usage indicator */}
+        <div className="rounded-xl bg-secondary/60 border border-border p-3 flex items-center gap-3">
+          <div className="flex-1">
+            <div className="flex justify-between text-xs font-semibold text-foreground mb-1.5">
+              <span>Evaluations used</span>
+              <span>1 / 1</span>
+            </div>
+            <div className="h-1.5 rounded-full bg-border overflow-hidden">
+              <div className="h-full rounded-full bg-red-500 w-full" />
+            </div>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="space-y-2 pt-1">
+          <button
+            onClick={onClose}
+            className="w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-white transition-opacity hover:opacity-90 cursor-pointer"
+            style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)' }}
+          >
+            <Zap className="h-4 w-4" />
+            Upgrade to Pro
+          </button>
+          <button
+            onClick={onClose}
+            className="w-full py-2.5 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer"
+          >
+            Maybe later
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main page ─────────────────────────────────────────────────────
 
 export default function MainsPage() {
@@ -795,6 +859,7 @@ export default function MainsPage() {
   const [isCustomQuestion,  setIsCustomQuestion]  = useState(false);
   const [listingTab,        setListingTab]        = useState<ListingTab>('bank');
   const [retrySecondsLeft,  setRetrySecondsLeft]  = useState(0);
+  const [showMainsLimit,    setShowMainsLimit]    = useState(false);
 
   const isSuccess = textMutation.isSuccess || pdfMutation.isSuccess || customPdfMutation.isSuccess;
   const result    = textMutation.data ?? pdfMutation.data ?? customPdfMutation.data;
@@ -818,16 +883,19 @@ export default function MainsPage() {
     }
   }, [isSuccess]);
 
-  const handlePdfError = (error: unknown) => {
+  const handleSubmitError = (error: unknown) => {
     const data = (error as { response?: { data?: { code?: string; message?: string } } }).response?.data;
     if (data?.code === 'AI_DAILY_LIMIT_REACHED') return;
+    if (data?.code === 'MAINS_LIMIT_REACHED') { setShowMainsLimit(true); return; }
     const msg = data?.message ?? '';
     if (/limit|minute/i.test(msg)) setRetrySecondsLeft(60);
   };
 
+  const handlePdfError = handleSubmitError;
+
   const handleTextSubmit = (answerText: string, timeTakenSecs: number) => {
     if (!selected) return;
-    textMutation.mutate({ questionId: selected.id, answerText, timeTakenSecs });
+    textMutation.mutate({ questionId: selected.id, answerText, timeTakenSecs }, { onError: handleSubmitError });
   };
 
   const handlePdfSubmit = (files: File[], timeTakenSecs: number) => {
@@ -973,6 +1041,8 @@ export default function MainsPage() {
           </>
         )}
       </div>
+
+      <MainsLimitModal open={showMainsLimit} onClose={() => setShowMainsLimit(false)} />
     </div>
   );
 }

@@ -135,6 +135,50 @@ export interface MyMainsAnswer {
   submittedAt: string;
 }
 
+// ── MCQ Analytics ─────────────────────────────────────────────────
+
+export interface McqAnalyticsOverall {
+  totalAttempted: number;
+  totalCorrect: number;
+  accuracyPct: number;
+  avgTimeSecs: number;
+}
+
+export interface McqAnalyticsByPaper {
+  paper: string;
+  total: number;
+  correct: number;
+  accuracyPct: number;
+}
+
+export interface McqAnalyticsByTopic {
+  topic: string;
+  total: number;
+  correct: number;
+  accuracyPct: number;
+}
+
+export interface McqAnalyticsTrend {
+  date: string;
+  total: number;
+  correct: number;
+  accuracyPct: number;
+}
+
+export interface McqAnalyticsArea {
+  topic: string;
+  accuracyPct: number;
+}
+
+export interface McqAnalytics {
+  overall: McqAnalyticsOverall;
+  byPaper: McqAnalyticsByPaper[];
+  byTopic: McqAnalyticsByTopic[];
+  trend: McqAnalyticsTrend[];
+  weakAreas: McqAnalyticsArea[];
+  strongAreas: McqAnalyticsArea[];
+}
+
 export interface MainsAnalyticsTrend {
   date: string;
   score: number;

@@ -8,7 +8,8 @@ import { TARGET_EXAM_LABELS, type TargetExam } from '@/types/auth';
 import { Header } from '@/components/layout/header';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { User, Mail, BookOpen, LogOut, CheckCircle2, Loader2, Pencil, X } from 'lucide-react';
+import { User, Mail, BookOpen, LogOut, CheckCircle2, Loader2, Pencil, X, CalendarDays, BookMarked } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { deleteCookie } from '@/lib/utils';
 
 // ── Exam options ──────────────────────────────────────────────────
@@ -28,10 +29,14 @@ export default function ProfilePage() {
   const router = useRouter();
   const { user, clearAuth, updateUser } = useAuthStore();
 
-  const [editing, setEditing]     = useState(false);
-  const [selected, setSelected]   = useState<TargetExam | null>(user?.target_exam ?? null);
-  const [saving, setSaving]       = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const [editing, setEditing]          = useState(false);
+  const [selected, setSelected]        = useState<TargetExam | null>(user?.target_exam ?? null);
+  const [examDate, setExamDate]        = useState(user?.exam_date ?? '');
+  const [optSubject, setOptSubject]    = useState(user?.optional_subject ?? '');
+  const [saving, setSaving]            = useState(false);
+  const [saveError, setSaveError]      = useState<string | null>(null);
+
+  const TODAY = new Date().toISOString().split('T')[0];
 
   const handleLogout = () => {
     clearAuth();
@@ -44,7 +49,10 @@ export default function ProfilePage() {
     setSaving(true);
     setSaveError(null);
     try {
-      const updated = await authService.updateProfile({ targetExam: selected });
+      const payload: Parameters<typeof authService.updateProfile>[0] = { targetExam: selected };
+      if (examDate) payload.examDate = examDate;
+      if (selected === 'UPSC_CSE' && optSubject.trim()) payload.optionalSubject = optSubject.trim();
+      const updated = await authService.updateProfile(payload);
       updateUser(updated);
       setEditing(false);
     } catch (err: unknown) {
@@ -53,6 +61,14 @@ export default function ProfilePage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const openEditor = () => {
+    setSelected(user?.target_exam ?? null);
+    setExamDate(user?.exam_date ?? '');
+    setOptSubject(user?.optional_subject ?? '');
+    setSaveError(null);
+    setEditing(true);
   };
 
   const currentExam = user?.target_exam ? EXAM_OPTIONS.find((e) => e.key === user.target_exam) : null;
@@ -112,7 +128,7 @@ export default function ProfilePage() {
                   </p>
                 </div>
                 <button
-                  onClick={() => { setEditing(!editing); setSelected(user?.target_exam ?? null); setSaveError(null); }}
+                  onClick={() => editing ? setEditing(false) : openEditor()}
                   className="shrink-0 h-7 w-7 flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors cursor-pointer"
                 >
                   {editing ? <X className="h-3.5 w-3.5" /> : <Pencil className="h-3.5 w-3.5" />}
@@ -147,6 +163,42 @@ export default function ProfilePage() {
                     })}
                   </div>
 
+                  {/* Exam date */}
+                  <div className="space-y-1.5 pt-1">
+                    <div className="flex items-center gap-1.5">
+                      <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        Exam Date <span className="normal-case font-normal">(optional)</span>
+                      </p>
+                    </div>
+                    <Input
+                      type="date"
+                      value={examDate}
+                      onChange={(e) => setExamDate(e.target.value)}
+                      min={TODAY}
+                      className="text-xs scheme-dark"
+                    />
+                  </div>
+
+                  {/* Optional subject — UPSC only */}
+                  {selected === 'UPSC_CSE' && (
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <BookMarked className="h-3.5 w-3.5 text-muted-foreground" />
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Optional Subject <span className="normal-case font-normal">(optional)</span>
+                        </p>
+                      </div>
+                      <Input
+                        type="text"
+                        value={optSubject}
+                        onChange={(e) => setOptSubject(e.target.value)}
+                        placeholder="e.g. History, Geography, Anthropology"
+                        className="text-xs"
+                      />
+                    </div>
+                  )}
+
                   {saveError && (
                     <p className="text-xs text-destructive">{saveError}</p>
                   )}
@@ -155,7 +207,7 @@ export default function ProfilePage() {
                     <Button
                       size="sm"
                       onClick={handleSaveExam}
-                      disabled={!selected || saving || selected === user?.target_exam}
+                      disabled={!selected || saving}
                       className="font-semibold text-xs cursor-pointer"
                     >
                       {saving ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Saving…</> : 'Save'}
@@ -163,7 +215,7 @@ export default function ProfilePage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => { setEditing(false); setSelected(user?.target_exam ?? null); setSaveError(null); }}
+                      onClick={() => setEditing(false)}
                       className="font-semibold text-xs cursor-pointer"
                     >
                       Cancel
@@ -173,19 +225,29 @@ export default function ProfilePage() {
               )}
             </div>
 
-            {/* Exam date (if set) */}
-            {user?.exam_date && (
-              <div className="flex items-center gap-4 p-3.5 rounded-lg bg-muted/20 border border-border">
+            {/* Exam date + optional subject (if set) */}
+            {(user?.exam_date || user?.optional_subject) && (
+              <div className="flex items-start gap-4 p-3.5 rounded-lg bg-muted/20 border border-border">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <span className="text-xs font-bold">📅</span>
+                  <CalendarDays className="h-4 w-4" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[9px] uppercase font-bold text-muted-foreground tracking-wider">Exam Date</p>
-                  <p className="text-xs font-bold text-foreground">
-                    {new Date(user.exam_date).toLocaleDateString('en-IN', {
-                      day: 'numeric', month: 'long', year: 'numeric',
-                    })}
-                  </p>
+                <div className="flex-1 min-w-0 space-y-1">
+                  {user?.exam_date && (
+                    <div>
+                      <p className="text-[9px] uppercase font-bold text-muted-foreground tracking-wider">Exam Date</p>
+                      <p className="text-xs font-bold text-foreground">
+                        {new Date(user.exam_date).toLocaleDateString('en-IN', {
+                          day: 'numeric', month: 'long', year: 'numeric',
+                        })}
+                      </p>
+                    </div>
+                  )}
+                  {user?.optional_subject && (
+                    <div>
+                      <p className="text-[9px] uppercase font-bold text-muted-foreground tracking-wider">Optional Subject</p>
+                      <p className="text-xs font-bold text-foreground">{user.optional_subject}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

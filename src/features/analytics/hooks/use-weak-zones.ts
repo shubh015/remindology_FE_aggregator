@@ -9,3 +9,12 @@ export function useWeakZones() {
     retry: false,
   });
 }
+
+export function useMCQAnalytics() {
+  return useQuery({
+    queryKey: ['mcq-analytics'],
+    queryFn: () => analyticsService.getMCQAnalytics(),
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+}

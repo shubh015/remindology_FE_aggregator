@@ -137,22 +137,28 @@ export function MCQsTab({ contentId }: ContentTabProps) {
 
                 <p className="text-sm font-semibold text-foreground leading-snug">{mcq.question}</p>
 
-                <div className="grid gap-2">
-                  {mcq.options.map((option) => {
+                <div className="grid gap-2.5">
+                  {mcq.options.map((option, optIdx) => {
+                    const letter = String.fromCharCode(65 + optIdx); // A B C D
                     const isCurrentCorrect  = option === mcq.correctAnswer;
                     const isCurrentSelected = selected === option;
-                    let optionStyle = 'border-border hover:bg-secondary/40 text-foreground';
+
+                    let wrapStyle    = 'border-border bg-card hover:bg-secondary/50 text-foreground';
+                    let badgeStyle   = 'bg-secondary text-muted-foreground border-border';
                     let icon: React.ReactNode = null;
 
                     if (isAnswered) {
                       if (isCurrentCorrect) {
-                        optionStyle = 'bg-emerald-500/10 border-emerald-500 text-emerald-700';
+                        wrapStyle  = 'bg-emerald-500/8 border-emerald-500/60 text-emerald-800 dark:text-emerald-300';
+                        badgeStyle = 'bg-emerald-500 text-white border-emerald-500';
                         icon = <Check className="h-4 w-4 text-emerald-500 shrink-0" />;
                       } else if (isCurrentSelected) {
-                        optionStyle = 'bg-destructive/10 border-destructive text-destructive';
+                        wrapStyle  = 'bg-destructive/8 border-destructive/60 text-destructive';
+                        badgeStyle = 'bg-destructive text-white border-destructive';
                         icon = <X className="h-4 w-4 text-destructive shrink-0" />;
                       } else {
-                        optionStyle = 'opacity-50 border-border bg-muted/20 text-muted-foreground';
+                        wrapStyle  = 'opacity-40 border-border bg-muted/30 text-muted-foreground';
+                        badgeStyle = 'bg-muted text-muted-foreground border-border';
                       }
                     }
 
@@ -161,9 +167,19 @@ export function MCQsTab({ contentId }: ContentTabProps) {
                         key={option}
                         onClick={() => handleSelectOption(mcq.id, option)}
                         disabled={isAnswered}
-                        className={cn('w-full flex items-center justify-between text-left p-3 rounded-lg border text-sm font-medium transition-all', !isAnswered && 'cursor-pointer', optionStyle)}
+                        className={cn(
+                          'w-full flex items-center gap-3 text-left px-3.5 py-3 rounded-xl border-2 transition-all duration-150',
+                          !isAnswered && 'cursor-pointer hover:scale-[1.005] active:scale-[0.998]',
+                          wrapStyle,
+                        )}
                       >
-                        <span>{option}</span>
+                        <span className={cn(
+                          'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-xs font-extrabold transition-colors',
+                          badgeStyle,
+                        )}>
+                          {letter}
+                        </span>
+                        <span className="flex-1 text-sm font-medium leading-snug">{option}</span>
                         {icon}
                       </button>
                     );
