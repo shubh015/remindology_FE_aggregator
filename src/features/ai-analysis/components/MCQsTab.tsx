@@ -10,6 +10,7 @@ import { HelpCircle, Sparkles, Loader2, AlertCircle, Check, X, RotateCcw, Chevro
 import { cn } from '@/lib/utils';
 import type { ContentTabProps } from '@/types/props';
 import { useAiLimitStore } from '@/store/use-ai-limit-store';
+import { QuestionText } from '@/components/mcq/QuestionText';
 
 type SelectedAnswers = Record<string, string>;
 
@@ -66,7 +67,7 @@ export function MCQsTab({ contentId }: ContentTabProps) {
 
   if (!Array.isArray(mcqs) || mcqs.length === 0) {
     return (
-      <div className="flex min-h-[260px] flex-col items-center justify-center rounded-xl border border-dashed border-border p-8 text-center bg-card mt-2">
+      <div className="flex min-h-65 flex-col items-center justify-center rounded-xl border border-dashed border-border p-8 text-center bg-card mt-2">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
           <HelpCircle className="h-5 w-5" />
         </div>
@@ -135,7 +136,7 @@ export function MCQsTab({ contentId }: ContentTabProps) {
                   </Badge>
                 </div>
 
-                <p className="text-sm font-semibold text-foreground leading-snug">{mcq.question}</p>
+                <QuestionText text={mcq.question} />
 
                 <div className="grid gap-2.5">
                   {mcq.options.map((option, optIdx) => {

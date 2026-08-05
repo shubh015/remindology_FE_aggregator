@@ -4,6 +4,12 @@ import type {
   CurrentAffairsArticle, EnrichedData,
   PrelimsFact, KeyTerm, PracticeQuestion,
 } from '@/types/features';
+
+export interface RelatedPYQ {
+  id: string;
+  content: string;
+  source: string;
+}
 import type { ApiResponse } from './auth.service';
 
 export interface PublishArticleInput {
@@ -106,6 +112,15 @@ export const currentAffairsService = {
       `/current-affairs/search?${params}`,
     );
     return normalizeList(response.data.data);
+  },
+
+  // ── Related PYQs (public) ────────────────────────────────────────
+
+  async getRelatedPYQs(id: string): Promise<RelatedPYQ[]> {
+    const response = await publicApiClient.get<ApiResponse<RelatedPYQ[]>>(
+      `/current-affairs/${id}/related-pyqs`,
+    );
+    return Array.isArray(response.data.data) ? response.data.data : [];
   },
 
   // ── Admin-only (require auth) ────────────────────────────────────

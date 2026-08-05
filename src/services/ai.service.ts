@@ -2,6 +2,45 @@ import { apiClient } from '@/lib/api/client';
 import { Summary, Topic, MCQ, RevisionNote, Mnemonic } from '@/types/content';
 import { ApiResponse } from './auth.service';
 
+// Strip leading option label: "(a)", "a)", "a.", "(1)", "1.", etc.
+const stripLabel = (s: string) => s.replace(/^\s*\(?[a-d1-4]\)?[.)]\s*/i, '').trim();
+
+function normalizeOptions(raw: unknown): string[] {
+  let arr: string[] = [];
+  if (Array.isArray(raw)) arr = (raw as unknown[]).map(String);
+  else if (typeof raw === 'string') {
+    try { arr = JSON.parse(raw); } catch { arr = [raw]; }
+  }
+
+  // Already 4 separate options — just clean leading labels
+  if (arr.length >= 4) return arr.map(stripLabel);
+
+  const combined = arr.join('\n');
+
+  // Split by (a)/(b)/(c)/(d) or a)/b) style markers
+  const byMarker = combined.split(/\s*\(?[a-d][).]\s*/i).map(s => s.trim()).filter(Boolean);
+  if (byMarker.length === 4) return byMarker;
+
+  // Split by newlines as fallback
+  const byLine = combined.split(/\r?\n+/).map(stripLabel).filter(Boolean);
+  if (byLine.length === 4) return byLine;
+
+  return arr.map(stripLabel);
+}
+
+function resolveCorrectAnswer(raw: string, options: string[]): string {
+  if (!raw) return '';
+  // Single letter or (letter) — map to option by index
+  const letterMatch = raw.match(/^\s*\(?([a-d])\)?\s*$/i);
+  if (letterMatch) {
+    const idx = 'abcd'.indexOf(letterMatch[1].toLowerCase());
+    return idx >= 0 && idx < options.length ? options[idx] : raw;
+  }
+  // Full string with label — strip the label and match against parsed options
+  const stripped = stripLabel(raw);
+  return options.find(o => o === stripped || o.toLowerCase() === stripped.toLowerCase()) ?? stripped;
+}
+
 export const aiService = {
   // Summary
   async generateSummary(contentId: string): Promise<Summary> {
@@ -50,24 +89,17 @@ export const aiService = {
     const response = await apiClient.post<ApiResponse<any[]>>(`/ai-analysis/contents/${contentId}/mcqs`);
     const rawList = response.data.data || [];
     return rawList.map((item) => {
-      let parsedOptions: string[] = [];
-      if (Array.isArray(item.options)) {
-        parsedOptions = item.options;
-      } else if (typeof item.options === 'string') {
-        try {
-          parsedOptions = JSON.parse(item.options);
-        } catch {
-          parsedOptions = [];
-        }
-      }
+      const options = normalizeOptions(item.options);
+      const correctAnswer = resolveCorrectAnswer(item.correct_answer || item.correctAnswer || '', options);
       return {
         id: item.id,
         contentId: item.content_id || contentId,
         question: item.question,
-        options: parsedOptions,
-        correctAnswer: item.correct_answer || item.correctAnswer || '',
+        options,
+        correctAnswer,
         explanation: item.explanation,
         difficulty: item.difficulty || 'MEDIUM',
+        wrongOptionExplanations: item.wrongOptionExplanations || item.wrong_option_explanations,
       };
     });
   },
@@ -76,24 +108,17 @@ export const aiService = {
     const response = await apiClient.get<ApiResponse<any[]>>(`/ai-analysis/contents/${contentId}/mcqs`);
     const rawList = response.data.data || [];
     return rawList.map((item) => {
-      let parsedOptions: string[] = [];
-      if (Array.isArray(item.options)) {
-        parsedOptions = item.options;
-      } else if (typeof item.options === 'string') {
-        try {
-          parsedOptions = JSON.parse(item.options);
-        } catch {
-          parsedOptions = [];
-        }
-      }
+      const options = normalizeOptions(item.options);
+      const correctAnswer = resolveCorrectAnswer(item.correct_answer || item.correctAnswer || '', options);
       return {
         id: item.id,
         contentId: item.content_id || contentId,
         question: item.question,
-        options: parsedOptions,
-        correctAnswer: item.correct_answer || item.correctAnswer || '',
+        options,
+        correctAnswer,
         explanation: item.explanation,
         difficulty: item.difficulty || 'MEDIUM',
+        wrongOptionExplanations: item.wrongOptionExplanations || item.wrong_option_explanations,
       };
     });
   },

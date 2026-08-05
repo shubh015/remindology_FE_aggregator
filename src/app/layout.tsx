@@ -9,7 +9,8 @@ const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
-  display: "swap",
+  display: "block",   // prevent FOUT — block until loaded, no font swap flash
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -28,7 +29,10 @@ export default function RootLayout({
       className={`${poppins.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <Providers>{children}</Providers>
+        {/* app-shell: single fade-in on first paint, masks all hydration flash */}
+        <div className="app-shell min-h-full flex flex-col">
+          <Providers>{children}</Providers>
+        </div>
         <SpeedInsights />
         <Analytics />
       </body>
