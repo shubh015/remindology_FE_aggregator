@@ -830,8 +830,8 @@ export default function ArticleDetailPage() {
                 </div>
               )}
 
-              {/* 10 — Previous Year Questions */}
-              {(relatedPYQs?.length ?? 0) > 0 && (
+              {/* 10 — Previous Year Questions (disabled — API returns irrelevant content, re-enable when fixed) */}
+              {false && (relatedPYQs?.length ?? 0) > 0 && (
                 <section className="space-y-3.5">
                   <SectionHeading color={accentColor}>Previous Year Questions on this Topic</SectionHeading>
                   <div className="space-y-3">
