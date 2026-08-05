@@ -154,10 +154,47 @@ p, li, td, th {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Page reveal — fires once on initial load, masks hydration flash ── */
+@keyframes pageReveal {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.app-shell {
+  animation: pageReveal 0.28s ease-out both;
+}
+
+/* ── Skeleton shimmer ─────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 25%,
+    hsl(var(--secondary)) 50%,
+    hsl(var(--muted)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  border-radius: 0.4rem;
+}
+
 /* ── Respect reduced motion ───────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .float-sym,
   .marquee-track {
     animation-play-state: paused !important;
+  }
+
+  .app-shell {
+    animation: none;
+  }
+
+  .skeleton {
+    animation: none;
+    background: hsl(var(--muted));
   }
 }

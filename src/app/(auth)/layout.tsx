@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/use-auth-store';
@@ -12,16 +12,11 @@ export default function AuthLayout({
 }) {
   const router = useRouter();
   const { isAuthenticated, needsOnboarding, postAuthRedirect, setPostAuthRedirect } = useAuthStore();
-  const [mounted, setMounted] = useState(false);
 
+  // Redirect authenticated users — fires after Zustand rehydrates from localStorage.
+  // The app-shell fade-in (0.28s) covers the brief flash for returning users.
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-  }, []);
-
-  // Single redirect controller — fires once when the user becomes authenticated
-  useEffect(() => {
-    if (mounted && isAuthenticated) {
+    if (isAuthenticated) {
       if (needsOnboarding) {
         router.replace('/onboarding');
       } else {
@@ -30,17 +25,7 @@ export default function AuthLayout({
         router.replace(dest);
       }
     }
-  }, [mounted, isAuthenticated, needsOnboarding, postAuthRedirect, setPostAuthRedirect, router]);
-
-  if (!mounted || isAuthenticated) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center"
-        style={{ background: '#09091F' }}>
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-t-transparent"
-          style={{ borderColor: 'rgba(167,139,250,0.4)', borderTopColor: 'transparent' }} />
-      </div>
-    );
-  }
+  }, [isAuthenticated, needsOnboarding, postAuthRedirect, setPostAuthRedirect, router]);
 
   return (
     <div className="relative flex min-h-screen items-center justify-center p-6 overflow-hidden"

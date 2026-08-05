@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { currentAffairsService } from '@/services/current-affairs.service';
+import type { RelatedPYQ } from '@/services/current-affairs.service';
+import { QuestionText } from '@/components/mcq/QuestionText';
 import { useAuthStore } from '@/store/use-auth-store';
 import { TARGET_EXAM_LABELS } from '@/types/auth';
 import type { PracticeQuestion } from '@/types/features';
@@ -93,6 +95,67 @@ function RenderFact({ fact, color }: { fact: string; color: string }) {
   return <>{fact}</>;
 }
 
+// ── PYQ helpers ───────────────────────────────────────────────────
+
+function formatPYQSource(source: string): string {
+  if (!source) return 'Previous Year';
+  const yearMatch = source.match(/\b(20\d{2})\b/);
+  const year = yearMatch ? yearMatch[1] : '';
+  const lower = source.toLowerCase();
+  if (lower.includes('prelim')) return year ? `UPSC Prelims ${year}` : 'UPSC Prelims';
+  if (lower.includes('mains'))  return year ? `UPSC Mains ${year}`   : 'UPSC Mains';
+  if (lower.includes('state'))  return year ? `State PSC ${year}`    : 'State PSC';
+  if (lower.includes('ssc'))    return year ? `SSC ${year}`          : 'SSC';
+  // Generic fallback: strip underscores + "pyq", keep year
+  return source.replace(/_/g, ' ').replace(/\bpyq\b/gi, '').replace(/\s+/g, ' ').trim()
+    || 'Previous Year';
+}
+
+function PYQCard({ pyq, accentColor }: { pyq: RelatedPYQ; accentColor: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const label = formatPYQSource(pyq.source);
+
+  return (
+    <div
+      className="rounded-xl p-4 space-y-3"
+      style={{ background: `${accentColor}05`, border: `1px solid ${accentColor}15` }}
+    >
+      {/* Source badge */}
+      <span
+        className="inline-flex items-center text-[10.5px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide"
+        style={{ background: `${accentColor}12`, color: accentColor, border: `1px solid ${accentColor}25` }}
+      >
+        {label}
+      </span>
+
+      {/* Question text */}
+      <p
+        className="text-[13.5px] leading-relaxed"
+        style={{
+          color: '#1F2937',
+          display: '-webkit-box',
+          WebkitBoxOrient: 'vertical',
+          WebkitLineClamp: expanded ? 'unset' : 3,
+          overflow: expanded ? 'visible' : 'hidden',
+        }}
+      >
+        {pyq.content}
+      </p>
+
+      {/* Expand / collapse — only show when text is long enough */}
+      {pyq.content.length > 160 && (
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className="text-[11px] font-bold cursor-pointer transition-colors hover:opacity-70"
+          style={{ color: accentColor }}
+        >
+          {expanded ? '↑ Show less' : '↓ Read full question'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 // ── Interactive MCQ ────────────────────────────────────────────────
 
 function MCQSection({ questions, accentColor }: { questions: PracticeQuestion[]; accentColor: string }) {
@@ -116,9 +179,13 @@ function MCQSection({ questions, accentColor }: { questions: PracticeQuestion[];
         const correct  = q.correct_answer;
         return (
           <div key={qi} className="space-y-3 pb-5" style={{ borderBottom: qi < questions.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
-            <p style={{ fontSize: '0.9rem', fontWeight: 600, lineHeight: 1.65, color: '#1F2937' }}>
-              Q{qi + 1}.&ensp;{q.question}
-            </p>
+            <div className="flex items-start gap-1.5">
+              <span className="text-sm font-bold shrink-0" style={{ color: accentColor }}>Q{qi + 1}.</span>
+              <QuestionText
+                text={q.question}
+                introClassName="text-sm font-semibold leading-relaxed"
+              />
+            </div>
             <div className="space-y-2">
               {q.options.map((opt, oi) => {
                 const isChosen   = chosen === opt;
@@ -233,6 +300,14 @@ export default function ArticleDetailPage() {
   const { data: article, isLoading, isError } = useQuery({
     queryKey: ['current-affairs', 'detail', id, isBriefView ? 'brief' : 'full'],
     queryFn: () => currentAffairsService.getById(id, isBriefView),
+    staleTime: 60 * 60 * 1000,
+    retry: false,
+    enabled: !!id,
+  });
+
+  const { data: relatedPYQs } = useQuery({
+    queryKey: ['current-affairs', 'pyqs', id],
+    queryFn: () => currentAffairsService.getRelatedPYQs(id),
     staleTime: 60 * 60 * 1000,
     retry: false,
     enabled: !!id,
@@ -513,20 +588,23 @@ export default function ArticleDetailPage() {
               {(ed?.keyTerms?.length ?? 0) > 0 && (
                 <section className="space-y-3.5">
                   <SectionHeading color={accentColor}>Key Terms</SectionHeading>
-                  <div className="space-y-0">
+                  <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${accentColor}18` }}>
                     {ed!.keyTerms!.map((t, i) => (
                       <div
                         key={i}
-                        className="flex items-start gap-4 py-3"
-                        style={{ borderBottom: i < ed!.keyTerms!.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}
+                        className="flex flex-col sm:flex-row sm:items-start gap-0.5 sm:gap-4 px-4 py-3.5"
+                        style={{
+                          borderBottom: i < ed!.keyTerms!.length - 1 ? `1px solid ${accentColor}10` : 'none',
+                          background: i % 2 === 0 ? `${accentColor}05` : '#FFFFFF',
+                        }}
                       >
                         <span
-                          className="shrink-0 text-xs font-extrabold leading-tight"
-                          style={{ color: accentColor, minWidth: 80, paddingTop: 2 }}
+                          className="text-[11.5px] font-extrabold leading-snug shrink-0 sm:w-44 sm:pt-0.5"
+                          style={{ color: accentColor }}
                         >
                           {t.term}
                         </span>
-                        <span style={{ fontSize: '0.875rem', lineHeight: 1.75, color: TEXT_BODY }}>
+                        <span className="text-sm leading-relaxed" style={{ color: TEXT_BODY }}>
                           {t.definition}
                         </span>
                       </div>
@@ -607,7 +685,19 @@ export default function ArticleDetailPage() {
                 </div>
               )}
 
-              {/* 10 — Topics + Exam footer */}
+              {/* 10 — Previous Year Questions */}
+              {(relatedPYQs?.length ?? 0) > 0 && (
+                <section className="space-y-3.5">
+                  <SectionHeading color={accentColor}>Previous Year Questions on this Topic</SectionHeading>
+                  <div className="space-y-3">
+                    {relatedPYQs!.map((pyq) => (
+                      <PYQCard key={pyq.id} pyq={pyq} accentColor={accentColor} />
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* 11 — Topics + Exam footer */}
               {(article.topicTags.length > 0 || relevantExams.length > 0) && (
                 <section className="space-y-3 pt-2">
                   <div className="h-px" style={{ background: `${accentColor}18` }} />
