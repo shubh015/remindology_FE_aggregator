@@ -106,195 +106,35 @@ function formatPYQSource(source: string): string {
   if (lower.includes('mains'))  return year ? `UPSC Mains ${year}`   : 'UPSC Mains';
   if (lower.includes('state'))  return year ? `State PSC ${year}`    : 'State PSC';
   if (lower.includes('ssc'))    return year ? `SSC ${year}`          : 'SSC';
-  if (lower.includes('syllabus')) {
-    if (lower.includes('gs1')) return 'UPSC Syllabus GS1';
-    if (lower.includes('gs2')) return 'UPSC Syllabus GS2';
-    if (lower.includes('gs3')) return 'UPSC Syllabus GS3';
-    if (lower.includes('gs4')) return 'UPSC Syllabus GS4';
-    return 'UPSC Syllabus';
-  }
   return source.replace(/_/g, ' ').replace(/\bpyq\b/gi, '').replace(/\s+/g, ' ').trim() || 'Previous Year';
-}
-
-type ParsedQ = { stem: string; stmts: { label: string; text: string }[]; options: { label: string; text: string }[]; closing: string };
-
-// Parses OCR PYQ text into structured questions.
-// KEY: statements are only detected BEFORE the first option marker (a), preventing
-// false matches on "Both Statement II and Statement III" inside option answer text.
-function parsePYQContent(raw: string): ParsedQ[] {
-  const cleaned = raw
-    .replace(/Scanned with CS CamScanner[^\n]*/gi, '')
-    .replace(/[✓√☑]/g, '')
-    .replace(/\bT\s+(?=Statement)/g, '') // OCR: "T Statement I" → "Statement I"
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  // Split at question number boundaries: "89." "91." "11." "12." etc.
-  const positions: number[] = [];
-  const qRe = /(?:^|\s)(\d{1,2})\.\s+(?=[A-Z])/g;
-  let qm: RegExpExecArray | null;
-  while ((qm = qRe.exec(cleaned)) !== null) {
-    positions.push(qm.index === 0 ? 0 : qm.index + 1);
-  }
-  const chunks: string[] = positions.length > 1
-    ? positions.map((p, i) => cleaned.slice(p, positions[i + 1]).trim())
-    : [cleaned];
-
-  return chunks.flatMap((chunk): ParsedQ[] => {
-    // Find where options section starts: first "(a)"
-    const firstAIdx = chunk.search(/\(a\)/i);
-    const prePart = firstAIdx >= 0 ? chunk.slice(0, firstAIdx) : chunk;
-    const optPart = firstAIdx >= 0 ? chunk.slice(firstAIdx) : '';
-
-    // Match Statement labels ONLY in prePart — requires colon/dash so "Statement II and" is NOT matched
-    const stmtRe = /(Statement[-\s]+(?:I{1,3}|IV))\s*[-–:]\s*/gi;
-    const stmtMs = [...prePart.matchAll(stmtRe)];
-
-    // Stem: everything before first statement (or all of prePart if no statements)
-    const stemEnd = stmtMs.length > 0 ? stmtMs[0].index! : prePart.length;
-    const stem = prePart.slice(0, stemEnd).trim().replace(/^\d{1,2}\.\s*/, '').trim();
-
-    // Statement rows
-    const stmts: { label: string; text: string }[] = stmtMs.map((s, i) => {
-      const from = s.index! + s[0].length;
-      const to   = i + 1 < stmtMs.length ? stmtMs[i + 1].index! : prePart.length;
-      let text = prePart.slice(from, to).trim();
-      // Trim trailing "Which one of..." closing question from last statement
-      text = text.replace(/\s+Which\s+(?:one\s+of|of)\s+the\s+(?:following|above).*/i, '').trim();
-      return {
-        label: s[1].replace(/\s+/g, ' ').trim(),
-        text,
-      };
-    });
-
-    // Closing question: "Which one of the following…?"
-    const closingMatch = prePart.match(/Which\s+(?:one\s+of\s+the\s+following|of\s+the\s+(?:above|following))[^?]+\?/i)
-      ?? prePart.match(/How\s+many\s+of\s+the\s+(?:above|following)[^?]+\?/i);
-    const closing = closingMatch ? closingMatch[0].trim() : '';
-
-    // Options: "(a)" "(b)" "(c)" "(d)"
-    // Handle OCR corruption "()" → treat as (c) when it appears between (b) and (d)
-    const optNorm = optPart.replace(/\(\)\s+(?=[A-Z])/g, '(c) ');
-    const optMs = [...optNorm.matchAll(/\(([a-d])\)\s*/gi)];
-    const options: { label: string; text: string }[] = optMs.map((o, i) => {
-      const from = o.index! + o[0].length;
-      const to   = i + 1 < optMs.length ? optMs[i + 1].index! : optNorm.length;
-      return { label: `(${o[1].toLowerCase()})`, text: optNorm.slice(from, to).trim() };
-    });
-
-    if (stem.length < 8 && stmts.length === 0 && options.length === 0) return [];
-    return [{ stem, stmts, options, closing }];
-  });
-}
-
-// Syllabus content uses a special bullet character (PDF OCR artifact) as separator.
-function parseSyllabusBullets(raw: string): string[] {
-  return raw
-    .split(/[�■▪•■•▪]/)
-    .map(s => s.replace(/^\s*\d+\s*/, '').trim())
-    .filter(s => s.length > 10);
 }
 
 function PYQCard({ pyq, accentColor }: { pyq: RelatedPYQ; accentColor: string }) {
   const [expanded, setExpanded] = useState(false);
   const label = formatPYQSource(pyq.source);
-  const isSyllabus = pyq.source.toLowerCase().includes('syllabus');
-
-  // ── Syllabus render ──────────────────────────────────────────────
-  if (isSyllabus) {
-    const bullets = parseSyllabusBullets(pyq.content);
-    const shown   = expanded ? bullets : bullets.slice(0, 3);
-    return (
-      <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${accentColor}20` }}>
-        <div className="flex items-center gap-3 px-4 py-2.5" style={{ background: `${accentColor}0d` }}>
-          <span className="text-[10.5px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide"
-            style={{ background: `${accentColor}18`, color: accentColor, border: `1px solid ${accentColor}30` }}>
-            {label}
-          </span>
-          <span className="text-[11px] text-muted-foreground">Relevant syllabus topics</span>
-        </div>
-        <ul className="px-4 py-3 space-y-2">
-          {shown.map((b, i) => (
-            <li key={i} className="flex items-start gap-2.5 text-[13px] leading-relaxed">
-              <span className="mt-2 w-1.5 h-1.5 rounded-full shrink-0 flex-none" style={{ background: accentColor }} />
-              <span className="text-foreground/80">{b}</span>
-            </li>
-          ))}
-        </ul>
-        {bullets.length > 3 && (
-          <button onClick={() => setExpanded(v => !v)}
-            className="w-full px-4 py-2 text-[11.5px] font-bold cursor-pointer text-center hover:opacity-70"
-            style={{ background: `${accentColor}08`, color: accentColor, borderTop: `1px solid ${accentColor}15` }}>
-            {expanded ? '↑ Show less' : `↓ Show all ${bullets.length} topics`}
-          </button>
-        )}
-      </div>
-    );
-  }
-
-  // ── PYQ render ───────────────────────────────────────────────────
-  const questions = parsePYQContent(pyq.content);
-  const hasMultiple = questions.length > 1;
-  const shown = expanded ? questions : questions.slice(0, 1);
+  const isLong = pyq.content.length > 200;
 
   return (
-    <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${accentColor}20` }}>
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2.5" style={{ background: `${accentColor}0d` }}>
-        <span className="text-[10.5px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide"
-          style={{ background: `${accentColor}18`, color: accentColor, border: `1px solid ${accentColor}30` }}>
-          {label}
-        </span>
-        {hasMultiple && !expanded && (
-          <span className="text-[11px] text-muted-foreground font-medium">{questions.length} questions</span>
-        )}
-      </div>
-
-      {/* Question cards */}
-      <div className="divide-y" style={{ borderColor: `${accentColor}12` }}>
-        {shown.map((q, qi) => (
-          <div key={qi} className="p-4 space-y-3">
-            {q.stem && (
-              <p className="text-[13.5px] font-semibold leading-relaxed text-foreground">{q.stem}</p>
-            )}
-
-            {q.stmts.length > 0 && (
-              <div className="rounded-lg overflow-hidden divide-y" style={{ border: `1px solid ${accentColor}18` }}>
-                {q.stmts.map((s, si) => (
-                  <div key={si} className="flex gap-3 px-3 py-2.5 text-[13px] leading-relaxed">
-                    <span className="font-bold shrink-0 mt-0.5" style={{ color: accentColor, minWidth: '6rem' }}>
-                      {s.label}:
-                    </span>
-                    <span className="text-foreground/80">{s.text}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {q.closing && (
-              <p className="text-[12.5px] font-medium text-foreground/60 italic">{q.closing}</p>
-            )}
-
-            {q.options.length > 0 && (
-              <div className="space-y-1.5">
-                {q.options.map((o, oi) => (
-                  <div key={oi} className="flex gap-2.5 px-3 py-2 rounded-lg text-[13px] leading-relaxed"
-                    style={{ background: `${accentColor}08`, border: `1px solid ${accentColor}15` }}>
-                    <span className="font-bold shrink-0" style={{ color: accentColor }}>{o.label}</span>
-                    <span className="text-foreground/75">{o.text}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {hasMultiple && (
-        <button onClick={() => setExpanded(v => !v)}
-          className="w-full px-4 py-2 text-[11.5px] font-bold cursor-pointer hover:opacity-70 text-center"
-          style={{ background: `${accentColor}08`, color: accentColor, borderTop: `1px solid ${accentColor}15` }}>
-          {expanded ? '↑ Show less' : `↓ Show all ${questions.length} questions`}
+    <div className="rounded-xl p-4 space-y-2.5" style={{ border: `1px solid ${accentColor}20`, background: `${accentColor}05` }}>
+      <span
+        className="inline-flex items-center text-[10.5px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide"
+        style={{ background: `${accentColor}15`, color: accentColor, border: `1px solid ${accentColor}30` }}
+      >
+        {label}
+      </span>
+      <p
+        className="text-[13.5px] leading-relaxed text-foreground/80"
+        style={!expanded && isLong ? { display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 4, overflow: 'hidden' } : undefined}
+      >
+        {pyq.content}
+      </p>
+      {isLong && (
+        <button
+          onClick={() => setExpanded(v => !v)}
+          className="text-[12px] font-semibold cursor-pointer hover:opacity-70"
+          style={{ color: accentColor }}
+        >
+          {expanded ? '↑ Show less' : '↓ Read more'}
         </button>
       )}
     </div>
@@ -830,10 +670,10 @@ export default function ArticleDetailPage() {
                 </div>
               )}
 
-              {/* 10 — Previous Year Questions */}
-              {(relatedPYQs?.length ?? 0) > 0 && (
+              {/* 10 — Asked in Previous Years (disabled) */}
+              {false && (relatedPYQs?.length ?? 0) > 0 && (
                 <section className="space-y-3.5">
-                  <SectionHeading color={accentColor}>Previous Year Questions on this Topic</SectionHeading>
+                  <SectionHeading color={accentColor}>Asked in Previous Years</SectionHeading>
                   <div className="space-y-3">
                     {relatedPYQs!.map((pyq) => (
                       <PYQCard key={pyq.id} pyq={pyq} accentColor={accentColor} />
