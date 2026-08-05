@@ -670,8 +670,8 @@ export default function ArticleDetailPage() {
                 </div>
               )}
 
-              {/* 10 — Asked in Previous Years */}
-              {(relatedPYQs?.length ?? 0) > 0 && (
+              {/* 10 — Asked in Previous Years (disabled) */}
+              {false && (relatedPYQs?.length ?? 0) > 0 && (
                 <section className="space-y-3.5">
                   <SectionHeading color={accentColor}>Asked in Previous Years</SectionHeading>
                   <div className="space-y-3">
