@@ -106,50 +106,162 @@ function formatPYQSource(source: string): string {
   if (lower.includes('mains'))  return year ? `UPSC Mains ${year}`   : 'UPSC Mains';
   if (lower.includes('state'))  return year ? `State PSC ${year}`    : 'State PSC';
   if (lower.includes('ssc'))    return year ? `SSC ${year}`          : 'SSC';
-  // Generic fallback: strip underscores + "pyq", keep year
-  return source.replace(/_/g, ' ').replace(/\bpyq\b/gi, '').replace(/\s+/g, ' ').trim()
-    || 'Previous Year';
+  return source.replace(/_/g, ' ').replace(/\bpyq\b/gi, '').replace(/\s+/g, ' ').trim() || 'Previous Year';
+}
+
+// Splits OCR-extracted PYQ text into one structured question per item.
+// Handles noise like "Scanned with CS CamScanner", stray checkmarks, etc.
+function parsePYQContent(raw: string): { stem: string; stmts: { label: string; text: string }[]; options: { label: string; text: string }[]; closing: string }[] {
+  // 1. Strip OCR noise
+  const cleaned = raw
+    .replace(/Scanned with CS CamScanner[^\n]*/gi, '')
+    .replace(/[✓√☑]/g, '')
+    .replace(/\bT\s+(?=Statement)/g, '')     // "T Statement I" → "Statement I"
+    .replace(/\bO\.\s+(?=\d|\w{3,})/g, '')  // stray "O." before numbers/words
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // 2. Split into individual questions at boundaries like "11. Consider" / "12. With reference"
+  const qBoundary = /(?:^|\s)(\d{1,2})\.\s+(?=[A-Z])/g;
+  const splits: { idx: number; qNum: string }[] = [];
+  let bm: RegExpExecArray | null;
+  while ((bm = qBoundary.exec(cleaned)) !== null) {
+    splits.push({ idx: bm.index === 0 ? 0 : bm.index + 1, qNum: bm[1] });
+  }
+
+  const rawQuestions: string[] = splits.length > 0
+    ? splits.map((s, i) => cleaned.slice(s.idx, i + 1 < splits.length ? splits[i + 1].idx : undefined).trim())
+    : [cleaned];
+
+  return rawQuestions.map((qText) => {
+    // 3a. Detect Statement I / II / III / IV labels
+    const stmtRe = /(Statement\s+(?:I{1,3}|IV)\s*:?)\s*/gi;
+    const stmtHits: { idx: number; label: string }[] = [];
+    let sm: RegExpExecArray | null;
+    while ((sm = stmtRe.exec(qText)) !== null) {
+      stmtHits.push({ idx: sm.index, label: sm[1].replace(/\s+/g, ' ').replace(/:$/, '').trim() });
+    }
+
+    // 3b. Detect options (a) (b) (c) (d)
+    const optRe = /\(([a-d])\)\s*/gi;
+    const optHits: { idx: number; label: string }[] = [];
+    let om: RegExpExecArray | null;
+    while ((om = optRe.exec(qText)) !== null) {
+      optHits.push({ idx: om.index, label: `(${om[1].toLowerCase()})` });
+    }
+
+    // 3c. Extract stem (text before first Statement or first option)
+    const firstStmt  = stmtHits[0]?.idx ?? Infinity;
+    const firstOpt   = optHits[0]?.idx  ?? Infinity;
+    const stemEnd    = Math.min(firstStmt, firstOpt);
+    const stem       = qText.slice(0, stemEnd === Infinity ? qText.length : stemEnd).trim()
+      .replace(/^[\d]{1,2}\.\s*/, '') // remove leading question number
+      .trim();
+
+    // 3d. Extract statements
+    const stmts = stmtHits.map((s, i) => {
+      const from = s.idx + s.label.length + (qText[s.idx + s.label.length] === ':' ? 1 : 0) + 1;
+      const to   = i + 1 < stmtHits.length ? stmtHits[i + 1].idx : (optHits[0]?.idx ?? qText.length);
+      return { label: s.label, text: qText.slice(from, to).trim().replace(/^:?\s*/, '') };
+    });
+
+    // 3e. Extract closing question (the "Which of the following..." between last stmt and options)
+    const afterStmts = stmtHits.length > 0
+      ? qText.slice(stmtHits[stmtHits.length - 1].idx).replace(/^[^\n.]*[.\n]/, '')
+      : '';
+    const closingMatch = afterStmts.match(/Which\s+[^?]+\?|How\s+many\s+[^?]+\?|Select\s+[^?]+\?/i);
+    const closing = closingMatch ? closingMatch[0].trim() : '';
+
+    // 3f. Extract options
+    const options = optHits.map((o, i) => {
+      const from = o.idx + o.label.length + 1;
+      const to   = i + 1 < optHits.length ? optHits[i + 1].idx : qText.length;
+      return { label: o.label, text: qText.slice(from, to).trim() };
+    });
+
+    return { stem, stmts, options, closing };
+  }).filter(q => q.stem.length > 10 || q.stmts.length > 0);
 }
 
 function PYQCard({ pyq, accentColor }: { pyq: RelatedPYQ; accentColor: string }) {
   const [expanded, setExpanded] = useState(false);
   const label = formatPYQSource(pyq.source);
+  const questions = parsePYQContent(pyq.content);
+  const hasMultiple = questions.length > 1;
 
   return (
     <div
-      className="rounded-xl p-4 space-y-3"
-      style={{ background: `${accentColor}05`, border: `1px solid ${accentColor}15` }}
+      className="rounded-xl overflow-hidden"
+      style={{ border: `1px solid ${accentColor}20` }}
     >
-      {/* Source badge */}
-      <span
-        className="inline-flex items-center text-[10.5px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide"
-        style={{ background: `${accentColor}12`, color: accentColor, border: `1px solid ${accentColor}25` }}
+      {/* Header */}
+      <div
+        className="flex items-center justify-between px-4 py-2.5"
+        style={{ background: `${accentColor}0d` }}
       >
-        {label}
-      </span>
+        <span
+          className="inline-flex items-center text-[10.5px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide"
+          style={{ background: `${accentColor}18`, color: accentColor, border: `1px solid ${accentColor}30` }}
+        >
+          {label}
+        </span>
+        {hasMultiple && (
+          <span className="text-[11px] text-muted-foreground font-medium">{questions.length} questions</span>
+        )}
+      </div>
 
-      {/* Question text */}
-      <p
-        className="text-[13.5px] leading-relaxed"
-        style={{
-          color: '#1F2937',
-          display: '-webkit-box',
-          WebkitBoxOrient: 'vertical',
-          WebkitLineClamp: expanded ? 'unset' : 3,
-          overflow: expanded ? 'visible' : 'hidden',
-        }}
-      >
-        {pyq.content}
-      </p>
+      {/* Questions */}
+      <div className="divide-y" style={{ borderColor: `${accentColor}12` }}>
+        {(expanded ? questions : questions.slice(0, 1)).map((q, qi) => (
+          <div key={qi} className="p-4 space-y-3">
+            {/* Stem */}
+            {q.stem && (
+              <p className="text-[13.5px] font-semibold leading-relaxed text-foreground">{q.stem}</p>
+            )}
 
-      {/* Expand / collapse — only show when text is long enough */}
-      {pyq.content.length > 160 && (
+            {/* Statements */}
+            {q.stmts.length > 0 && (
+              <div className="rounded-lg divide-y" style={{ borderColor: `${accentColor}18`, border: `1px solid ${accentColor}18` }}>
+                {q.stmts.map((s, si) => (
+                  <div key={si} className="flex gap-3 px-3 py-2 text-[13px] leading-relaxed">
+                    <span className="font-bold shrink-0 mt-0.5" style={{ color: accentColor, minWidth: '5rem' }}>
+                      {s.label}:
+                    </span>
+                    <span className="text-foreground/80">{s.text}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Closing question if detected separately */}
+            {q.closing && (
+              <p className="text-[12.5px] font-medium text-foreground/70 italic">{q.closing}</p>
+            )}
+
+            {/* Options */}
+            {q.options.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                {q.options.map((o, oi) => (
+                  <div key={oi} className="flex gap-2 px-3 py-1.5 rounded-lg text-[12.5px]"
+                    style={{ background: `${accentColor}08`, border: `1px solid ${accentColor}15` }}>
+                    <span className="font-bold shrink-0" style={{ color: accentColor }}>{o.label}</span>
+                    <span className="text-foreground/75">{o.text}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Show more / less */}
+      {(hasMultiple || questions.length === 0) && (
         <button
           onClick={() => setExpanded((v) => !v)}
-          className="text-[11px] font-bold cursor-pointer transition-colors hover:opacity-70"
-          style={{ color: accentColor }}
+          className="w-full px-4 py-2 text-[11.5px] font-bold cursor-pointer transition-opacity hover:opacity-70 text-center"
+          style={{ background: `${accentColor}08`, color: accentColor, borderTop: `1px solid ${accentColor}15` }}
         >
-          {expanded ? '↑ Show less' : '↓ Read full question'}
+          {expanded ? '↑ Show less' : `↓ Show all ${questions.length} questions`}
         </button>
       )}
     </div>
