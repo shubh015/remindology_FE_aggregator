@@ -130,6 +130,20 @@ export const currentAffairsService = {
     return normalizeList(response.data.data);
   },
 
+  async updateDraft(id: string, data: Partial<{
+    title: string;
+    summary: string;
+    keyFacts: string[];
+    gsPaperTags: string[];
+    topicTags: string[];
+    mainsAngle: string;
+    publishedDate: string;
+    enrichedData: EnrichedData;
+  }>): Promise<CurrentAffairsArticle> {
+    const response = await apiClient.patch<ApiResponse<Raw>>(`/current-affairs/${id}`, data);
+    return normalize(response.data.data);
+  },
+
   async publish(input: PublishArticleInput): Promise<CurrentAffairsArticle> {
     const response = await apiClient.post<ApiResponse<Raw>>('/current-affairs/publish', input);
     return normalize(response.data.data);
