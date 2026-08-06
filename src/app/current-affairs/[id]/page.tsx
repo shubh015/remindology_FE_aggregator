@@ -487,9 +487,17 @@ export default function ArticleDetailPage() {
               {/* 1 — Why in News */}
               <section className="space-y-3.5">
                 <SectionHeading color={accentColor}>Why in News?</SectionHeading>
-                <p style={{ fontSize: '0.9625rem', lineHeight: 1.9, color: TEXT_BODY, fontWeight: 450 }}>
-                  {whyInNews}
-                </p>
+                {whyInNews.includes('<') ? (
+                  <div
+                    className="rich-editor-content"
+                    style={{ fontSize: '0.9625rem', lineHeight: 1.9, color: TEXT_BODY, fontWeight: 450 }}
+                    dangerouslySetInnerHTML={{ __html: whyInNews }}
+                  />
+                ) : (
+                  <p style={{ fontSize: '0.9625rem', lineHeight: 1.9, color: TEXT_BODY, fontWeight: 450 }}>
+                    {whyInNews}
+                  </p>
+                )}
               </section>
 
               {/* 2 — Prelims Quick Facts table */}
@@ -497,36 +505,61 @@ export default function ArticleDetailPage() {
                 <section className="space-y-3.5">
                   <SectionHeading color={accentColor}>Prelims Quick Facts</SectionHeading>
                   <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${accentColor}20` }}>
-                    {ed!.prelimsFacts!.map((f, i) => (
-                      <div
-                        key={i}
-                        className="flex"
-                        style={{
-                          borderBottom: i < ed!.prelimsFacts!.length - 1
-                            ? `1px solid ${accentColor}15` : 'none',
-                        }}
-                      >
-                        <div
-                          className="w-5/12 px-4 py-2.5 flex items-center text-[11.5px] font-medium"
-                          style={{
-                            background: i % 2 === 0 ? `${accentColor}07` : `${accentColor}03`,
-                            color: TEXT_MUTED,
-                            borderRight: `1px solid ${accentColor}15`,
-                          }}
-                        >
-                          {f.label}
-                        </div>
-                        <div
-                          className="flex-1 px-4 py-2.5 flex items-center text-[12px] font-bold"
-                          style={{
-                            background: i % 2 === 0 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)',
-                            color: '#111827',
-                          }}
-                        >
-                          {f.value}
-                        </div>
-                      </div>
-                    ))}
+                    {(() => {
+                      // Merge consecutive rows that share the same label into one rowSpan group
+                      const groups: { label: string; values: string[] }[] = [];
+                      for (const f of ed!.prelimsFacts!) {
+                        const last = groups[groups.length - 1];
+                        if (last && last.label === f.label) last.values.push(f.value);
+                        else groups.push({ label: f.label, values: [f.value] });
+                      }
+                      return (
+                        <table className="w-full border-collapse">
+                          <tbody>
+                            {groups.flatMap((g, gi) =>
+                              g.values.map((val, vi) => {
+                                const isLast = gi === groups.length - 1 && vi === g.values.length - 1;
+                                const rowBorder = isLast ? 'none' : `1px solid ${accentColor}15`;
+                                const labelBg = gi % 2 === 0 ? `${accentColor}07` : `${accentColor}03`;
+                                const valBg   = gi % 2 === 0 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)';
+                                return (
+                                  <tr key={`${gi}-${vi}`}>
+                                    {vi === 0 && (
+                                      <td
+                                        rowSpan={g.values.length}
+                                        className="w-5/12 px-4 py-3 text-[11.5px] font-medium align-middle"
+                                        style={{
+                                          background: labelBg,
+                                          color: TEXT_MUTED,
+                                          borderRight: `1px solid ${accentColor}15`,
+                                          borderBottom: gi < groups.length - 1 ? `1px solid ${accentColor}15` : 'none',
+                                        }}
+                                      >
+                                        <span>{g.label}</span>
+                                        {g.values.length > 1 && (
+                                          <span
+                                            className="ml-1.5 inline-flex items-center justify-center text-[10px] font-extrabold px-1.5 py-0.5 rounded-full"
+                                            style={{ background: `${accentColor}18`, color: accentColor }}
+                                          >
+                                            {g.values.length}
+                                          </span>
+                                        )}
+                                      </td>
+                                    )}
+                                    <td
+                                      className="px-4 py-2.5 text-[12px] font-bold"
+                                      style={{ background: valBg, color: '#111827', borderBottom: rowBorder }}
+                                    >
+                                      {val}
+                                    </td>
+                                  </tr>
+                                );
+                              })
+                            )}
+                          </tbody>
+                        </table>
+                      );
+                    })()}
                   </div>
                 </section>
               )}
@@ -545,9 +578,17 @@ export default function ArticleDetailPage() {
                             background: accentColor, opacity: 0.65, flexShrink: 0,
                           }}
                         />
-                        <span style={{ fontSize: '0.9375rem', lineHeight: 1.85, color: TEXT_BODY }}>
-                          <RenderFact fact={fact} color={accentColor} />
-                        </span>
+                        {fact.includes('<') ? (
+                          <span
+                            className="rich-editor-content"
+                            style={{ fontSize: '0.9375rem', lineHeight: 1.85, color: TEXT_BODY }}
+                            dangerouslySetInnerHTML={{ __html: fact }}
+                          />
+                        ) : (
+                          <span style={{ fontSize: '0.9375rem', lineHeight: 1.85, color: TEXT_BODY }}>
+                            <RenderFact fact={fact} color={accentColor} />
+                          </span>
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -562,9 +603,17 @@ export default function ArticleDetailPage() {
                     className="rounded-xl px-5 py-4"
                     style={{ background: `${accentColor}06`, border: `1px solid ${accentColor}14` }}
                   >
-                    <p style={{ fontSize: '0.9375rem', lineHeight: 1.88, color: TEXT_BODY }}>
-                      {ed.historicalBackground}
-                    </p>
+                    {ed.historicalBackground.includes('<') ? (
+                      <div
+                        className="rich-editor-content"
+                        style={{ fontSize: '0.9375rem', lineHeight: 1.88, color: TEXT_BODY }}
+                        dangerouslySetInnerHTML={{ __html: ed.historicalBackground }}
+                      />
+                    ) : (
+                      <p style={{ fontSize: '0.9375rem', lineHeight: 1.88, color: TEXT_BODY }}>
+                        {ed.historicalBackground}
+                      </p>
+                    )}
                   </div>
                 </section>
               )}

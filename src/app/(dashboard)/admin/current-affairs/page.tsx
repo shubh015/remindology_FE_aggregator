@@ -12,7 +12,7 @@ import { currentAffairsService } from '@/services/current-affairs.service';
 import {
   Send, Trash2, AlertCircle, CheckCircle2, X,
   Loader2, Newspaper, ShieldCheck, BookOpen, Tag,
-  FileText, CheckCheck, XCircle, Layers,
+  FileText, CheckCheck, XCircle, Layers, Pencil,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -244,6 +244,7 @@ function DraftCard({
   publishingId: string | null;
   rejectingId: string | null;
 }) {
+  const router  = useRouter();
   const dateStr = draft.publishedDate
     ? new Date(draft.publishedDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
     : '—';
@@ -294,6 +295,14 @@ function DraftCard({
 
       {/* Actions */}
       <div className="flex items-center gap-2 pt-1">
+        <button
+          onClick={() => router.push(`/admin/drafts/${draft.id}`)}
+          disabled={busy}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border border-border text-foreground hover:bg-secondary transition-colors disabled:cursor-not-allowed cursor-pointer"
+        >
+          <Pencil className="h-3.5 w-3.5" />
+          Edit
+        </button>
         <button
           onClick={() => onPublish(draft.id, draft.title)}
           disabled={busy}
