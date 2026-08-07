@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import type { ContentTabProps } from '@/types/props';
 import { useAiLimitStore } from '@/store/use-ai-limit-store';
 import { QuestionText } from '@/components/mcq/QuestionText';
+import { ExplanationText } from '@/components/mcq/ExplanationText';
 
 type SelectedAnswers = Record<string, string>;
 
@@ -190,11 +191,9 @@ export function MCQsTab({ contentId }: ContentTabProps) {
                 {isAnswered && (
                   <div className="space-y-2">
                     {/* Explanation */}
-                    <div className={cn('p-4 rounded-lg border text-sm leading-relaxed', isCorrect ? 'bg-emerald-500/6 border-emerald-500/25' : 'bg-muted/50 border-border/80')}>
-                      <p className="font-semibold text-foreground mb-1">{isCorrect ? '✓ Correct!' : '✗ Incorrect'}</p>
-                      <p className="text-muted-foreground">
-                        <span className="font-semibold text-foreground">Explanation: </span>{mcq.explanation}
-                      </p>
+                    <div className={cn('p-4 rounded-lg border text-sm leading-relaxed space-y-2', isCorrect ? 'bg-emerald-500/6 border-emerald-500/25' : 'bg-muted/50 border-border/80')}>
+                      <p className="font-semibold text-foreground">{isCorrect ? '✓ Correct!' : '✗ Incorrect'}</p>
+                      <ExplanationText text={mcq.explanation} className="text-sm text-muted-foreground leading-relaxed" />
                     </div>
 
                     {/* Prelims Detective — wrong option breakdown */}
