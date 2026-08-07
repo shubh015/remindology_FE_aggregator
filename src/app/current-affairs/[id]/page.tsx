@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { currentAffairsService } from '@/services/current-affairs.service';
 import type { RelatedPYQ } from '@/services/current-affairs.service';
 import { QuestionText } from '@/components/mcq/QuestionText';
+import { ExplanationText } from '@/components/mcq/ExplanationText';
 import { useAuthStore } from '@/store/use-auth-store';
 import { TARGET_EXAM_LABELS } from '@/types/auth';
 import type { PracticeQuestion } from '@/types/features';
@@ -217,9 +218,10 @@ function MCQSection({ questions, accentColor }: { questions: PracticeQuestion[];
                     ✓ Correct answer: {correct}
                   </p>
                 )}
-                <p className="text-[12px] leading-relaxed" style={{ color: '#374151' }}>
-                  {q.explanation}
-                </p>
+                <ExplanationText
+                  text={q.explanation}
+                  className="text-[12px] leading-relaxed"
+                />
               </div>
             )}
           </div>
