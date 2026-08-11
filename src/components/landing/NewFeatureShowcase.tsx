@@ -5,6 +5,7 @@ import {
   Flame, PenLine, TrendingDown, Newspaper, CalendarDays, Search, Brain, BadgeCheck,
   Check, X, Zap, BookOpen, FlaskConical, Trophy,
 } from 'lucide-react';
+import { MobileFeatureCarousel } from './MobileFeatureCarousel';
 
 // ── Feature metadata ─────────────────────────────────────────────
 const NEW_FEATURES = [
@@ -390,11 +391,21 @@ export function NewFeatureShowcase() {
   const feature = NEW_FEATURES[active];
 
   return (
-    <div
-      ref={containerRef}
-      className="rounded-3xl overflow-hidden"
-      style={{ border: '1px solid rgba(124,58,237,0.12)', boxShadow: '0 20px 60px rgba(124,58,237,0.1)' }}
-    >
+    <>
+      {/* ── Mobile — flicker-free manual carousel, no auto-rotate/IntersectionObserver ── */}
+      <div
+        className="md:hidden rounded-3xl p-4 overflow-hidden"
+        style={{ border: '1px solid rgba(124,58,237,0.12)', boxShadow: '0 20px 60px rgba(124,58,237,0.1)', background: '#FFFFFF' }}
+      >
+        <MobileFeatureCarousel items={NEW_FEATURES} renderMockup={(id) => <NewMockup id={id as NewFeatureId} />} />
+      </div>
+
+      {/* ── Desktop/tablet — auto-rotating grid with progress bar ── */}
+      <div
+        ref={containerRef}
+        className="hidden md:block rounded-3xl overflow-hidden"
+        style={{ border: '1px solid rgba(124,58,237,0.12)', boxShadow: '0 20px 60px rgba(124,58,237,0.1)' }}
+      >
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes rmProgressSweepNFS {
           from { transform: scaleX(0); }
@@ -502,6 +513,7 @@ export function NewFeatureShowcase() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Flame, Newspaper, PenLine, CalendarDays, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Flame, Newspaper, PenLine, CalendarDays, Milestone, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useDailyChallenge } from '@/features/daily-challenge/hooks/use-daily-challenge';
 import { cn } from '@/lib/utils';
 
@@ -40,6 +40,15 @@ const ACTIONS = [
     color: '#6366F1',
     glow: 'rgba(99,102,241,0.1)',
     border: 'hover:border-indigo-400/40',
+    isDailyChallenge: false,
+  },
+  {
+    href: '/revision-trail',
+    icon: Milestone,
+    title: 'Revision Trail',
+    color: '#8B5CF6',
+    glow: 'rgba(139,92,246,0.1)',
+    border: 'hover:border-violet-400/40',
     isDailyChallenge: false,
   },
 ] as const;

@@ -10,6 +10,7 @@ import { currentAffairsService } from '@/services/current-affairs.service';
 import type { RelatedPYQ } from '@/services/current-affairs.service';
 import { QuestionText } from '@/components/mcq/QuestionText';
 import { ExplanationText } from '@/components/mcq/ExplanationText';
+import { SaveNoteButton } from '@/components/notes/SaveNoteButton';
 import { useAuthStore } from '@/store/use-auth-store';
 import { TARGET_EXAM_LABELS } from '@/types/auth';
 import type { PracticeQuestion } from '@/types/features';
@@ -94,6 +95,11 @@ function RenderFact({ fact, color }: { fact: string; color: string }) {
     );
   }
   return <>{fact}</>;
+}
+
+// Strips rich-text HTML tags for use as plain-text saved-note content
+function stripHtml(text: string): string {
+  return text.includes('<') ? text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : text;
 }
 
 // ── PYQ helpers ───────────────────────────────────────────────────
@@ -552,7 +558,15 @@ export default function ArticleDetailPage() {
                                       className="px-4 py-2.5 text-[12px] font-bold"
                                       style={{ background: valBg, color: '#111827', borderBottom: rowBorder }}
                                     >
-                                      {val}
+                                      <span className="flex items-center justify-between gap-2">
+                                        <span>{val}</span>
+                                        <SaveNoteButton
+                                          articleId={article.id}
+                                          articleTitle={article.title}
+                                          noteText={`${g.label}: ${val}`}
+                                          sourceSection="PRELIMS_FACT"
+                                        />
+                                      </span>
                                     </td>
                                   </tr>
                                 );
@@ -580,17 +594,26 @@ export default function ArticleDetailPage() {
                             background: accentColor, opacity: 0.65, flexShrink: 0,
                           }}
                         />
-                        {fact.includes('<') ? (
-                          <span
-                            className="rich-editor-content"
-                            style={{ fontSize: '0.9375rem', lineHeight: 1.85, color: TEXT_BODY }}
-                            dangerouslySetInnerHTML={{ __html: fact }}
+                        <span className="flex-1 flex items-start justify-between gap-2">
+                          {fact.includes('<') ? (
+                            <span
+                              className="rich-editor-content"
+                              style={{ fontSize: '0.9375rem', lineHeight: 1.85, color: TEXT_BODY }}
+                              dangerouslySetInnerHTML={{ __html: fact }}
+                            />
+                          ) : (
+                            <span style={{ fontSize: '0.9375rem', lineHeight: 1.85, color: TEXT_BODY }}>
+                              <RenderFact fact={fact} color={accentColor} />
+                            </span>
+                          )}
+                          <SaveNoteButton
+                            articleId={article.id}
+                            articleTitle={article.title}
+                            noteText={stripHtml(fact)}
+                            sourceSection="KEY_POINT"
+                            className="mt-0.5"
                           />
-                        ) : (
-                          <span style={{ fontSize: '0.9375rem', lineHeight: 1.85, color: TEXT_BODY }}>
-                            <RenderFact fact={fact} color={accentColor} />
-                          </span>
-                        )}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -640,8 +663,16 @@ export default function ArticleDetailPage() {
                         >
                           {t.term}
                         </span>
-                        <span className="text-sm leading-relaxed" style={{ color: TEXT_BODY }}>
-                          {t.definition}
+                        <span className="flex-1 flex items-start justify-between gap-2">
+                          <span className="text-sm leading-relaxed" style={{ color: TEXT_BODY }}>
+                            {t.definition}
+                          </span>
+                          <SaveNoteButton
+                            articleId={article.id}
+                            articleTitle={article.title}
+                            noteText={`${t.term}: ${t.definition}`}
+                            sourceSection="KEY_TERM"
+                          />
                         </span>
                       </div>
                     ))}
@@ -662,7 +693,15 @@ export default function ArticleDetailPage() {
                         >
                           {i + 1}
                         </span>
-                        <span style={{ fontSize: '0.9rem', lineHeight: 1.85, color: TEXT_BODY }}>{angle}</span>
+                        <span className="flex-1 flex items-start justify-between gap-2">
+                          <span style={{ fontSize: '0.9rem', lineHeight: 1.85, color: TEXT_BODY }}>{angle}</span>
+                          <SaveNoteButton
+                            articleId={article.id}
+                            articleTitle={article.title}
+                            noteText={angle}
+                            sourceSection="MAINS_ANGLE"
+                          />
+                        </span>
                       </li>
                     ))}
                   </ol>
@@ -682,7 +721,15 @@ export default function ArticleDetailPage() {
                         >
                           →
                         </span>
-                        <span style={{ fontSize: '0.9rem', lineHeight: 1.85, color: TEXT_BODY }}>{point}</span>
+                        <span className="flex-1 flex items-start justify-between gap-2">
+                          <span style={{ fontSize: '0.9rem', lineHeight: 1.85, color: TEXT_BODY }}>{point}</span>
+                          <SaveNoteButton
+                            articleId={article.id}
+                            articleTitle={article.title}
+                            noteText={point}
+                            sourceSection="WAY_FORWARD"
+                          />
+                        </span>
                       </li>
                     ))}
                   </ul>

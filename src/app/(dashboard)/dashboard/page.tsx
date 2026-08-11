@@ -11,6 +11,7 @@ import { QuickActions } from '@/features/dashboard/components/QuickActions';
 import { SubjectBreakdown } from '@/features/dashboard/components/SubjectBreakdown';
 import { RecentUploads } from '@/features/dashboard/components/RecentUploads';
 import { WeakZoneRadar } from '@/features/dashboard/components/WeakZoneRadar';
+import { SavedNotesPreview } from '@/features/dashboard/components/SavedNotesPreview';
 import { Header } from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
 import { UploadModal } from '@/features/contents/components/UploadModal';
@@ -82,6 +83,7 @@ export default function DashboardPage() {
           />
           <SubjectBreakdown stats={stats} isLoading={isLoading} />
           <WeakZoneRadar />
+          <SavedNotesPreview />
         </div>
       </div>
 

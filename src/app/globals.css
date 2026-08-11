@@ -278,6 +278,17 @@ p, li, td, th {
   100% { transform: translate3d(var(--dx-end), var(--dy-end), 0) rotate(var(--rot-end)) scale(0.65); opacity: 0; }
 }
 
+/* ── Revision Trail ────────────────────────────────────── */
+
+/* Generic "look here" beacon — expanding ring behind a solid dot
+   (the dot itself uses pulseDot for an in-place breathe). Used for
+   unrevised note pins on the trail. */
+@keyframes pulseRing {
+  0%   { transform: scale(0.6); opacity: 0.55; }
+  70%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
 /* ── TipTap / ProseMirror rich editor ────────────────── */
 .rich-editor-content { outline: none; }
 .rich-editor-content p { margin: 0 0 0.5em; }
