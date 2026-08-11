@@ -229,3 +229,21 @@ export interface StudyPlan {
   weakTopicsCount: number;
   plan: StudyPlanDay[];
 }
+
+// ── Revision Trail ────────────────────────────────────────────────
+
+export type NoteSection = 'PRELIMS_FACT' | 'KEY_POINT' | 'KEY_TERM' | 'MAINS_ANGLE' | 'WAY_FORWARD';
+
+export interface SavedNote {
+  id: string;
+  articleId: string;
+  articleTitle: string;
+  noteText: string;
+  sourceSection: NoteSection;
+  gsPaperTag?: string;
+  savedAt: string;
+  revisedAt?: string | null;
+  revisionCount?: number;
+  nextDueAt: string;
+  isDue: boolean;
+}

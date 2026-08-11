@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import {
   LayoutDashboard, FileText, User, LogOut,
-  Newspaper, BookOpenCheck, BarChart2, Flame, PenLine, CalendarDays, X, ShieldCheck, Database,
+  Newspaper, BookOpenCheck, BarChart2, Flame, PenLine, CalendarDays, X, ShieldCheck, Database, Milestone,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/use-auth-store';
 import { useSidebarStore } from '@/store/use-sidebar-store';
@@ -40,6 +40,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { name: 'Daily Challenge', href: '/daily-challenge', icon: Flame          },
       { name: 'Current Affairs', href: '/current-affairs', icon: Newspaper      },
+      { name: 'Revision Trail',  href: '/revision-trail',  icon: Milestone      },
       { name: 'Answer Writing',  href: '/mains',           icon: PenLine        },
       { name: 'MCQ Analytics',   href: '/subject-mcqs',    icon: BookOpenCheck },
     ],

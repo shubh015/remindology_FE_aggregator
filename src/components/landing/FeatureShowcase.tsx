@@ -11,6 +11,7 @@ import {
   Sparkles,
   ArrowUp,
 } from 'lucide-react';
+import { MobileFeatureCarousel } from './MobileFeatureCarousel';
 
 // ── Feature metadata ─────────────────────────────────────────────
 const FEATURES = [
@@ -505,14 +506,28 @@ export function FeatureShowcase() {
   const feature = FEATURES[active];
 
   return (
-    <div
-      ref={containerRef}
-      className="rounded-3xl overflow-hidden"
-      style={{
-        border: '1px solid rgba(124,58,237,0.12)',
-        boxShadow: '0 20px 60px rgba(124,58,237,0.1)',
-      }}
-    >
+    <>
+      {/* ── Mobile — flicker-free manual carousel, no auto-rotate/IntersectionObserver ── */}
+      <div
+        className="md:hidden rounded-3xl p-4 overflow-hidden"
+        style={{
+          border: '1px solid rgba(124,58,237,0.12)',
+          boxShadow: '0 20px 60px rgba(124,58,237,0.1)',
+          background: '#FFFFFF',
+        }}
+      >
+        <MobileFeatureCarousel items={FEATURES} renderMockup={(id) => <Mockup id={id as FeatureId} />} />
+      </div>
+
+      {/* ── Desktop — auto-rotating tabs with progress bar ── */}
+      <div
+        ref={containerRef}
+        className="hidden md:block rounded-3xl overflow-hidden"
+        style={{
+          border: '1px solid rgba(124,58,237,0.12)',
+          boxShadow: '0 20px 60px rgba(124,58,237,0.1)',
+        }}
+      >
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes rmProgressSweepFS {
           from { transform: scaleX(0); }
@@ -641,6 +656,7 @@ export function FeatureShowcase() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
