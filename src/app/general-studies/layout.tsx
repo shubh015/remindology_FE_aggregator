@@ -10,7 +10,7 @@ const TEXT_GRAD  = {
 };
 const BORDER_D = '1px solid rgba(124,58,237,0.2)';
 
-export default function CurrentAffairsPublicLayout({
+export default function GeneralStudiesPublicLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -83,7 +83,7 @@ export default function CurrentAffairsPublicLayout({
             <span className="font-bold text-base" style={TEXT_GRAD}>Remindology</span>
           </Link>
           <p className="text-xs text-center" style={{ color: 'rgba(196,181,253,0.4)' }}>
-            AI-curated current affairs for UPSC, SSC &amp; State PSCs · Published every morning
+            AI-curated General Studies notes for UPSC, SSC &amp; State PSCs
           </p>
           <div className="flex items-center gap-5">
             {[['Home', '/'], ['Pricing', '/#pricing'], ['Sign Up', '/signup']].map(([l, h]) => (

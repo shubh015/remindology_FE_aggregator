@@ -7,7 +7,7 @@ const SUBJECTS = [
   {
     badge: 'UPSC CSE',
     badgeColor: '#7C3AED',
-    badgeBg:   'rgba(124,58,237,0.22)',
+    badgeBg:   'rgba(124,58,237,0.1)',
     title:     "India's G20 Presidency",
     slug:      'indias-g20-presidency',
     input:     "India's G20 Presidency focused on inclusive growth, digital public infrastructure, and climate financing. The 'One Earth, One Family, One Future' theme centred the needs of the Global South.",
@@ -22,7 +22,7 @@ const SUBJECTS = [
   {
     badge: 'SSC CGL',
     badgeColor: '#D97706',
-    badgeBg:   'rgba(217,119,6,0.22)',
+    badgeBg:   'rgba(217,119,6,0.1)',
     title:     'Indian Constitution',
     slug:      'indian-constitution',
     input:     "The Constitution of India was adopted on 26 November 1949 and came into force on 26 January 1950. Dr. B.R. Ambedkar chaired the Drafting Committee. It is the world's longest written constitution.",
@@ -35,6 +35,12 @@ const SUBJECTS = [
     time: '1.6s',
   },
 ];
+
+// ── Light-card palette — matches ProductDemo.tsx's mockup colors ──
+const TEXT_MID   = '#9D95C4';
+const TEXT_BODY  = '#4B4580';
+const SURFACE    = '#F5F4FF';
+const BORDER_L   = 'rgba(124,58,237,0.08)';
 
 type Phase = 'typing' | 'processing' | 'revealing' | 'complete' | 'exiting';
 
@@ -95,42 +101,56 @@ export function HeroPreview() {
 
   const displayText    = subject.input.slice(0, typedChars);
   const showCursor     = phase === 'typing';
-  const showProcessing = phase === 'processing';
+  // Nothing is revealed yet during typing — show the same loading state as
+  // "processing" so the right panel is never blank on first paint.
+  const showProcessing = phase === 'typing' || phase === 'processing';
+  const processingLabel = phase === 'typing' ? 'Waiting for input…' : 'Analysing content…';
   const showComplete   = phase === 'revealing' || phase === 'complete' || phase === 'exiting';
 
   return (
-    <div style={{ opacity: cardVisible ? 1 : 0, transition: 'opacity 0.45s ease' }}>
+    // Perspective wrapper — the tilt lives here so it doesn't fight the
+    // opacity-fade transition on the card itself.
+    <div className="group relative" style={{ perspective: '1400px' }}>
+      {/* Shadow lives on its own layer and only ever transitions opacity —
+          animating box-shadow directly alongside a 3D transform forces a
+          repaint every frame and is what made the hover feel janky. */}
       <div
-        className="rounded-2xl overflow-hidden"
-        style={{
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(167,139,250,0.22)',
-          boxShadow: '0 32px 80px rgba(124,58,237,0.16)',
-        }}
+        className="absolute inset-2 rounded-2xl opacity-60 transition-opacity duration-1400 ease-in-out group-hover:opacity-100"
+        style={{ boxShadow: '0 32px 80px rgba(124,58,237,0.22)' }}
+      />
+      <div
+        style={{ opacity: cardVisible ? 1 : 0, transition: 'opacity 0.45s ease', willChange: 'transform' }}
+        className={[
+          'relative rounded-2xl overflow-hidden bg-white',
+          'transform-[perspective(1400px)_rotateY(-7deg)_rotateX(2.5deg)]',
+          'transition-transform duration-1400 ease-in-out',
+          'backface-hidden',
+          'group-hover:transform-[perspective(1400px)_rotateY(0deg)_rotateX(0deg)_scale(1.025)]',
+        ].join(' ')}
       >
-        {/* Browser bar */}
+        {/* Browser bar — stays dark regardless of card theme, matching ProductDemo's mockup chrome */}
         <div
           className="flex items-center gap-2 px-4 py-3"
-          style={{ background: 'rgba(0,0,0,0.32)', borderBottom: '1px solid rgba(167,139,250,0.1)' }}
+          style={{ background: '#09091F', borderBottom: '1px solid rgba(124,58,237,0.2)' }}
         >
           <div className="flex gap-1.5">
             {['#EF4444', '#F59E0B', '#10B981'].map((c, ci) => (
-              <div key={ci} style={{ width: 9, height: 9, borderRadius: '50%', background: c, opacity: 0.55 }} />
+              <div key={ci} style={{ width: 9, height: 9, borderRadius: '50%', background: c, opacity: 0.7 }} />
             ))}
           </div>
           <span
             className="text-[10px] ml-3"
-            style={{ color: 'rgba(240,238,255,0.2)', fontFamily: 'monospace' }}
+            style={{ color: 'rgba(255,255,255,0.32)', fontFamily: 'monospace' }}
           >
             remindology.app/contents/{subject.slug}
           </span>
         </div>
 
-        {/* Two-panel content */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 text-left">
+        {/* Two-panel content — fixed height so the reveal animation never shifts layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 text-left h-115 sm:h-75">
 
           {/* ── Left: material being typed ─────────────────────── */}
-          <div className="p-5 border-b sm:border-b-0 sm:border-r" style={{ borderColor: 'rgba(167,139,250,0.08)' }}>
+          <div className="p-5 border-b sm:border-b-0 sm:border-r overflow-hidden" style={{ borderColor: BORDER_L }}>
             <div className="flex items-center gap-2 mb-3">
               <span
                 className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
@@ -142,7 +162,7 @@ export function HeroPreview() {
               >
                 {subject.badge}
               </span>
-              <span className="text-[10px] truncate" style={{ color: 'rgba(196,181,253,0.36)' }}>
+              <span className="text-[10px] truncate" style={{ color: TEXT_MID }}>
                 {subject.title}
               </span>
             </div>
@@ -150,9 +170,9 @@ export function HeroPreview() {
             <div
               className="text-[10px] leading-relaxed rounded-xl p-3"
               style={{
-                background: 'rgba(124,58,237,0.08)',
-                border: '1px solid rgba(167,139,250,0.1)',
-                color: 'rgba(196,181,253,0.58)',
+                background: SURFACE,
+                border: `1px solid ${BORDER_L}`,
+                color: TEXT_BODY,
                 minHeight: 74,
               }}
             >
@@ -163,7 +183,7 @@ export function HeroPreview() {
                     display: 'inline-block',
                     width: 2,
                     height: '0.85em',
-                    background: '#A78BFA',
+                    background: '#7C3AED',
                     verticalAlign: 'middle',
                     marginLeft: 2,
                     borderRadius: 1,
@@ -181,7 +201,7 @@ export function HeroPreview() {
               className="flex items-center gap-1.5 mt-3"
               style={{
                 fontSize: '0.6rem',
-                color: 'rgba(52,211,153,0.72)',
+                color: '#059669',
                 opacity: showComplete ? 1 : 0,
                 transition: 'opacity 0.5s ease',
               }}
@@ -192,10 +212,10 @@ export function HeroPreview() {
           </div>
 
           {/* ── Right: AI outputs ──────────────────────────────── */}
-          <div className="p-5 flex flex-col">
+          <div className="p-5 flex flex-col overflow-hidden">
             <p
               className="text-[9px] font-bold uppercase tracking-widest mb-3"
-              style={{ color: 'rgba(196,181,253,0.30)' }}
+              style={{ color: TEXT_MID }}
             >
               Study Kit Generated
             </p>
@@ -221,8 +241,8 @@ export function HeroPreview() {
                     />
                   ))}
                 </div>
-                <p style={{ fontSize: '0.62rem', color: 'rgba(196,181,253,0.42)' }}>
-                  Analysing content…
+                <p style={{ fontSize: '0.62rem', color: TEXT_MID }}>
+                  {processingLabel}
                 </p>
               </div>
             ) : (
@@ -234,18 +254,18 @@ export function HeroPreview() {
                       key={`${subjectIdx}-${i}`}
                       className="flex items-center justify-between px-3 py-1.5 rounded-lg"
                       style={{
-                        background: 'rgba(124,58,237,0.07)',
-                        border: '1px solid rgba(167,139,250,0.09)',
+                        background: SURFACE,
+                        border: `1px solid ${BORDER_L}`,
                         animationName: 'slideReveal',
                         animationDuration: '0.35s',
                         animationTimingFunction: 'ease-out',
                         animationFillMode: 'both',
                       }}
                     >
-                      <span className="text-[10px]" style={{ color: 'rgba(196,181,253,0.52)' }}>
+                      <span className="text-[10px]" style={{ color: TEXT_BODY }}>
                         {item.icon} {item.label}
                       </span>
-                      <span className="text-[9px] font-bold" style={{ color: '#34D399' }}>
+                      <span className="text-[9px] font-bold" style={{ color: '#059669' }}>
                         ✓ Done
                       </span>
                     </div>

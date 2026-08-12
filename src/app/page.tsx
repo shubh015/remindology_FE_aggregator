@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, HelpCircle, Sparkles, Star, Target, Zap, Scale, MessageSquareQuote, Tag, Mail } from 'lucide-react';
+import { ArrowRight, HelpCircle, Sparkles, BookOpen, Target, Zap, Scale, LayoutGrid, Tag, Mail } from 'lucide-react';
 import { ProductDemo } from '@/components/landing/ProductDemo';
 import { FeatureShowcase } from '@/components/landing/FeatureShowcase';
 import { NewFeatureShowcase } from '@/components/landing/NewFeatureShowcase';
@@ -9,10 +9,11 @@ import { HeroPreview } from '@/components/landing/HeroPreview';
 import { MobileNav } from '@/components/landing/MobileNav';
 import { NavAuthButtons } from '@/components/landing/NavAuthButtons';
 import { WhyRemindology } from '@/components/landing/WhyRemindology';
-import { Testimonials } from '@/components/landing/Testimonials';
 import { Pricing } from '@/components/landing/Pricing';
 import { CurrentAffairsTeaser } from '@/components/landing/CurrentAffairsTeaser';
 import { OCRCopyCheckShowcase } from '@/components/landing/OCRCopyCheckShowcase';
+import { AmbientBlobs } from '@/components/landing/AmbientBlobs';
+import { UPSCPrepGrid } from '@/components/landing/UPSCPrepGrid';
 
 // ── Style shortcuts ───────────────────────────────────────────────
 const BRAND_GRAD = 'linear-gradient(135deg, #7C3AED, #C026D3)';
@@ -20,9 +21,10 @@ const TEXT_GRAD = { background: 'linear-gradient(135deg, #A78BFA, #E879F9)', Web
 const TEXT_GRAD_LT = { background: 'linear-gradient(135deg, #7C3AED, #C026D3)', WebkitBackgroundClip: 'text' as const, WebkitTextFillColor: 'transparent' };
 const MIDNIGHT = '#09091F';
 const SURFACE = '#F5F4FF';
+// Same hue family as BRAND_GRAD, pushed to near-white lightness for the hero.
+const HERO_GRAD_LIGHT = 'linear-gradient(135deg, #FDFCFF 0%, #F5F1FF 55%, #FBF0FA 100%)';
 const TEXT_DARK = '#1A1836';
 const TEXT_MID = '#6B63A0';
-const TEXT_MUTED_D = 'rgba(196,181,253,0.65)';
 const BORDER_D = '1px solid rgba(124,58,237,0.2)';
 
 export default function LandingPage() {
@@ -37,7 +39,19 @@ export default function LandingPage() {
   };
 
   return (
-    <div style={{ fontFamily: 'var(--font-poppins), system-ui, sans-serif', color: TEXT_DARK }}>
+    <div
+      style={{
+        fontFamily: 'var(--font-poppins), system-ui, sans-serif',
+        color: TEXT_DARK,
+        backgroundImage: `
+          linear-gradient(to right, rgba(124, 58, 237, 0.03) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(124, 58, 237, 0.03) 1px, transparent 1px),
+          linear-gradient(180deg, #FDFCFF 0%, #F8F7FC 50%, #FDFCFF 100%)
+        `,
+        backgroundSize: '40px 40px, 40px 40px, 100% 100%',
+        position: 'relative',
+      }}
+    >
 
       {/* ════════════════════════════════════════════════════════
           ANNOUNCEMENT BAR + NAVBAR
@@ -78,7 +92,7 @@ export default function LandingPage() {
             </Link>
 
             <nav className="hidden md:flex items-center gap-7">
-              {[['Features', '#features'], ['Current Affairs', '#current-affairs'], ['Pricing', '#pricing'], ['FAQ', '#faq']].map(([label, href]) => (
+              {[['Features', '#features'], ['Current Affairs', '#current-affairs'], ['General Studies', '/general-studies'], ['Pricing', '#pricing'], ['FAQ', '#faq']].map(([label, href]) => (
                 <a
                   key={label}
                   href={href}
@@ -102,21 +116,16 @@ export default function LandingPage() {
       {/* ════════════════════════════════════════════════════════
           HERO  ·  split layout: preview left | copy right
       ════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden" style={{ background: MIDNIGHT }}>
+      <section className="relative overflow-hidden" style={{ background: 'transparent' }}>
 
-        {/* Dot grid */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(167,139,250,0.13) 1px, transparent 1px)', backgroundSize: '36px 36px' }}
-        />
         {/* Radial glows */}
         <div
           className="absolute pointer-events-none"
-          style={{ top: '-15%', right: '-6%', width: 580, height: 580, borderRadius: '50%', background: 'radial-gradient(circle, rgba(124,58,237,0.26) 0%, transparent 68%)' }}
+          style={{ top: '-15%', right: '-6%', width: 580, height: 580, borderRadius: '50%', background: 'radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 68%)' }}
         />
         <div
           className="absolute pointer-events-none"
-          style={{ bottom: '0', left: '-8%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(192,38,211,0.15) 0%, transparent 68%)' }}
+          style={{ bottom: '0', left: '-8%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(192,38,211,0.08) 0%, transparent 68%)' }}
         />
 
         <div className="relative max-w-6xl mx-auto px-6 pt-20 sm:pt-28">
@@ -135,7 +144,7 @@ export default function LandingPage() {
               {/* Live badge */}
               <div
                 className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full self-start"
-                style={{ background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.38)', color: '#C4B5FD' }}
+                style={{ background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.22)', color: '#7C3AED' }}
               >
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: '#34D399' }} />
@@ -147,14 +156,14 @@ export default function LandingPage() {
               {/* Headline */}
               <h1
                 className="font-extrabold tracking-tight"
-                style={{ fontSize: 'clamp(2rem, 4.4vw, 3rem)', lineHeight: 1.13, color: '#F0EEFF' }}
+                style={{ fontSize: 'clamp(2rem, 4.4vw, 3rem)', lineHeight: 1.13, color: TEXT_DARK }}
               >
-                <span style={TEXT_GRAD}>Your Personal<br />
+                <span style={TEXT_GRAD_LT}>Your Personal<br />
                   Learning Intelligence.<br /></span>
               </h1>
 
               {/* Subtext */}
-              <p style={{ color: 'rgba(240,238,255,0.62)', fontSize: '0.97rem', lineHeight: 1.78, maxWidth: 420 }}>
+              <p style={{ color: TEXT_MID, fontSize: '0.97rem', lineHeight: 1.78, maxWidth: 420 }}>
                 Upload any chapter — get instant summaries, revision notes, MCQs &amp; answer evaluation.
                 Coaching-level prep, without the fees.
               </p>
@@ -164,64 +173,33 @@ export default function LandingPage() {
                 <Link
                   href="/signup"
                   className="inline-flex items-center gap-2 text-white font-bold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity"
-                  style={{ background: BRAND_GRAD, boxShadow: '0 6px 24px rgba(124,58,237,0.4)', fontSize: '0.95rem' }}
+                  style={{ background: BRAND_GRAD, boxShadow: '0 6px 24px rgba(124,58,237,0.25)', fontSize: '0.95rem' }}
                 >
                   Get Started Free
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <a
                   href="#features"
-                  className="inline-flex items-center gap-1 font-semibold transition-colors hover:text-white"
-                  style={{ color: 'rgba(196,181,253,0.68)', fontSize: '0.9rem' }}
+                  className="inline-flex items-center gap-1 font-semibold transition-colors hover:opacity-70"
+                  style={{ color: TEXT_MID, fontSize: '0.9rem' }}
                 >
                   See how it works ↓
                 </a>
               </div>
 
-              {/* Proof row: avatars + stars + divider + quick stats */}
-              <div className="flex items-center gap-5 flex-wrap pt-1">
-                <div className="flex items-center gap-3">
-                  <div className="flex -space-x-2.5">
-                    {[
-                      { i: 'AR', c: '#7C3AED' },
-                      { i: 'KM', c: '#0891B2' },
-                      { i: 'PS', c: '#059669' },
-                      { i: 'RV', c: '#D97706' },
-                    ].map(a => (
-                      <div
-                        key={a.i}
-                        className="h-7 w-7 rounded-full flex items-center justify-center text-[9px] font-bold text-white"
-                        style={{ background: `linear-gradient(135deg, ${a.c}, ${a.c}CC)`, border: '2px solid #09091F' }}
-                      >
-                        {a.i}
-                      </div>
-                    ))}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-0.5 mb-0.5">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-3 w-3" style={{ color: '#F59E0B', fill: '#F59E0B' }} />
-                      ))}
-                    </div>
-                    <p className="text-[11px]" style={{ color: 'rgba(196,181,253,0.55)' }}>Loved by 500+ aspirants</p>
-                  </div>
+              {/* Quick stats — real, verifiable numbers only */}
+              <div className="flex gap-6 pt-1">
+                <div>
+                  <p className="text-lg font-extrabold leading-none" style={{ color: TEXT_DARK }}>14</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: TEXT_MID }}>AI study tools</p>
                 </div>
-
-                <div className="h-8 w-px hidden sm:block" style={{ background: 'rgba(124,58,237,0.22)' }} />
-
-                <div className="flex gap-5">
-                  <div>
-                    <p className="text-base font-extrabold leading-none text-white">14</p>
-                    <p className="text-[10px] mt-0.5" style={{ color: 'rgba(196,181,253,0.5)' }}>AI tools</p>
-                  </div>
-                  <div>
-                    <p className="text-base font-extrabold leading-none text-white">5+</p>
-                    <p className="text-[10px] mt-0.5" style={{ color: 'rgba(196,181,253,0.5)' }}>hrs/week saved</p>
-                  </div>
-                  <div>
-                    <p className="text-base font-extrabold leading-none" style={TEXT_GRAD}>Free</p>
-                    <p className="text-[10px] mt-0.5" style={{ color: 'rgba(196,181,253,0.5)' }}>to get started</p>
-                  </div>
+                <div>
+                  <p className="text-lg font-extrabold leading-none" style={{ color: TEXT_DARK }}>4</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: TEXT_MID }}>GS papers covered</p>
+                </div>
+                <div>
+                  <p className="text-lg font-extrabold leading-none" style={TEXT_GRAD_LT}>Free</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: TEXT_MID }}>to get started</p>
                 </div>
               </div>
             </div>
@@ -274,38 +252,18 @@ export default function LandingPage() {
               <p className="text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.65)' }}>one upload does it all</p>
             </div>
 
-            {/* Social proof card */}
+            {/* General Studies + Current Affairs — factual value card */}
             <div
-              className="rounded-2xl px-6 py-5"
-              style={{ background: 'rgba(255,255,255,0.04)', border: BORDER_D }}
+              className="relative overflow-hidden rounded-2xl px-6 py-5 flex flex-col items-center justify-center text-center"
+              style={{ background: 'linear-gradient(135deg, #4338CA, #7C3AED)' }}
             >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="flex -space-x-2.5">
-                  {[
-                    { i: 'AR', c: '#7C3AED' },
-                    { i: 'KM', c: '#0891B2' },
-                    { i: 'PS', c: '#059669' },
-                    { i: 'RV', c: '#D97706' },
-                  ].map(a => (
-                    <div
-                      key={a.i}
-                      className="h-8 w-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
-                      style={{ background: `linear-gradient(135deg, ${a.c}, ${a.c}CC)`, border: '2px solid #09091F' }}
-                    >
-                      {a.i}
-                    </div>
-                  ))}
-                </div>
-                <div className="flex items-center gap-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-3.5 w-3.5" style={{ color: '#F59E0B', fill: '#F59E0B' }} />
-                  ))}
-                </div>
+              <div className="flex items-center gap-2.5 mb-1" style={{ color: 'rgba(255,255,255,0.8)' }}>
+                <BookOpen className="h-4 w-4" />
+                <span className="text-sm font-extrabold text-white">General Studies</span>
+                <BookOpen className="h-4 w-4" />
               </div>
-              <p className="text-sm font-bold" style={{ color: '#F0EEFF' }}>Loved by aspirants across India</p>
-              <p className="text-[11px] mt-0.5" style={{ color: 'rgba(196,181,253,0.55)' }}>
-                Preparing for UPSC, SSC &amp; State PSC
-              </p>
+              <p className="text-sm font-bold text-white">&amp; Current Affairs</p>
+              <p className="text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.65)' }}>free to read, updated daily</p>
             </div>
           </div>
         </div>
@@ -314,8 +272,9 @@ export default function LandingPage() {
       {/* ════════════════════════════════════════════════════════
           PRODUCT DEMO  ·  animated, cycling subjects
       ════════════════════════════════════════════════════════ */}
-      <section className="py-24" style={{ background: SURFACE }}>
-        <div className="max-w-5xl mx-auto px-6">
+      <section className="relative overflow-hidden py-24" style={{ background: 'transparent' }}>
+        <AmbientBlobs palette="sky" />
+        <div className="relative max-w-5xl mx-auto px-6">
           <div className="text-center mb-14">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
@@ -342,10 +301,16 @@ export default function LandingPage() {
       </section>
 
       {/* ════════════════════════════════════════════════════════
+          CURRENT AFFAIRS TEASER  ·  public, no auth needed
+      ════════════════════════════════════════════════════════ */}
+      <CurrentAffairsTeaser />
+
+      {/* ════════════════════════════════════════════════════════
           FEATURE SHOWCASE  ·  interactive dashboard tour
       ════════════════════════════════════════════════════════ */}
-      <section id="features" className="py-24" style={{ background: '#FFFFFF' }}>
-        <div className="max-w-5xl mx-auto px-6">
+      <section id="features" className="relative overflow-hidden py-24" style={{ background: 'transparent' }}>
+        <AmbientBlobs palette="violet" />
+        <div className="relative max-w-5xl mx-auto px-6">
           <div className="text-center mb-14">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
@@ -374,8 +339,9 @@ export default function LandingPage() {
       {/* ════════════════════════════════════════════════════════
           NEW FEATURES  ·  8 new AI-powered capabilities
       ════════════════════════════════════════════════════════ */}
-      <section id="new-features" className="py-24" style={{ background: SURFACE }}>
-        <div className="max-w-5xl mx-auto px-6">
+      <section id="new-features" className="relative overflow-hidden py-24" style={{ background: 'transparent' }}>
+        <AmbientBlobs palette="amber" />
+        <div className="relative max-w-5xl mx-auto px-6">
           <div className="text-center mb-14">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
@@ -415,17 +381,13 @@ export default function LandingPage() {
       {/* ════════════════════════════════════════════════════════
           OCR COPY CHECK  ·  answer writing feature spotlight
       ════════════════════════════════════════════════════════ */}
-      <section className="relative py-24 overflow-hidden" style={{ background: MIDNIGHT }}>
-        {/* Dot grid */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(167,139,250,0.07) 1px, transparent 1px)', backgroundSize: '36px 36px' }}
-        />
+      <section className="relative py-24 overflow-hidden" style={{ background: 'transparent' }}>
+        <AmbientBlobs palette="emerald" />
         <div className="relative max-w-5xl mx-auto px-6">
           <div className="text-center mb-12">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
-              style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.25)', color: '#34D399' }}
+              style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.25)', color: '#059669' }}
             >
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: '#34D399' }} />
@@ -435,12 +397,12 @@ export default function LandingPage() {
             </div>
             <h2
               className="font-bold tracking-tight mb-3"
-              style={{ fontSize: '2.2rem', color: '#F0EEFF', lineHeight: 1.15 }}
+              style={{ fontSize: '2.2rem', color: TEXT_DARK, lineHeight: 1.15 }}
             >
               Stop copying.{' '}
-              <span style={TEXT_GRAD}>Start thinking.</span>
+              <span style={TEXT_GRAD_LT}>Start thinking.</span>
             </h2>
-            <p style={{ color: TEXT_MUTED_D, maxWidth: 440, margin: '0 auto', fontSize: '0.9rem', lineHeight: 1.75 }}>
+            <p style={{ color: TEXT_MID, maxWidth: 440, margin: '0 auto', fontSize: '0.9rem', lineHeight: 1.75 }}>
               The UPSC examiner rewards original analysis — not textbook regurgitation.
               Our OCR copy check catches it before they do.
             </p>
@@ -453,33 +415,26 @@ export default function LandingPage() {
       {/* ════════════════════════════════════════════════════════
           HOW IT WORKS  ·  back to midnight
       ════════════════════════════════════════════════════════ */}
-      <section id="how-it-works" className="relative py-24 overflow-hidden" style={{ background: MIDNIGHT }}>
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(167,139,250,0.08) 1px, transparent 1px)', backgroundSize: '36px 36px' }}
-        />
-        <div
-          className="absolute pointer-events-none"
-          style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 700, height: 400, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(124,58,237,0.12) 0%, transparent 70%)' }}
-        />
+      <section id="how-it-works" className="relative py-24 overflow-hidden" style={{ background: 'transparent' }}>
+        <AmbientBlobs palette="rose" />
 
         <div className="relative max-w-5xl mx-auto px-6">
           <div className="text-center mb-16">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
-              style={{ background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.35)', color: '#C4B5FD' }}
+              style={{ background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.15)', color: '#7C3AED' }}
             >
               <Target className="h-3.5 w-3.5" />
               How It Works
             </div>
             <h2
               className="font-bold tracking-tight mb-3"
-              style={{ fontSize: '2.2rem', color: '#F0EEFF', lineHeight: 1.15 }}
+              style={{ fontSize: '2.2rem', color: TEXT_DARK, lineHeight: 1.15 }}
             >
               Three steps.{' '}
-              <span style={TEXT_GRAD}>Zero friction.</span>
+              <span style={TEXT_GRAD_LT}>Zero friction.</span>
             </h2>
-            <p style={{ color: TEXT_MUTED_D, maxWidth: 380, margin: '0 auto', fontSize: '0.9rem', lineHeight: 1.75 }}>
+            <p style={{ color: TEXT_MID, maxWidth: 380, margin: '0 auto', fontSize: '0.9rem', lineHeight: 1.75 }}>
               No onboarding checklist. No configuration. You study — Remindology handles the rest.
             </p>
           </div>
@@ -493,18 +448,18 @@ export default function LandingPage() {
               <div
                 key={step.n}
                 className="p-7 rounded-2xl"
-                style={{ background: 'rgba(124,58,237,0.07)', border: BORDER_D }}
+                style={{ background: '#FFFFFF', border: '1px solid rgba(124,58,237,0.12)', boxShadow: '0 8px 28px rgba(124,58,237,0.06)' }}
               >
                 <span
                   className="block font-extrabold mb-4"
-                  style={{ fontSize: '3rem', lineHeight: 1, ...TEXT_GRAD }}
+                  style={{ fontSize: '3rem', lineHeight: 1, ...TEXT_GRAD_LT }}
                 >
                   {step.n}
                 </span>
-                <h3 className="font-semibold mb-2" style={{ color: '#F0EEFF', fontSize: '1rem' }}>
+                <h3 className="font-semibold mb-2" style={{ color: TEXT_DARK, fontSize: '1rem' }}>
                   {step.title}
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: TEXT_MUTED_D }}>
+                <p className="text-sm leading-relaxed" style={{ color: TEXT_MID }}>
                   {step.desc}
                 </p>
               </div>
@@ -516,8 +471,9 @@ export default function LandingPage() {
       {/* ════════════════════════════════════════════════════════
           WHY REMINDOLOGY  ·  comparison table
       ════════════════════════════════════════════════════════ */}
-      <section id="why" className="py-24" style={{ background: '#FFFFFF' }}>
-        <div className="max-w-4xl mx-auto px-6">
+      <section id="why" className="relative overflow-hidden py-24" style={{ background: 'transparent' }}>
+        <AmbientBlobs palette="sky" />
+        <div className="relative max-w-4xl mx-auto px-6">
           <div className="text-center mb-14">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
@@ -545,7 +501,7 @@ export default function LandingPage() {
       {/* ════════════════════════════════════════════════════════
           STATS STRIP  ·  outcome-focused metrics
       ════════════════════════════════════════════════════════ */}
-      <section style={{ background: SURFACE, borderTop: '1px solid rgba(124,58,237,0.1)', borderBottom: '1px solid rgba(124,58,237,0.1)' }}>
+      <section style={{ background: 'rgba(124,58,237,0.02)', borderTop: '1px solid rgba(124,58,237,0.1)', borderBottom: '1px solid rgba(124,58,237,0.1)' }}>
         <div className="max-w-5xl mx-auto px-6 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
@@ -564,45 +520,41 @@ export default function LandingPage() {
       </section>
 
       {/* ════════════════════════════════════════════════════════
-          CURRENT AFFAIRS TEASER  ·  public, no auth needed
+          FEATURE HIGHLIGHTS
       ════════════════════════════════════════════════════════ */}
-      <CurrentAffairsTeaser />
-
-      {/* ════════════════════════════════════════════════════════
-          TESTIMONIALS  ·  dual marquee
-      ════════════════════════════════════════════════════════ */}
-      <section id="testimonials" className="py-24 overflow-hidden" style={{ background: '#FFFFFF' }}>
-        <div className="max-w-5xl mx-auto px-6">
+      <section id="testimonials" className="relative overflow-hidden py-24" style={{ background: 'transparent' }}>
+        <AmbientBlobs palette="amber" />
+        <div className="relative max-w-5xl mx-auto px-6">
           <div className="text-center mb-14">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
               style={{ background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.15)', color: '#7C3AED' }}
             >
-              <MessageSquareQuote className="h-3.5 w-3.5" />
-              Loved by Aspirants
+              <LayoutGrid className="h-3.5 w-3.5" />
+              UPSC Prep Hub
             </div>
             <h2
               className="font-bold tracking-tight mb-3"
               style={{ fontSize: '2.2rem', color: TEXT_DARK, lineHeight: 1.15 }}
             >
-              Students are{' '}
-              <span style={TEXT_GRAD_LT}>studying smarter.</span>
+              Everything you need for your{' '}
+              <span style={TEXT_GRAD_LT}>UPSC Preparation.</span>
             </h2>
             <p style={{ color: TEXT_MID, maxWidth: 420, margin: '0 auto', lineHeight: 1.75, fontSize: '0.9rem' }}>
-              Real aspirants preparing for UPSC, SSC &amp; State PSCs — here&apos;s what changed for them.
+              A curated collection of resources, study kits, and tools designed to optimize your syllabus coverage.
             </p>
           </div>
         </div>
 
-        {/* Full-bleed marquee */}
-        <Testimonials />
+        <UPSCPrepGrid />
       </section>
 
       {/* ════════════════════════════════════════════════════════
           PRICING
       ════════════════════════════════════════════════════════ */}
-      <section id="pricing" className="py-24" style={{ background: SURFACE }}>
-        <div className="max-w-5xl mx-auto px-6">
+      <section id="pricing" className="relative overflow-hidden py-24" style={{ background: 'transparent' }}>
+        <AmbientBlobs palette="violet" />
+        <div className="relative max-w-5xl mx-auto px-6">
           <div className="text-center mb-14">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
@@ -634,13 +586,14 @@ export default function LandingPage() {
       {/* ════════════════════════════════════════════════════════
           FAQ  ·  structured data for Google rich snippets
       ════════════════════════════════════════════════════════ */}
-      <section id="faq" className="py-24" style={{ background: '#FFFFFF' }}>
+      <section id="faq" className="relative overflow-hidden py-24" style={{ background: 'transparent' }}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
+        <AmbientBlobs palette="emerald" />
 
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="relative max-w-5xl mx-auto px-6">
           <div className="text-center mb-14">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
@@ -668,8 +621,9 @@ export default function LandingPage() {
       {/* ════════════════════════════════════════════════════════
           CTA BANNER
       ════════════════════════════════════════════════════════ */}
-      <section className="py-20" style={{ background: SURFACE }}>
-        <div className="max-w-4xl mx-auto px-6">
+      <section className="relative overflow-hidden py-20" style={{ background: 'transparent' }}>
+        <AmbientBlobs palette="rose" />
+        <div className="relative max-w-4xl mx-auto px-6">
           <div
             className="relative overflow-hidden rounded-3xl p-8 sm:p-12 text-center"
             style={{ background: 'linear-gradient(135deg, #5B21B6 0%, #7C3AED 40%, #C026D3 100%)' }}

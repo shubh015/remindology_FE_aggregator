@@ -126,16 +126,6 @@ p, li, td, th {
   animation-iteration-count: infinite;
 }
 
-/* ── Landing page: exam-types marquee ─────────────────── */
-.marquee-track {
-  animation: marqueeScroll 40s linear infinite;
-}
-
-@keyframes marqueeScroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
 /* ── Product demo: generating dots ───────────────────── */
 @keyframes loadingBounce {
   0%, 100% { transform: translateY(0);    opacity: 0.5; }
@@ -320,8 +310,7 @@ p, li, td, th {
 
 /* ── Respect reduced motion ───────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .float-sym,
-  .marquee-track {
+  .float-sym {
     animation-play-state: paused !important;
   }
 

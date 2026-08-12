@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 import { currentAffairsService } from '@/services/current-affairs.service';
 import type { RelatedPYQ } from '@/services/current-affairs.service';
 import { QuestionText } from '@/components/mcq/QuestionText';
@@ -499,7 +500,7 @@ export default function ArticleDetailPage() {
                   <div
                     className="rich-editor-content"
                     style={{ fontSize: '0.9625rem', lineHeight: 1.9, color: TEXT_BODY, fontWeight: 450 }}
-                    dangerouslySetInnerHTML={{ __html: whyInNews }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(whyInNews) }}
                   />
                 ) : (
                   <p style={{ fontSize: '0.9625rem', lineHeight: 1.9, color: TEXT_BODY, fontWeight: 450 }}>
@@ -599,7 +600,7 @@ export default function ArticleDetailPage() {
                             <span
                               className="rich-editor-content"
                               style={{ fontSize: '0.9375rem', lineHeight: 1.85, color: TEXT_BODY }}
-                              dangerouslySetInnerHTML={{ __html: fact }}
+                              dangerouslySetInnerHTML={{ __html: sanitizeHtml(fact) }}
                             />
                           ) : (
                             <span style={{ fontSize: '0.9375rem', lineHeight: 1.85, color: TEXT_BODY }}>
@@ -632,7 +633,7 @@ export default function ArticleDetailPage() {
                       <div
                         className="rich-editor-content"
                         style={{ fontSize: '0.9375rem', lineHeight: 1.88, color: TEXT_BODY }}
-                        dangerouslySetInnerHTML={{ __html: ed.historicalBackground }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(ed.historicalBackground) }}
                       />
                     ) : (
                       <p style={{ fontSize: '0.9375rem', lineHeight: 1.88, color: TEXT_BODY }}>

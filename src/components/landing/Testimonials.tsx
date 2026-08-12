@@ -1,109 +1,66 @@
-'use client';
+import {
+  Target, BookOpenCheck, ScrollText, Radar,
+  CalendarRange, Landmark, Lightbulb, BookmarkCheck,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
-import { useState } from 'react';
-import { Star, Quote } from 'lucide-react';
-
-// ── Aspirant testimonials ─────────────────────────────────────────
-interface Testimonial {
-  name: string;
-  exam: string;
-  quote: string;
+// ── Real, already-shipped features — no names, quotes or ratings ──
+interface Feature {
+  icon: LucideIcon;
+  title: string;
+  description: string;
   accent: string;
 }
 
-const TESTIMONIALS: Testimonial[] = [
-  { name: 'Ananya R.', exam: 'UPSC CSE Aspirant', accent: '#7C3AED',
-    quote: 'I paste a whole editorial and get notes + MCQs before my chai is done. It cut my note-making time in half.' },
-  { name: 'Kunal M.', exam: 'SSC CGL 2025', accent: '#0891B2',
-    quote: 'The daily challenge got me to study every single morning. 40-day streak and my prelims accuracy is way up.' },
-  { name: 'Priya S.', exam: 'State PSC (MPPSC)', accent: '#059669',
-    quote: 'The mains scorecard is brutal in the best way. It shows exactly where my answers lose marks — intro, examples, conclusion.' },
-  { name: 'Rohit V.', exam: 'UPSC CSE Aspirant', accent: '#D97706',
-    quote: 'Weak-zone tracker was an eye-opener. I thought I was strong in Polity — turns out Governance was killing my score.' },
-  { name: 'Sneha K.', exam: 'SSC CHSL', accent: '#C026D3',
-    quote: 'Current affairs already tagged to the syllabus saves me an hour daily. No more juggling three newspapers.' },
-  { name: 'Aditya P.', exam: 'State PSC (BPSC)', accent: '#818CF8',
-    quote: 'The mnemonics are genuinely clever. Facts I kept forgetting now actually stick before the exam.' },
-  { name: 'Meera J.', exam: 'UPSC CSE Aspirant', accent: '#F43F5E',
-    quote: 'The 30-day plan gave my prep a structure I never had. I open the app and I just know what to do today.' },
-  { name: 'Vikram T.', exam: 'SSC CGL 2025', accent: '#7C3AED',
-    quote: 'Detective mode explains WHY each wrong option is wrong. That single feature fixed my silly mistakes.' },
+const FEATURES: Feature[] = [
+  { icon: Target, title: 'Daily Challenge', accent: '#7C3AED',
+    description: 'A fresh MCQ set every day, scored instantly with streaks to keep you consistent.' },
+  { icon: BookOpenCheck, title: 'Current Affairs', accent: '#0891B2',
+    description: 'Daily news mapped straight to the syllabus, so you skip the newspaper juggling.' },
+  { icon: ScrollText, title: 'Mains Scorecard', accent: '#059669',
+    description: 'AI-graded mains answers, scored on structure, examples and conclusion.' },
+  { icon: Radar, title: 'Weak-Zone Tracker', accent: '#D97706',
+    description: 'Tracks your accuracy topic by topic, so you know exactly where to focus next.' },
+  { icon: CalendarRange, title: '30-Day Plan', accent: '#C026D3',
+    description: 'A structured daily plan for your prep, so you always know what to study today.' },
+  { icon: Landmark, title: 'General Studies', accent: '#818CF8',
+    description: 'Structured GS content across papers, ready to read — no scattered PDFs.' },
+  { icon: Lightbulb, title: 'Mnemonics', accent: '#F43F5E',
+    description: 'Memory aids for facts that are easy to read and hard to forget on exam day.' },
+  { icon: BookmarkCheck, title: 'Revision Trail', accent: '#7C3AED',
+    description: 'Save any note or article for spaced revision before it becomes due again.' },
 ];
 
 const TEXT_DARK = '#1A1836';
 const TEXT_MID  = '#6B63A0';
 
-function initials(name: string) {
-  return name.split(' ').map(w => w[0]).join('').slice(0, 2);
-}
-
-function Card({ t }: { t: Testimonial }) {
+function Card({ f }: { f: Feature }) {
+  const Icon = f.icon;
   return (
     <div
-      className="shrink-0 w-[300px] sm:w-[340px] rounded-2xl p-5 flex flex-col"
+      className="rounded-2xl p-5 flex flex-col transition-transform hover:-translate-y-1"
       style={{ background: '#FFFFFF', border: '1px solid rgba(124,58,237,0.12)', boxShadow: '0 8px 28px rgba(124,58,237,0.06)' }}
     >
-      <div className="flex items-center gap-1 mb-3">
-        {[...Array(5)].map((_, i) => (
-          <Star key={i} className="h-3.5 w-3.5" style={{ color: '#F59E0B', fill: '#F59E0B' }} />
-        ))}
-        <Quote className="h-4 w-4 ml-auto" style={{ color: 'rgba(124,58,237,0.25)' }} />
-      </div>
-      <p className="text-[13px] leading-relaxed flex-1" style={{ color: '#4B4580' }}>
-        “{t.quote}”
-      </p>
-      <div className="flex items-center gap-3 mt-4 pt-4" style={{ borderTop: '1px solid rgba(124,58,237,0.08)' }}>
-        <div
-          className="h-9 w-9 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0"
-          style={{ background: `linear-gradient(135deg, ${t.accent}, ${t.accent}CC)` }}
-        >
-          {initials(t.name)}
-        </div>
-        <div className="min-w-0">
-          <p className="text-[13px] font-bold truncate" style={{ color: TEXT_DARK }}>{t.name}</p>
-          <p className="text-[11px] truncate" style={{ color: TEXT_MID }}>{t.exam}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Row({ items, reverse }: { items: Testimonial[]; reverse?: boolean }) {
-  const [paused, setPaused] = useState(false);
-  // Duplicate so the -50% marquee loop is seamless
-  const doubled = [...items, ...items];
-  return (
-    <div
-      className="overflow-hidden"
-      style={{
-        maskImage: 'linear-gradient(to right, transparent, black 6%, black 94%, transparent)',
-        WebkitMaskImage: 'linear-gradient(to right, transparent, black 6%, black 94%, transparent)',
-      }}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
       <div
-        className="marquee-track flex gap-4 w-max"
-        style={{
-          animationDuration: '48s',
-          animationDirection: reverse ? 'reverse' : 'normal',
-          animationPlayState: paused ? 'paused' : 'running',
-        }}
+        className="h-10 w-10 rounded-xl flex items-center justify-center mb-4"
+        style={{ background: `${f.accent}14` }}
       >
-        {doubled.map((t, i) => (
-          <Card key={i} t={t} />
-        ))}
+        <Icon className="h-5 w-5" style={{ color: f.accent }} />
       </div>
+      <p className="text-[14px] font-bold mb-1.5" style={{ color: TEXT_DARK }}>{f.title}</p>
+      <p className="text-[12.5px] leading-relaxed" style={{ color: TEXT_MID }}>{f.description}</p>
     </div>
   );
 }
 
 export function Testimonials() {
-  const half = Math.ceil(TESTIMONIALS.length / 2);
   return (
-    <div className="space-y-4">
-      <Row items={TESTIMONIALS.slice(0, half)} />
-      <Row items={TESTIMONIALS.slice(half)} reverse />
+    <div className="relative max-w-5xl mx-auto px-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {FEATURES.map((f) => (
+          <Card key={f.title} f={f} />
+        ))}
+      </div>
     </div>
   );
 }
