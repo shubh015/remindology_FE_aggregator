@@ -11,6 +11,7 @@ import {
   Loader2, AlertCircle, CheckCircle2, X, Plus, Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 import { RichEditor } from '@/components/editor/RichEditor';
 
 // ── Constants ─────────────────────────────────────────────────────
@@ -219,7 +220,7 @@ function BulletList({ items, html = false }: { items: string[]; html?: boolean }
         <li key={i} className="flex items-start gap-2 text-sm text-foreground">
           <span className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: '#7C3AED' }} />
           {html
-            ? <span dangerouslySetInnerHTML={{ __html: item }} />
+            ? <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(item) }} />
             : <span>{item}</span>}
         </li>
       ))}
@@ -231,7 +232,10 @@ function BulletList({ items, html = false }: { items: string[]; html?: boolean }
 function extractHtmlFacts(html: string): string[] {
   if (typeof document === 'undefined' || !html) return [];
   const div = document.createElement('div');
-  div.innerHTML = html;
+  // Sanitize before assigning to innerHTML — even on a detached, never-
+  // attached element, browsers still fire things like <img onerror> as
+  // soon as the element is parsed, so this isn't just a rendering concern.
+  div.innerHTML = sanitizeHtml(html);
   const items = div.querySelectorAll('li');
   if (items.length > 0) {
     return Array.from(items).map((li) => {
@@ -854,7 +858,7 @@ export default function DraftEditPage() {
               <PreviewSection title="Summary">
                 <div
                   className="text-sm text-foreground leading-relaxed border-l-2 border-primary/20 pl-3 rich-editor-content"
-                  dangerouslySetInnerHTML={{ __html: form.summary }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(form.summary) }}
                 />
               </PreviewSection>
             )}
@@ -871,7 +875,7 @@ export default function DraftEditPage() {
               <PreviewSection title="Why in News">
                 <div
                   className="text-sm text-foreground leading-relaxed rich-editor-content"
-                  dangerouslySetInnerHTML={{ __html: form.whyInNews }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(form.whyInNews) }}
                 />
               </PreviewSection>
             )}
@@ -881,7 +885,7 @@ export default function DraftEditPage() {
               <PreviewSection title="Historical Background">
                 <div
                   className="text-sm text-foreground leading-relaxed rich-editor-content"
-                  dangerouslySetInnerHTML={{ __html: form.historicalBackground }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(form.historicalBackground) }}
                 />
               </PreviewSection>
             )}

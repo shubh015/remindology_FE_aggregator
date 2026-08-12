@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 import { currentAffairsService } from '@/services/current-affairs.service';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 import { useAuthStore } from '@/store/use-auth-store';
 import type { CurrentAffairsArticle } from '@/types/features';
 import {
@@ -128,9 +129,17 @@ function ArticleSection({ article, index }: { article: CurrentAffairsArticle; in
             >
               Why in News
             </p>
-            <p style={{ fontSize: '0.9rem', lineHeight: 1.85, color: '#374151' }}>
-              {whyInNews}
-            </p>
+            {whyInNews.includes('<') ? (
+              <div
+                className="rich-editor-content"
+                style={{ fontSize: '0.9rem', lineHeight: 1.85, color: '#374151' }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(whyInNews) }}
+              />
+            ) : (
+              <p style={{ fontSize: '0.9rem', lineHeight: 1.85, color: '#374151' }}>
+                {whyInNews}
+              </p>
+            )}
           </div>
         )}
 
@@ -181,9 +190,17 @@ function ArticleSection({ article, index }: { article: CurrentAffairsArticle; in
                     className="rounded-full shrink-0 mt-1.25"
                     style={{ width: 5, height: 5, background: accentColor, opacity: 0.6, flexShrink: 0 }}
                   />
-                  <span style={{ fontSize: '0.875rem', lineHeight: 1.8, color: '#374151' }}>
-                    <RenderFact fact={fact} color={accentColor} />
-                  </span>
+                  {fact.includes('<') ? (
+                    <span
+                      className="rich-editor-content"
+                      style={{ fontSize: '0.875rem', lineHeight: 1.8, color: '#374151' }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(fact) }}
+                    />
+                  ) : (
+                    <span style={{ fontSize: '0.875rem', lineHeight: 1.8, color: '#374151' }}>
+                      <RenderFact fact={fact} color={accentColor} />
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>

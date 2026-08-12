@@ -88,17 +88,35 @@ export function ProductDemo() {
   const [phase, setPhase] = useState<'idle' | 'generating'>('idle');
   const [inputVisible, setInputVisible] = useState(true);
   const [outputVisible, setOutputVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const activeDemoRef = useRef(0);
+  const containerRef  = useRef<HTMLDivElement>(null);
 
-  // Auto-cycle every 7 s
+  // Pause the auto-cycle entirely while off-screen — on mobile, a transition
+  // firing mid-scroll (fade-out/swap/fade-in changing panel height) is the
+  // flicker; halting it outside the viewport removes the cause, not just the
+  // symptom.
   useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Auto-cycle every 7 s — only while visible
+  useEffect(() => {
+    if (!isVisible) return;
     const interval = setInterval(() => {
       const next = (activeDemoRef.current + 1) % DEMOS.length;
       runTransition(next);
     }, 7000);
     return () => clearInterval(interval);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isVisible]);
 
   function runTransition(nextIdx: number) {
     // Fade out both panels
@@ -129,7 +147,7 @@ export function ProductDemo() {
   const demo = DEMOS[activeDemoIdx];
 
   return (
-    <div>
+    <div ref={containerRef}>
       {/* Subject selector */}
       <div className="flex flex-wrap justify-center gap-2 mb-8">
         {DEMOS.map((d, i) => (

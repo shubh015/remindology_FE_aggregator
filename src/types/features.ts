@@ -247,3 +247,102 @@ export interface SavedNote {
   nextDueAt: string;
   isDue: boolean;
 }
+
+// ── General Studies ───────────────────────────────────────────────
+
+export interface GSSubject {
+  id: string;
+  slug: string;
+  name: string;
+  gsPaperTag: string;
+  displayOrder: number;
+}
+
+export interface GSCategory {
+  id: string;
+  subjectId: string;
+  slug: string;
+  name: string;
+  displayOrder: number;
+}
+
+export interface GSSection {
+  heading: string;
+  content: string;
+}
+
+export interface GSFaq {
+  question: string;
+  answer: string;
+}
+
+export interface GSArticle {
+  id: string;
+  subjectId: string;
+  categoryId: string | null;
+  slug: string;
+  title: string;
+  rawContent: string;
+  status: 'draft' | 'published';
+  summary: string;
+  keyPoints: string[];
+  sections: GSSection[];
+  mainsAngles: string[];
+  faqs: GSFaq[];
+  gsPaperTags: string[];
+  topicTags: string[];
+  readTimeMins: number;
+  publishedAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GSCreateArticleInput {
+  subjectSlug: string;
+  categorySlug?: string;
+  title: string;
+  rawContent: string;
+}
+
+export interface GSUpdateArticleInput {
+  title?: string;
+  rawContent?: string;
+}
+
+export type PlaceCategory =
+  | 'border-dispute' | 'defence' | 'disaster' | 'summit-visit'
+  | 'environment-wildlife' | 'heritage-culture' | 'economy-infra' | 'other';
+
+export interface PlaceInNews {
+  id: string;
+  name: string;
+  context: string;
+  category: PlaceCategory;
+  newsDate: string;              // YYYY-MM-DD
+  lat: number | null;
+  lng: number | null;
+  currentAffairId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PlaceInNewsCreateInput {
+  name: string;
+  context: string;
+  category: PlaceCategory;
+  newsDate: string;
+}
+
+export interface PlaceInNewsUpdateInput {
+  context?: string;
+  category?: PlaceCategory;
+  lat?: number;
+  lng?: number;
+}
+
+// The /map endpoint filters out unresolved places server-side, so lat/lng
+// are guaranteed here — the map component never has to handle a null pin.
+export interface PlaceInNewsMapPoint extends Omit<PlaceInNews, 'lat' | 'lng'> {
+  lat: number;
+  lng: number;
+}
