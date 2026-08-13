@@ -11,7 +11,7 @@ import {
 import { useAuthStore } from '@/store/use-auth-store';
 import {
   Newspaper, Search, X, AlertCircle,
-  CalendarDays, ArrowRight, BookOpen, Zap, Layers, ChevronDown, Loader2,
+  CalendarDays, ArrowRight, BookOpen, Zap, Layers, ChevronDown, Loader2, MapPin,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { CurrentAffairsArticle } from '@/types/features';
@@ -509,6 +509,17 @@ export default function CurrentAffairsPublicPage() {
                 </div>
               ))}
             </div>
+
+            {/* Places in News CTA */}
+            <Link
+              href="/current-affairs/places-in-news"
+              className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-xl mt-6 transition-colors hover:bg-white/5"
+              style={{ border: '1px solid rgba(124,58,237,0.35)', color: '#C4B5FD' }}
+            >
+              <MapPin className="h-3.5 w-3.5" />
+              Explore Places in the News on a map
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
         </div>
       </section>

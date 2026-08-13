@@ -5,16 +5,30 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import {
   MapPin, List, Map as MapIcon, ChevronDown, ArrowLeft, ArrowRight,
-  AlertCircle, Loader2, MapPinOff,
+  AlertCircle, Loader2, MapPinOff, Mountain,
 } from 'lucide-react';
 import { DatePicker } from '@/components/ui/date-picker';
 import { toISO } from '@/components/ui/calendar';
 import { usePlacesInNewsList, usePlacesInNewsMap } from '@/features/places-in-news/hooks/use-places-in-news';
+import { usePhysicalFeatures } from '@/features/places-in-news/hooks/use-physical-features';
 import { CATEGORY_CONFIG } from '@/features/places-in-news/category-config';
-import type { PlaceInNews } from '@/types/features';
+import { PHYSICAL_FEATURE_CONFIG, PHYSICAL_FEATURE_TYPES } from '@/features/places-in-news/physical-feature-config';
+import type { PlaceInNews, PhysicalFeatureType } from '@/types/features';
 
 const PlacesMap = dynamic(
   () => import('@/features/places-in-news/components/PlacesMap').then((m) => m.PlacesMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    ),
+  },
+);
+
+const PhysicalMap = dynamic(
+  () => import('@/features/places-in-news/components/PhysicalMap').then((m) => m.PhysicalMap),
   {
     ssr: false,
     loading: () => (
@@ -32,7 +46,7 @@ const TEXT_GRAD = {
   WebkitTextFillColor: 'transparent',
 };
 
-type ViewMode = 'map' | 'list';
+type ViewMode = 'map' | 'list' | 'physical';
 
 function daysAgoISO(n: number): string {
   const d = new Date();
@@ -148,6 +162,16 @@ export default function PlacesInNewsPage() {
 
   const { data: mapPoints, isLoading: mapLoading, isError: mapError } = usePlacesInNewsMap(from, to);
   const { data: places, isLoading: listLoading, isError: listError } = usePlacesInNewsList(from, to);
+  const { data: physicalFeatures, isLoading: physicalLoading, isError: physicalError } = usePhysicalFeatures();
+
+  const [visibleTypes, setVisibleTypes] = useState<Set<PhysicalFeatureType>>(new Set(PHYSICAL_FEATURE_TYPES));
+  const toggleType = (type: PhysicalFeatureType) => {
+    setVisibleTypes((prev) => {
+      const next = new Set(prev);
+      if (next.has(type)) next.delete(type); else next.add(type);
+      return next;
+    });
+  };
 
   const groups = useMemo(() => groupByDate(places ?? []), [places]);
 
@@ -178,24 +202,47 @@ export default function PlacesInNewsPage() {
           </div>
 
           <div className="max-w-2xl">
-            <div
-              className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-5"
-              style={{ background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.35)', color: '#C4B5FD' }}
-            >
-              <MapPin className="h-3.5 w-3.5" />
-              Places in the News
-            </div>
-
-            <h1
-              className="font-extrabold tracking-tight mb-3"
-              style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', lineHeight: 1.1, color: '#F0EEFF' }}
-            >
-              Every place that made <span style={TEXT_GRAD}>the news.</span>
-            </h1>
-            <p style={{ color: 'rgba(196,181,253,0.65)', fontSize: '0.95rem', lineHeight: 1.8, maxWidth: 520 }}>
-              Border disputes, summits, disasters and more — mapped by location and
-              grouped by day, so geography stays part of your current affairs prep.
-            </p>
+            {view === 'physical' ? (
+              <>
+                <div
+                  className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-5"
+                  style={{ background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.35)', color: '#C4B5FD' }}
+                >
+                  <Mountain className="h-3.5 w-3.5" />
+                  UPSC Through Map
+                </div>
+                <h1
+                  className="font-extrabold tracking-tight mb-3"
+                  style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', lineHeight: 1.1, color: '#F0EEFF' }}
+                >
+                  Straits, ranges, rivers &amp; plates <span style={TEXT_GRAD}>— one atlas.</span>
+                </h1>
+                <p style={{ color: 'rgba(196,181,253,0.65)', fontSize: '0.95rem', lineHeight: 1.8, maxWidth: 520 }}>
+                  Every major strait, mountain range, river and tectonic plate in the world,
+                  toggle-able by layer — physical geography, the way GS1 actually needs it.
+                </p>
+              </>
+            ) : (
+              <>
+                <div
+                  className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-5"
+                  style={{ background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.35)', color: '#C4B5FD' }}
+                >
+                  <MapPin className="h-3.5 w-3.5" />
+                  Places in the News
+                </div>
+                <h1
+                  className="font-extrabold tracking-tight mb-3"
+                  style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', lineHeight: 1.1, color: '#F0EEFF' }}
+                >
+                  Every place that made <span style={TEXT_GRAD}>the news.</span>
+                </h1>
+                <p style={{ color: 'rgba(196,181,253,0.65)', fontSize: '0.95rem', lineHeight: 1.8, maxWidth: 520 }}>
+                  Border disputes, summits, disasters and more — mapped by location and
+                  grouped by day, so geography stays part of your current affairs prep.
+                </p>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -227,17 +274,30 @@ export default function PlacesInNewsPage() {
                 <List className="h-3.5 w-3.5" />
                 Day-wise
               </button>
+              <button
+                onClick={() => setView('physical')}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                style={view === 'physical'
+                  ? { background: '#7C3AED', color: '#FFFFFF' }
+                  : { background: 'transparent', color: '#6B63A0' }}
+              >
+                <Mountain className="h-3.5 w-3.5" />
+                UPSC Through Map
+              </button>
             </div>
 
-            <div className="flex items-center gap-2">
-              <div style={{ width: 160 }}>
-                <DatePicker value={from} onChange={setFrom} max={to} placeholder="From" />
+            {/* Date range only applies to news-driven views — the physical map is static reference geography */}
+            {view !== 'physical' && (
+              <div className="flex items-center gap-2">
+                <div style={{ width: 160 }}>
+                  <DatePicker value={from} onChange={setFrom} max={to} placeholder="From" />
+                </div>
+                <span className="text-xs text-muted-foreground">to</span>
+                <div style={{ width: 160 }}>
+                  <DatePicker value={to} onChange={setTo} min={from} max={toISO(new Date())} placeholder="To" />
+                </div>
               </div>
-              <span className="text-xs text-muted-foreground">to</span>
-              <div style={{ width: 160 }}>
-                <DatePicker value={to} onChange={setTo} min={from} max={toISO(new Date())} placeholder="To" />
-              </div>
-            </div>
+            )}
           </div>
 
           {/* ── Map view ── */}
@@ -302,6 +362,59 @@ export default function PlacesInNewsPage() {
                   <DayAccordionItem key={group.dateKey} group={group} defaultOpen={i === 0} />
                 ))
               )}
+            </div>
+          )}
+
+          {/* ── UPSC Through Map ── */}
+          {view === 'physical' && (
+            <div>
+              {physicalError ? (
+                <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-600">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  Could not load the physical map. Please try again later.
+                </div>
+              ) : (
+                <div className="rounded-2xl overflow-hidden" style={{ height: 560, border: '1px solid rgba(124,58,237,0.12)' }}>
+                  {physicalLoading ? (
+                    <div className="flex items-center justify-center h-full">
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : (
+                    <PhysicalMap features={physicalFeatures ?? []} visibleTypes={visibleTypes} />
+                  )}
+                </div>
+              )}
+
+              {/* Layer toggles */}
+              <div className="flex flex-wrap items-center gap-2 mt-5">
+                {PHYSICAL_FEATURE_TYPES.map((type) => {
+                  const cfg = PHYSICAL_FEATURE_CONFIG[type];
+                  const active = visibleTypes.has(type);
+                  return (
+                    <button
+                      key={type}
+                      onClick={() => toggleType(type)}
+                      className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full border transition-all cursor-pointer"
+                      style={active
+                        ? { background: `${cfg.color}14`, color: cfg.color, border: `1px solid ${cfg.color}55` }
+                        : { background: 'transparent', color: '#9CA3AF', border: '1px solid #E5E7EB' }}
+                    >
+                      <span
+                        className="h-2.5 w-2.5 shrink-0"
+                        style={{
+                          background: active ? cfg.color : '#D1D5DB',
+                          borderRadius: cfg.kind === 'point' ? '50%' : cfg.kind === 'line' ? 2 : 0,
+                        }}
+                      />
+                      {cfg.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-3">
+                Rivers and mountain ranges are shown as key waypoints (origin, major landmarks, mouth) rather than a precisely traced course.
+                Tectonic plate boundaries are real data, simplified from a standard scientific plate model for lightweight rendering.
+              </p>
             </div>
           )}
         </div>
