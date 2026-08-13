@@ -351,3 +351,29 @@ export interface PlaceInNewsMapPoint extends Omit<PlaceInNews, 'lat' | 'lng'> {
   lat: number;
   lng: number;
 }
+
+// ── UPSC Through Map ─────────────────────────────────────────
+
+export type PhysicalFeatureType =
+  | 'wildlife-sanctuary' | 'national-park' | 'lake' | 'river' | 'mountain-range'
+  | 'strait' | 'tectonic-plate' | 'mahajanapada';
+
+export interface PhysicalFeaturePathPoint {
+  lat: number;
+  lng: number;
+  label?: string;
+}
+
+export interface PhysicalFeature {
+  id: string;
+  name: string;
+  type: PhysicalFeatureType;
+  state: string | null;
+  description: string | null;
+  // Point features (sanctuary/park/lake/strait) use lat/lng; line features (river/range)
+  // and boundary features (tectonic-plate, a closed ring) use path.
+  lat: number | null;
+  lng: number | null;
+  path: PhysicalFeaturePathPoint[] | null;
+  createdAt: string;
+}
