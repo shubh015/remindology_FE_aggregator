@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAuthStore } from '@/store/use-auth-store';
 import { currentAffairsService } from '@/services/current-affairs.service';
-import type { EnrichedData, PrelimsFact, KeyTerm } from '@/types/features';
+import type { EnrichedData, PrelimsFact, KeyTerm, CAKeyFeature } from '@/types/features';
 import {
   ArrowLeft, Pencil, Eye, Save, Send,
   Loader2, AlertCircle, CheckCircle2, X, Plus, Trash2,
@@ -172,7 +172,7 @@ interface FormState {
   summary: string;
   keyFactsRaw: string;         // textarea: one fact per line
   whyInNews: string;
-  historicalBackground: string;
+  keyFeatures: CAKeyFeature[];
   syllabusDetail: string;
   mainsAnglesRaw: string;      // textarea: one per line
   wayForwardRaw: string;       // textarea: one per line
@@ -191,7 +191,7 @@ function emptyForm(): FormState {
     summary: '',
     keyFactsRaw: '',
     whyInNews: '',
-    historicalBackground: '',
+    keyFeatures: [],
     syllabusDetail: '',
     mainsAnglesRaw: '',
     wayForwardRaw: '',
@@ -293,7 +293,7 @@ export default function DraftEditPage() {
       summary:                     article.summary ?? '',
       keyFactsRaw:                 factsToHtml(article.keyFacts ?? []),
       whyInNews:                   ed?.whyInNews ?? '',
-      historicalBackground:        ed?.historicalBackground ?? '',
+      keyFeatures:                 ed?.keyFeatures ? [...ed.keyFeatures] : [],
       syllabusDetail:              ed?.syllabusDetail ?? '',
       mainsAnglesRaw:              (ed?.mainsAngles ?? []).join('\n'),
       wayForwardRaw:               (ed?.wayForward ?? []).join('\n'),
@@ -308,7 +308,7 @@ export default function DraftEditPage() {
     mutationFn: () => {
       const enrichedData: EnrichedData = {
         whyInNews:                form.whyInNews || undefined,
-        historicalBackground:     form.historicalBackground || undefined,
+        keyFeatures:              form.keyFeatures.filter((f) => f.heading.trim() || f.content.trim()),
         syllabusDetail:           form.syllabusDetail || undefined,
         mainsAngles:              form.mainsAnglesRaw.split('\n').map((s) => s.trim()).filter(Boolean),
         wayForward:               form.wayForwardRaw.split('\n').map((s) => s.trim()).filter(Boolean),
@@ -602,14 +602,54 @@ export default function DraftEditPage() {
                   />
                 </div>
 
-                <div>
-                  <Label>Historical Background</Label>
-                  <RichEditor
-                    value={form.historicalBackground}
-                    onChange={(html) => set('historicalBackground', html)}
-                    placeholder="Historical context and background…"
-                    minHeight="100px"
-                  />
+                <div className="space-y-2">
+                  <Label>
+                    Key Features
+                    <span className="ml-1 font-normal normal-case tracking-normal text-muted-foreground/60">Detailed, structured breakdown of this development</span>
+                  </Label>
+
+                  {form.keyFeatures.map((feature, i) => (
+                    <div key={i} className="rounded-xl border border-border p-3 space-y-2 relative">
+                      <div className="flex items-center gap-2">
+                        <input
+                          value={feature.heading}
+                          onChange={(e) => {
+                            const updated = [...form.keyFeatures];
+                            updated[i] = { ...updated[i], heading: e.target.value };
+                            set('keyFeatures', updated);
+                          }}
+                          placeholder="Heading — e.g. What Changed, Key Provisions…"
+                          className="flex-1 bg-transparent text-sm font-semibold outline-none text-foreground placeholder:text-muted-foreground/50 placeholder:font-normal"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => set('keyFeatures', form.keyFeatures.filter((_, j) => j !== i))}
+                          className="shrink-0 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                      <RichEditor
+                        value={feature.content}
+                        onChange={(html) => {
+                          const updated = [...form.keyFeatures];
+                          updated[i] = { ...updated[i], content: html };
+                          set('keyFeatures', updated);
+                        }}
+                        placeholder="Detailed content for this feature…"
+                        minHeight="80px"
+                      />
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={() => set('keyFeatures', [...form.keyFeatures, { heading: '', content: '' }])}
+                    className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:opacity-80 transition-opacity cursor-pointer"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Add Feature
+                  </button>
                 </div>
 
                 <div>
@@ -880,13 +920,22 @@ export default function DraftEditPage() {
               </PreviewSection>
             )}
 
-            {/* 6. Historical Background */}
-            {form.historicalBackground && form.historicalBackground !== '<p></p>' && (
-              <PreviewSection title="Historical Background">
-                <div
-                  className="text-sm text-foreground leading-relaxed rich-editor-content"
-                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(form.historicalBackground) }}
-                />
+            {/* 6. Key Features */}
+            {form.keyFeatures.filter((f) => f.heading.trim() || f.content.trim()).length > 0 && (
+              <PreviewSection title="Key Features">
+                <div className="space-y-3">
+                  {form.keyFeatures
+                    .filter((f) => f.heading.trim() || f.content.trim())
+                    .map((feature, i) => (
+                      <div key={i}>
+                        <p className="text-sm font-bold text-foreground mb-1">{feature.heading}</p>
+                        <div
+                          className="text-sm text-foreground leading-relaxed rich-editor-content"
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(feature.content) }}
+                        />
+                      </div>
+                    ))}
+                </div>
               </PreviewSection>
             )}
 

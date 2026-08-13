@@ -62,9 +62,14 @@ export interface PracticeQuestion {
   explanation: string;
 }
 
+export interface CAKeyFeature {
+  heading: string;
+  content: string;
+}
+
 export interface EnrichedData {
   whyInNews?: string;
-  historicalBackground?: string;
+  keyFeatures?: CAKeyFeature[];
   prelimsFacts?: PrelimsFact[];
   keyTerms?: KeyTerm[];
   mainsAngles?: string[];

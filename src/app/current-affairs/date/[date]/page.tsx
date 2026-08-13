@@ -268,12 +268,12 @@ function ArticleSection({ article, index }: { article: CurrentAffairsArticle; in
               </div>
               <p className="text-white/65 text-[11px] font-medium pl-5.5">
                 {[
-                  'Historical Background',
+                  (ed?.keyFeatures?.length ?? 0) > 0 && 'Key Features',
                   hasMCQ && 'MCQ Practice',
                   (ed?.keyTerms?.length ?? 0) > 0 && 'Key Terms',
                   (ed?.wayForward?.length ?? 0) > 0 && 'Way Forward',
                 ].filter(Boolean).slice(0, 3).join(' · ')}
-                {(!ed?.historicalBackground && !hasMCQ && !ed?.keyTerms?.length) && 'Key Terms · Mains Angles · Way Forward'}
+                {(!ed?.keyFeatures?.length && !hasMCQ && !ed?.keyTerms?.length) && 'Key Terms · Mains Angles · Way Forward'}
               </p>
             </div>
 
