@@ -2,7 +2,7 @@ import { publicApiClient } from '@/lib/api/public-client';
 import { apiClient } from '@/lib/api/client';
 import type {
   CurrentAffairsArticle, EnrichedData,
-  PrelimsFact, KeyTerm, PracticeQuestion,
+  PrelimsFact, KeyTerm, PracticeQuestion, CAKeyFeature,
 } from '@/types/features';
 
 export interface RelatedPYQ {
@@ -37,8 +37,8 @@ function normalizeEnrichedData(raw: unknown): EnrichedData | undefined {
   if (!raw || typeof raw !== 'object') return undefined;
   const r = raw as Record<string, unknown>;
   return {
-    whyInNews:               (r.whyInNews            as string | undefined) ?? undefined,
-    historicalBackground:    (r.historicalBackground as string | undefined) ?? undefined,
+    whyInNews:               (r.whyInNews as string | undefined) ?? undefined,
+    keyFeatures:             asTypedArray<CAKeyFeature>(r.keyFeatures),
     // Backend has a typo "prelisFacts" — accept both spellings
     prelimsFacts:            asTypedArray<PrelimsFact>(r.prelisFacts ?? r.prelimsFacts),
     keyTerms:                asTypedArray<KeyTerm>(r.keyTerms),

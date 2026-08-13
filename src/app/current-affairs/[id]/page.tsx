@@ -352,7 +352,7 @@ export default function ArticleDetailPage() {
 
   const totalWords = [
     article.summary, ...(article.keyFacts ?? []),
-    article.mainsAngle, ed?.historicalBackground ?? '',
+    article.mainsAngle, ...(ed?.keyFeatures ?? []).map((f) => f.content),
     ...(ed?.mainsAngles ?? []), ...(ed?.wayForward ?? []),
   ].join(' ').split(/\s+/).length;
   const readMins = Math.max(1, Math.ceil(totalWords / 200));
@@ -621,28 +621,28 @@ export default function ArticleDetailPage() {
                 </section>
               )}
 
-              {/* 4 — Historical Background */}
-              {ed?.historicalBackground && (
-                <section className="space-y-3.5">
-                  <SectionHeading color={accentColor}>Historical Background</SectionHeading>
+              {/* 4 — Key Features */}
+              {(ed?.keyFeatures?.length ?? 0) > 0 && ed!.keyFeatures!.map((feature, i) => (
+                <section key={i} className="space-y-3.5">
+                  <SectionHeading color={accentColor}>{feature.heading}</SectionHeading>
                   <div
                     className="rounded-xl px-5 py-4"
                     style={{ background: `${accentColor}06`, border: `1px solid ${accentColor}14` }}
                   >
-                    {ed.historicalBackground.includes('<') ? (
+                    {feature.content.includes('<') ? (
                       <div
                         className="rich-editor-content"
                         style={{ fontSize: '0.9375rem', lineHeight: 1.88, color: TEXT_BODY }}
-                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(ed.historicalBackground) }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(feature.content) }}
                       />
                     ) : (
                       <p style={{ fontSize: '0.9375rem', lineHeight: 1.88, color: TEXT_BODY }}>
-                        {ed.historicalBackground}
+                        {feature.content}
                       </p>
                     )}
                   </div>
                 </section>
-              )}
+              ))}
 
               {/* 5 — Key Terms */}
               {(ed?.keyTerms?.length ?? 0) > 0 && (
