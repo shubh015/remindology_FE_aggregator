@@ -354,9 +354,28 @@ export interface PlaceInNewsMapPoint extends Omit<PlaceInNews, 'lat' | 'lng'> {
 
 // ── UPSC Through Map ─────────────────────────────────────────
 
-export type PhysicalFeatureType =
-  | 'wildlife-sanctuary' | 'national-park' | 'lake' | 'river' | 'mountain-range'
-  | 'strait' | 'tectonic-plate' | 'mahajanapada';
+export interface MapSubject {
+  id: string;
+  slug: string;
+  name: string;
+  icon: string | null;
+  color: string | null;
+  displayOrder: number;
+}
+
+export type MapCategoryKind = 'point' | 'line' | 'polygon';
+export type MapCategoryShape = 'circle' | 'diamond';
+
+export interface MapCategory {
+  id: string;
+  subjectId: string;
+  slug: string;
+  name: string;
+  color: string;
+  shape: MapCategoryShape | null;
+  kind: MapCategoryKind;
+  displayOrder: number;
+}
 
 export interface PhysicalFeaturePathPoint {
   lat: number;
@@ -364,10 +383,11 @@ export interface PhysicalFeaturePathPoint {
   label?: string;
 }
 
+// The category/subject come back as nested objects (not a flat enum) — new subjects and
+// categories are just data, added via the admin API, no frontend code change required.
 export interface PhysicalFeature {
   id: string;
   name: string;
-  type: PhysicalFeatureType;
   state: string | null;
   description: string | null;
   // Point features (sanctuary/park/lake/strait) use lat/lng; line features (river/range)
@@ -375,5 +395,17 @@ export interface PhysicalFeature {
   lat: number | null;
   lng: number | null;
   path: PhysicalFeaturePathPoint[] | null;
+  category: {
+    id: string;
+    slug: string;
+    name: string;
+    color: string;
+    shape: MapCategoryShape | null;
+    kind: MapCategoryKind;
+  };
+  subject: {
+    slug: string;
+    name: string;
+  };
   createdAt: string;
 }

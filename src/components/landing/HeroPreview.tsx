@@ -7,10 +7,10 @@ const SUBJECTS = [
   {
     badge: 'UPSC CSE',
     badgeColor: '#7C3AED',
-    badgeBg:   'rgba(124,58,237,0.1)',
-    title:     "India's G20 Presidency",
-    slug:      'indias-g20-presidency',
-    input:     "India's G20 Presidency focused on inclusive growth, digital public infrastructure, and climate financing. The 'One Earth, One Family, One Future' theme centred the needs of the Global South.",
+    badgeBg: 'rgba(124,58,237,0.1)',
+    title: "India's G20 Presidency",
+    slug: 'indias-g20-presidency',
+    input: "India's G20 Presidency focused on inclusive growth, digital public infrastructure, and climate financing. The 'One Earth, One Family, One Future' theme centred the needs of the Global South.",
     outputs: [
       { icon: '📋', label: 'AI Summary' },
       { icon: '📒', label: '4 Revision Notes' },
@@ -22,10 +22,10 @@ const SUBJECTS = [
   {
     badge: 'SSC CGL',
     badgeColor: '#D97706',
-    badgeBg:   'rgba(217,119,6,0.1)',
-    title:     'Indian Constitution',
-    slug:      'indian-constitution',
-    input:     "The Constitution of India was adopted on 26 November 1949 and came into force on 26 January 1950. Dr. B.R. Ambedkar chaired the Drafting Committee. It is the world's longest written constitution.",
+    badgeBg: 'rgba(217,119,6,0.1)',
+    title: 'Indian Constitution',
+    slug: 'indian-constitution',
+    input: "The Constitution of India was adopted on 26 November 1949 and came into force on 26 January 1950. Dr. B.R. Ambedkar chaired the Drafting Committee. It is the world's longest written constitution.",
     outputs: [
       { icon: '📋', label: 'AI Summary' },
       { icon: '📒', label: '4 Revision Notes' },
@@ -37,19 +37,19 @@ const SUBJECTS = [
 ];
 
 // ── Light-card palette — matches ProductDemo.tsx's mockup colors ──
-const TEXT_MID   = '#9D95C4';
-const TEXT_BODY  = '#4B4580';
-const SURFACE    = '#F5F4FF';
-const BORDER_L   = 'rgba(124,58,237,0.08)';
+const TEXT_MID = '#9D95C4';
+const TEXT_BODY = '#4B4580';
+const SURFACE = '#F5F4FF';
+const BORDER_L = 'rgba(124,58,237,0.08)';
 
 type Phase = 'typing' | 'processing' | 'revealing' | 'complete' | 'exiting';
 
 export function HeroPreview() {
-  const [subjectIdx, setSubjectIdx]     = useState(0);
-  const [phase, setPhase]               = useState<Phase>('typing');
-  const [typedChars, setTypedChars]     = useState(0);
+  const [subjectIdx, setSubjectIdx] = useState(0);
+  const [phase, setPhase] = useState<Phase>('typing');
+  const [typedChars, setTypedChars] = useState(0);
   const [revealedItems, setRevealedItems] = useState(0);
-  const [cardVisible, setCardVisible]   = useState(true);
+  const [cardVisible, setCardVisible] = useState(true);
 
   const subject = SUBJECTS[subjectIdx];
 
@@ -59,7 +59,7 @@ export function HeroPreview() {
     if (typedChars >= subject.input.length) { setPhase('processing'); return; }
     const t = setTimeout(() => setTypedChars(c => c + 1), 22);
     return () => clearTimeout(t);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, typedChars]);
 
   // ── Processing → Revealing ────────────────────────────────────────
@@ -75,7 +75,7 @@ export function HeroPreview() {
     if (revealedItems >= subject.outputs.length) { setPhase('complete'); return; }
     const t = setTimeout(() => setRevealedItems(r => r + 1), 420);
     return () => clearTimeout(t);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, revealedItems]);
 
   // ── Pause then exit ───────────────────────────────────────────────
@@ -99,13 +99,13 @@ export function HeroPreview() {
     return () => clearTimeout(t);
   }, [phase]);
 
-  const displayText    = subject.input.slice(0, typedChars);
-  const showCursor     = phase === 'typing';
+  const displayText = subject.input.slice(0, typedChars);
+  const showCursor = phase === 'typing';
   // Nothing is revealed yet during typing — show the same loading state as
   // "processing" so the right panel is never blank on first paint.
   const showProcessing = phase === 'typing' || phase === 'processing';
   const processingLabel = phase === 'typing' ? 'Waiting for input…' : 'Analysing content…';
-  const showComplete   = phase === 'revealing' || phase === 'complete' || phase === 'exiting';
+  const showComplete = phase === 'revealing' || phase === 'complete' || phase === 'exiting';
 
   return (
     // Perspective wrapper — the tilt lives here so it doesn't fight the
@@ -116,16 +116,17 @@ export function HeroPreview() {
           repaint every frame and is what made the hover feel janky. */}
       <div
         className="absolute inset-2 rounded-2xl opacity-60 transition-opacity duration-1400 ease-in-out group-hover:opacity-100"
-        style={{ boxShadow: '0 32px 80px rgba(124,58,237,0.22)' }}
       />
       <div
-        style={{ opacity: cardVisible ? 1 : 0, transition: 'opacity 0.45s ease', willChange: 'transform' }}
+        style={{ opacity: cardVisible ? 1 : 0, willChange: 'transform' }}
         className={[
           'relative rounded-2xl overflow-hidden bg-white',
-          'transform-[perspective(1400px)_rotateY(-7deg)_rotateX(2.5deg)]',
+          // Flat on mobile (no hover to trigger it anyway) — tilt is a
+          // desktop-only touch, starting at the md breakpoint.
+          'transform-none md:transform-[perspective(1400px)_rotateY(-7deg)_rotateX(2.5deg)]',
           'transition-transform duration-1400 ease-in-out',
           'backface-hidden',
-          'group-hover:transform-[perspective(1400px)_rotateY(0deg)_rotateX(0deg)_scale(1.025)]',
+          'md:group-hover:transform-[perspective(1400px)_rotateY(0deg)_rotateX(0deg)_scale(1.025)]',
         ].join(' ')}
       >
         {/* Browser bar — stays dark regardless of card theme, matching ProductDemo's mockup chrome */}

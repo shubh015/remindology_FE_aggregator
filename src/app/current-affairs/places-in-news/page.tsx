@@ -11,9 +11,9 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { toISO } from '@/components/ui/calendar';
 import { usePlacesInNewsList, usePlacesInNewsMap } from '@/features/places-in-news/hooks/use-places-in-news';
 import { usePhysicalFeatures } from '@/features/places-in-news/hooks/use-physical-features';
+import { useMapSubjects, useMapCategories } from '@/features/places-in-news/hooks/use-map-taxonomy';
 import { CATEGORY_CONFIG } from '@/features/places-in-news/category-config';
-import { PHYSICAL_FEATURE_CONFIG, PHYSICAL_FEATURE_TYPES } from '@/features/places-in-news/physical-feature-config';
-import type { PlaceInNews, PhysicalFeatureType } from '@/types/features';
+import type { PlaceInNews } from '@/types/features';
 
 const PlacesMap = dynamic(
   () => import('@/features/places-in-news/components/PlacesMap').then((m) => m.PlacesMap),
@@ -164,14 +164,30 @@ export default function PlacesInNewsPage() {
   const { data: places, isLoading: listLoading, isError: listError } = usePlacesInNewsList(from, to);
   const { data: physicalFeatures, isLoading: physicalLoading, isError: physicalError } = usePhysicalFeatures();
 
-  const [visibleTypes, setVisibleTypes] = useState<Set<PhysicalFeatureType>>(new Set(PHYSICAL_FEATURE_TYPES));
-  const toggleType = (type: PhysicalFeatureType) => {
-    setVisibleTypes((prev) => {
+  const { data: mapSubjects } = useMapSubjects();
+  const [selectedSubject, setSelectedSubject] = useState('geography');
+  const { data: subjectCategories } = useMapCategories(selectedSubject);
+
+  // Tracks explicitly-hidden categories rather than an explicit "visible" set — so
+  // switching subjects never needs a reset effect: any category not in this set is
+  // visible by default, including ones from a subject picked for the first time.
+  const [hiddenCategorySlugs, setHiddenCategorySlugs] = useState<Set<string>>(new Set());
+  const toggleCategory = (slug: string) => {
+    setHiddenCategorySlugs((prev) => {
       const next = new Set(prev);
-      if (next.has(type)) next.delete(type); else next.add(type);
+      if (next.has(slug)) next.delete(slug); else next.add(slug);
       return next;
     });
   };
+
+  const visibleCategorySlugs = useMemo(
+    () => new Set((subjectCategories ?? []).filter((c) => !hiddenCategorySlugs.has(c.slug)).map((c) => c.slug)),
+    [subjectCategories, hiddenCategorySlugs],
+  );
+  const subjectFeatures = useMemo(
+    () => (physicalFeatures ?? []).filter((f) => f.subject.slug === selectedSubject),
+    [physicalFeatures, selectedSubject],
+  );
 
   const groups = useMemo(() => groupByDate(places ?? []), [places]);
 
@@ -309,7 +325,10 @@ export default function PlacesInNewsPage() {
                   Could not load the map. Please try again later.
                 </div>
               ) : (
-                <div className="rounded-2xl overflow-hidden" style={{ height: 560, border: '1px solid rgba(124,58,237,0.12)' }}>
+                // isolate: Leaflet's internal zoom-control layer uses z-index:1000, which
+                // would otherwise paint over the page's sticky header (z-50) on scroll —
+                // isolation:isolate scopes it to this box only.
+                <div className="relative isolate rounded-2xl overflow-hidden" style={{ height: 560, border: '1px solid rgba(124,58,237,0.12)' }}>
                   {mapLoading ? (
                     <div className="flex items-center justify-center h-full">
                       <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -368,32 +387,55 @@ export default function PlacesInNewsPage() {
           {/* ── UPSC Through Map ── */}
           {view === 'physical' && (
             <div>
+              {/* Subject picker — Geography, History, and whatever gets added later */}
+              <div className="flex flex-wrap items-center gap-2 mb-5">
+                {(mapSubjects ?? []).map((subject) => {
+                  const active = subject.slug === selectedSubject;
+                  return (
+                    <button
+                      key={subject.slug}
+                      onClick={() => setSelectedSubject(subject.slug)}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                      style={active
+                        ? { background: subject.color ?? '#7C3AED', color: '#FFFFFF' }
+                        : { background: 'rgba(124,58,237,0.06)', color: '#6B63A0' }}
+                    >
+                      {subject.icon && <span>{subject.icon}</span>}
+                      {subject.name}
+                    </button>
+                  );
+                })}
+              </div>
+
               {physicalError ? (
                 <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-600">
                   <AlertCircle className="h-4 w-4 shrink-0" />
                   Could not load the physical map. Please try again later.
                 </div>
               ) : (
-                <div className="rounded-2xl overflow-hidden" style={{ height: 560, border: '1px solid rgba(124,58,237,0.12)' }}>
+                // isolate: Leaflet's internal zoom-control layer uses z-index:1000, which
+                // would otherwise paint over the page's sticky header (z-50) on scroll —
+                // isolation:isolate scopes it to this box only.
+                <div className="relative isolate rounded-2xl overflow-hidden" style={{ height: 560, border: '1px solid rgba(124,58,237,0.12)' }}>
                   {physicalLoading ? (
                     <div className="flex items-center justify-center h-full">
                       <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                     </div>
                   ) : (
-                    <PhysicalMap features={physicalFeatures ?? []} visibleTypes={visibleTypes} />
+                    <PhysicalMap features={subjectFeatures} visibleCategorySlugs={visibleCategorySlugs} />
                   )}
                 </div>
               )}
 
-              {/* Layer toggles */}
+              {/* Category toggles — scoped to the selected subject, so this never grows
+                  past a handful of pills no matter how many subjects exist overall */}
               <div className="flex flex-wrap items-center gap-2 mt-5">
-                {PHYSICAL_FEATURE_TYPES.map((type) => {
-                  const cfg = PHYSICAL_FEATURE_CONFIG[type];
-                  const active = visibleTypes.has(type);
+                {(subjectCategories ?? []).map((cfg) => {
+                  const active = !hiddenCategorySlugs.has(cfg.slug);
                   return (
                     <button
-                      key={type}
-                      onClick={() => toggleType(type)}
+                      key={cfg.slug}
+                      onClick={() => toggleCategory(cfg.slug)}
                       className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full border transition-all cursor-pointer"
                       style={active
                         ? { background: `${cfg.color}14`, color: cfg.color, border: `1px solid ${cfg.color}55` }
@@ -406,7 +448,7 @@ export default function PlacesInNewsPage() {
                           borderRadius: cfg.kind === 'point' ? '50%' : cfg.kind === 'line' ? 2 : 0,
                         }}
                       />
-                      {cfg.label}
+                      {cfg.name}
                     </button>
                   );
                 })}

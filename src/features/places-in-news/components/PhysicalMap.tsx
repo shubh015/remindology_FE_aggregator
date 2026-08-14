@@ -4,8 +4,7 @@ import { useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon, CircleMarker, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import type { PhysicalFeature, PhysicalFeatureType } from '@/types/features';
-import { PHYSICAL_FEATURE_CONFIG } from '../physical-feature-config';
+import type { PhysicalFeature } from '@/types/features';
 import { useIsHoverCapable } from '../hooks/use-is-hover-capable';
 
 const WORLD_CENTER: [number, number] = [15, 20];
@@ -30,8 +29,8 @@ function dotIcon(color: string, pulse: boolean): L.DivIcon {
   });
 }
 
-// Mahajanapadas get a diamond, not a circle — visually separates "historical/cultural"
-// markers from the physical-geography ones at a glance.
+// A diamond visually separates "historical/cultural" markers (e.g. Mahajanapadas)
+// from physical-geography ones at a glance.
 function diamondIcon(color: string, pulse: boolean): L.DivIcon {
   return L.divIcon({
     className: '',
@@ -88,14 +87,14 @@ function useHoverEventHandlers(hoverCapable: boolean) {
 }
 
 // The detail card shown on click, shared by every feature kind (point/line/polygon).
-function FeatureCard({ name, typeLabel, color, state, description }: {
-  name: string; typeLabel: string; color: string; state?: string | null; description?: string | null;
+function FeatureCard({ name, categoryLabel, color, state, description }: {
+  name: string; categoryLabel: string; color: string; state?: string | null; description?: string | null;
 }) {
   return (
     <div style={{ minWidth: 200, maxWidth: 260 }}>
       <p style={{ fontWeight: 700, fontSize: 13.5, marginBottom: 2, color: '#1A1836' }}>{name}</p>
       <p style={{ fontSize: 11, fontWeight: 600, color, marginBottom: description ? 5 : 0 }}>
-        {typeLabel}{state ? ` · ${state}` : ''}
+        {categoryLabel}{state ? ` · ${state}` : ''}
       </p>
       {description && <p style={{ fontSize: 12, lineHeight: 1.5, color: '#4B5563' }}>{description}</p>}
     </div>
@@ -103,17 +102,17 @@ function FeatureCard({ name, typeLabel, color, state, description }: {
 }
 
 function PointFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hoverCapable: boolean }) {
-  const cfg = PHYSICAL_FEATURE_CONFIG[feature.type];
+  const { color, shape, name: categoryLabel } = feature.category;
   const icon = useMemo(
-    () => (cfg.shape === 'diamond' ? diamondIcon(cfg.color, !hoverCapable) : dotIcon(cfg.color, !hoverCapable)),
-    [cfg.color, cfg.shape, hoverCapable],
+    () => (shape === 'diamond' ? diamondIcon(color, !hoverCapable) : dotIcon(color, !hoverCapable)),
+    [color, shape, hoverCapable],
   );
   const eventHandlers = useHoverEventHandlers(hoverCapable);
   return (
     <Marker position={[feature.lat!, feature.lng!]} icon={icon} eventHandlers={eventHandlers}>
       <Popup maxWidth={260} autoPan={false}>
         <FeatureCard
-          name={feature.name} typeLabel={cfg.label} color={cfg.color}
+          name={feature.name} categoryLabel={categoryLabel} color={color}
           state={feature.state} description={feature.description}
         />
       </Popup>
@@ -122,7 +121,7 @@ function PointFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hov
 }
 
 function RiverFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hoverCapable: boolean }) {
-  const cfg = PHYSICAL_FEATURE_CONFIG.river;
+  const { color, name: categoryLabel } = feature.category;
   const path = feature.path!;
   const smoothed = useMemo(() => smoothPath(path.map((p) => [p.lat, p.lng] as LatLng)), [path]);
   const eventHandlers = useHoverEventHandlers(hoverCapable);
@@ -133,13 +132,13 @@ function RiverFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hov
         positions={smoothed}
         eventHandlers={eventHandlers}
         pathOptions={{
-          color: cfg.color, weight: 4, opacity: 0.85,
+          color, weight: 4, opacity: 0.85,
           lineCap: 'round', lineJoin: 'round',
           className: 'river-flow-animated',
         }}
       >
         <Popup maxWidth={260} autoPan={false}>
-          <FeatureCard name={feature.name} typeLabel={cfg.label} color={cfg.color} description={feature.description} />
+          <FeatureCard name={feature.name} categoryLabel={categoryLabel} color={color} description={feature.description} />
         </Popup>
       </Polyline>
       {path.map((p, i) => (
@@ -147,7 +146,7 @@ function RiverFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hov
           key={i}
           center={[p.lat, p.lng]}
           radius={3.5}
-          pathOptions={{ color: cfg.color, fillColor: '#FFFFFF', fillOpacity: 1, weight: 2 }}
+          pathOptions={{ color, fillColor: '#FFFFFF', fillOpacity: 1, weight: 2 }}
         >
           {p.label && <Tooltip>{p.label}</Tooltip>}
         </CircleMarker>
@@ -157,10 +156,10 @@ function RiverFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hov
 }
 
 function MountainRangeFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hoverCapable: boolean }) {
-  const cfg = PHYSICAL_FEATURE_CONFIG['mountain-range'];
+  const { color, name: categoryLabel } = feature.category;
   const path = feature.path!;
   const positions = path.map((p) => [p.lat, p.lng] as LatLng);
-  const icon = useMemo(() => peakIcon(cfg.color), [cfg.color]);
+  const icon = useMemo(() => peakIcon(color), [color]);
   const eventHandlers = useHoverEventHandlers(hoverCapable);
 
   return (
@@ -168,10 +167,10 @@ function MountainRangeFeature({ feature, hoverCapable }: { feature: PhysicalFeat
       <Polyline
         positions={positions}
         eventHandlers={eventHandlers}
-        pathOptions={{ color: cfg.color, weight: 2.5, opacity: 0.7, dashArray: '2 6', lineCap: 'round' }}
+        pathOptions={{ color, weight: 2.5, opacity: 0.7, dashArray: '2 6', lineCap: 'round' }}
       >
         <Popup maxWidth={260} autoPan={false}>
-          <FeatureCard name={feature.name} typeLabel={cfg.label} color={cfg.color} description={feature.description} />
+          <FeatureCard name={feature.name} categoryLabel={categoryLabel} color={color} description={feature.description} />
         </Popup>
       </Polyline>
       {path.map((p, i) => (
@@ -184,7 +183,7 @@ function MountainRangeFeature({ feature, hoverCapable }: { feature: PhysicalFeat
 }
 
 function PlateFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hoverCapable: boolean }) {
-  const cfg = PHYSICAL_FEATURE_CONFIG['tectonic-plate'];
+  const { color, name: categoryLabel } = feature.category;
   const positions = feature.path!.map((p) => [p.lat, p.lng] as LatLng);
   const eventHandlers = useHoverEventHandlers(hoverCapable);
   return (
@@ -194,26 +193,55 @@ function PlateFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hov
       // fill: false — a plate's interior is huge (most of the map) and must not swallow
       // hover/click events meant for smaller features sitting inside it; only the thin
       // boundary line itself should be interactive.
-      pathOptions={{ color: cfg.color, weight: 1.5, opacity: 0.55, fill: false, dashArray: '4 4' }}
+      pathOptions={{ color, weight: 1.5, opacity: 0.55, fill: false, dashArray: '4 4' }}
     >
-      <Tooltip sticky>{feature.name}</Tooltip>
-      <Popup maxWidth={260}>
-        <FeatureCard name={feature.name} typeLabel={cfg.label} color={cfg.color} description={feature.description} />
+      <Popup maxWidth={260} autoPan={false}>
+        <FeatureCard name={feature.name} categoryLabel={categoryLabel} color={color} description={feature.description} />
+      </Popup>
+    </Polygon>
+  );
+}
+
+// Fallback for any future line/polygon category that isn't one of the three bespoke
+// treatments above — so newly-added categories (via the admin API) always render with
+// something reasonable instead of silently not appearing.
+function GenericLineFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hoverCapable: boolean }) {
+  const { color, name: categoryLabel } = feature.category;
+  const positions = feature.path!.map((p) => [p.lat, p.lng] as LatLng);
+  const eventHandlers = useHoverEventHandlers(hoverCapable);
+  return (
+    <Polyline positions={positions} eventHandlers={eventHandlers} pathOptions={{ color, weight: 3, opacity: 0.8 }}>
+      <Popup maxWidth={260} autoPan={false}>
+        <FeatureCard name={feature.name} categoryLabel={categoryLabel} color={color} description={feature.description} />
+      </Popup>
+    </Polyline>
+  );
+}
+
+function GenericPolygonFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hoverCapable: boolean }) {
+  const { color, name: categoryLabel } = feature.category;
+  const positions = feature.path!.map((p) => [p.lat, p.lng] as LatLng);
+  const eventHandlers = useHoverEventHandlers(hoverCapable);
+  return (
+    <Polygon positions={positions} eventHandlers={eventHandlers} pathOptions={{ color, weight: 1.5, opacity: 0.7, fill: false }}>
+      <Popup maxWidth={260} autoPan={false}>
+        <FeatureCard name={feature.name} categoryLabel={categoryLabel} color={color} description={feature.description} />
       </Popup>
     </Polygon>
   );
 }
 
 export function PhysicalMap({
-  features, visibleTypes,
+  features, visibleCategorySlugs,
 }: {
   features: PhysicalFeature[];
-  visibleTypes: Set<PhysicalFeatureType>;
+  visibleCategorySlugs: Set<string>;
 }) {
   const hoverCapable = useIsHoverCapable();
-  const visible = features.filter((f) => visibleTypes.has(f.type));
-  const pointFeatures = visible.filter((f) => f.lat != null && f.lng != null);
-  const lineOrPolygonFeatures = visible.filter((f) => f.path && f.path.length > 1);
+  const visible = features.filter((f) => visibleCategorySlugs.has(f.category.slug));
+  const pointFeatures = visible.filter((f) => f.category.kind === 'point' && f.lat != null && f.lng != null);
+  const lineFeatures = visible.filter((f) => f.category.kind === 'line' && f.path && f.path.length > 1);
+  const polygonFeatures = visible.filter((f) => f.category.kind === 'polygon' && f.path && f.path.length > 1);
 
   return (
     <>
@@ -257,17 +285,18 @@ export function PhysicalMap({
           noWrap
         />
 
-        {/* Plates render first (bottom of the overlay stack) since their boundary lines
-            span almost the whole map — rivers/mountains on top read clearly over them. */}
-        {lineOrPolygonFeatures.filter((f) => f.type === 'tectonic-plate').map((f) => (
-          <PlateFeature key={f.id} feature={f} hoverCapable={hoverCapable} />
+        {/* Polygons render first (bottom of the overlay stack) since their boundary lines
+            can span almost the whole map — lines/points on top read clearly over them. */}
+        {polygonFeatures.map((f) => (
+          f.category.slug === 'tectonic-plate'
+            ? <PlateFeature key={f.id} feature={f} hoverCapable={hoverCapable} />
+            : <GenericPolygonFeature key={f.id} feature={f} hoverCapable={hoverCapable} />
         ))}
-        {lineOrPolygonFeatures.filter((f) => f.type === 'mountain-range').map((f) => (
-          <MountainRangeFeature key={f.id} feature={f} hoverCapable={hoverCapable} />
-        ))}
-        {lineOrPolygonFeatures.filter((f) => f.type === 'river').map((f) => (
-          <RiverFeature key={f.id} feature={f} hoverCapable={hoverCapable} />
-        ))}
+        {lineFeatures.map((f) => {
+          if (f.category.slug === 'mountain-range') return <MountainRangeFeature key={f.id} feature={f} hoverCapable={hoverCapable} />;
+          if (f.category.slug === 'river') return <RiverFeature key={f.id} feature={f} hoverCapable={hoverCapable} />;
+          return <GenericLineFeature key={f.id} feature={f} hoverCapable={hoverCapable} />;
+        })}
 
         {pointFeatures.map((f) => <PointFeature key={f.id} feature={f} hoverCapable={hoverCapable} />)}
       </MapContainer>
