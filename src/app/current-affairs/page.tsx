@@ -513,12 +513,18 @@ export default function CurrentAffairsPublicPage() {
             {/* Places in News CTA */}
             <Link
               href="/current-affairs/places-in-news"
-              className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-xl mt-6 transition-colors hover:bg-white/5"
-              style={{ border: '1px solid rgba(124,58,237,0.35)', color: '#C4B5FD' }}
+              className="group inline-flex items-center gap-2.5 text-sm font-bold pl-2.5 pr-5 py-2.5 rounded-xl mt-6 text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(124,58,237,0.45)]"
+              style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)', boxShadow: '0 6px 20px rgba(124,58,237,0.35)' }}
             >
-              <MapPin className="h-3.5 w-3.5" />
+              <span
+                className="text-[10px] font-extrabold px-2 py-1 rounded-lg shrink-0"
+                style={{ background: 'rgba(255,255,255,0.22)', color: '#FDE68A' }}
+              >
+                NEW
+              </span>
+              <MapPin className="h-4 w-4 shrink-0" />
               Explore Places in the News on a map
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
         </div>
@@ -527,6 +533,48 @@ export default function CurrentAffairsPublicPage() {
       {/* ── Content area ── */}
       <section style={{ background: '#FFFFFF', minHeight: '60vh' }}>
         <div className="max-w-7xl mx-auto px-6 py-10">
+
+          {/* ── Places in News promo banner ── */}
+          <Link
+            href="/current-affairs/places-in-news"
+            className="group relative overflow-hidden rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-5 p-6 sm:p-7 mb-8 transition-transform hover:-translate-y-0.5"
+            style={{ background: 'linear-gradient(135deg, #5B21B6 0%, #7C3AED 45%, #C026D3 100%)', boxShadow: '0 12px 32px rgba(124,58,237,0.25)' }}
+          >
+            <div
+              className="absolute pointer-events-none"
+              style={{ top: 0, right: 0, width: 260, height: 260, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', transform: 'translate(30%, -30%)' }}
+            />
+
+            <div className="relative flex items-start gap-4">
+              <div className="shrink-0 h-11 w-11 rounded-xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.15)' }}>
+                <MapPin className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.22)', color: '#FDE68A' }}>
+                    NEW
+                  </span>
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                    Places in the News
+                  </span>
+                </div>
+                <p className="font-extrabold text-white" style={{ fontSize: '1.05rem', lineHeight: 1.3 }}>
+                  Every border dispute, summit &amp; disaster — mapped.
+                </p>
+                <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.75)', maxWidth: 440 }}>
+                  See where the news is actually happening, grouped by day, with a live map view.
+                </p>
+              </div>
+            </div>
+
+            <span
+              className="relative shrink-0 inline-flex items-center gap-2 text-sm font-bold px-5 py-2.5 rounded-xl"
+              style={{ background: '#FFFFFF', color: '#7C3AED' }}
+            >
+              Explore the map
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </span>
+          </Link>
 
           {/* ── Filter card ── */}
           <div className="rounded-2xl border border-border bg-white shadow-sm p-5 mb-8 space-y-5">

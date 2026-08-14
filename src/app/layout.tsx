@@ -13,9 +13,34 @@ const poppins = Poppins({
   preload: true,
 });
 
+const SITE_URL = "https://www.remindology.com";
+const SITE_DESCRIPTION =
+  "Accelerate your UPSC preparation with AI-powered summaries, topics, revision notes, and MCQs generated from your study materials.";
+
 export const metadata: Metadata = {
-  title: "Remindology | AI-Powered UPSC Learning Platform",
-  description: "Accelerate your UPSC preparation with AI-powered summaries, topics, revision notes, and MCQs generated from your study materials.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Remindology | AI-Powered UPSC Learning Platform",
+    template: "%s | Remindology",
+  },
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    siteName: "Remindology",
+    type: "website",
+    locale: "en_IN",
+    url: "/",
+    title: "Remindology | AI-Powered UPSC Learning Platform",
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Remindology | AI-Powered UPSC Learning Platform",
+    description: SITE_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
