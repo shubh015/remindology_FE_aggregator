@@ -10,12 +10,15 @@ interface ConfettiPiece {
   dxMid: number; dyMid: number; dxEnd: number; dyEnd: number; rotMid: number; rotEnd: number;
 }
 
-export function Confetti({ count = 60 }: { count?: number }) {
+export function Confetti({
+  count = 60, colors = CONFETTI_COLORS, sizeScale = 1, extraDurationMs = 0,
+}: { count?: number; colors?: string[]; sizeScale?: number; extraDurationMs?: number }) {
   const [pieces, setPieces] = useState<ConfettiPiece[]>([]);
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const vw = typeof window !== 'undefined' ? window.innerWidth : 400;
+    const extraSec = extraDurationMs / 1000;
     setPieces(Array.from({ length: count }, (_, i) => {
       const fromLeft = i % 2 === 0;
       const power    = 0.7 + Math.random() * 0.6;
@@ -26,10 +29,10 @@ export function Confetti({ count = 60 }: { count?: number }) {
       return {
         id: i,
         originLeft: fromLeft ? `${2 + Math.random() * 8}%` : `${88 + Math.random() * 8}%`,
-        color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-        size: 7 + Math.random() * 6,
+        color: colors[i % colors.length],
+        size: (7 + Math.random() * 6) * sizeScale,
         delay: `${(Math.random() * 0.35).toFixed(2)}s`,
-        duration: `${(1.6 + Math.random() * 0.7).toFixed(2)}s`,
+        duration: `${(1.6 + Math.random() * 0.7 + extraSec).toFixed(2)}s`,
         isCircle: i % 4 === 0,
         isWide: i % 5 === 2,
         dxMid, dyMid, dxEnd, dyEnd,
@@ -37,9 +40,9 @@ export function Confetti({ count = 60 }: { count?: number }) {
         rotEnd: Math.round(480 + Math.random() * 480),
       };
     }));
-    const hide = setTimeout(() => setVisible(false), 2700);
+    const hide = setTimeout(() => setVisible(false), 2700 + extraDurationMs);
     return () => clearTimeout(hide);
-  }, [count]);
+  }, [count, extraDurationMs]);
 
   if (!visible || !pieces.length) return null;
 
