@@ -14,6 +14,7 @@ import { CurrentAffairsTeaser } from '@/components/landing/CurrentAffairsTeaser'
 import { OCRCopyCheckShowcase } from '@/components/landing/OCRCopyCheckShowcase';
 import { AmbientBlobs } from '@/components/landing/AmbientBlobs';
 import { UPSCPrepGrid } from '@/components/landing/UPSCPrepGrid';
+import { Confetti } from '@/components/ui/confetti';
 
 // ── Style shortcuts ───────────────────────────────────────────────
 const BRAND_GRAD = 'linear-gradient(135deg, #7C3AED, #C026D3)';
@@ -53,21 +54,28 @@ export default function LandingPage() {
       }}
     >
 
+      {/* Independence Day 2026 — remove this strip after 15 Aug */}
+      <div className="flex h-3 w-full">
+        <div className="flex-1" style={{ background: '#FF9933' }} />
+        <div className="flex-1" style={{ background: '#FFFFFF' }} />
+        <div className="flex-1" style={{ background: '#138808' }} />
+      </div>
+
       {/* ════════════════════════════════════════════════════════
           ANNOUNCEMENT BAR + NAVBAR
       ════════════════════════════════════════════════════════ */}
       <header className="sticky top-0 z-50">
 
-        {/* Announcement bar */}
+        {/* Announcement bar — Independence Day 2026 message, remove after 15 Aug */}
         <div
           className="flex items-center justify-center gap-3 py-2 px-6 text-center"
           style={{ background: 'linear-gradient(135deg, rgba(76,29,149,0.97), rgba(134,25,143,0.97))', backdropFilter: 'blur(8px)' }}
         >
           <p className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.88)' }}>
             <span className="hidden sm:inline">
-              ✦ Built for UPSC CSE, SSC &amp; State PSCs — K-12, JEE &amp; NEET on the roadmap
+              🇮🇳 Happy 80th Independence Day! Jai Hind — wishing every aspirant a bright future.
             </span>
-            <span className="sm:hidden">✦ UPSC, SSC &amp; State PSC · More coming</span>
+            <span className="sm:hidden">🇮🇳 Happy 80th Independence Day! Jai Hind.</span>
           </p>
           <Link
             href="/signup"
@@ -118,6 +126,9 @@ export default function LandingPage() {
       ════════════════════════════════════════════════════════ */}
       <section className="relative overflow-hidden" style={{ background: 'transparent' }}>
 
+        {/* Independence Day 2026 — one-time tricolor confetti burst, remove after 15 Aug */}
+        <Confetti count={70} colors={['#FF9933', '#138808', '#0F5C06', '#FFA733']} sizeScale={1.6} extraDurationMs={2000} />
+
         {/* Radial glows */}
         <div
           className="absolute pointer-events-none"
@@ -140,6 +151,14 @@ export default function LandingPage() {
 
             {/* RIGHT: value copy + CTA + inline proof */}
             <div className="order-1 lg:order-2 flex flex-col gap-5 text-left">
+
+              {/* Independence Day 2026 badge — remove after 15 Aug */}
+              <div
+                className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full self-start"
+                style={{ background: 'rgba(19,136,8,0.08)', border: '1px solid rgba(19,136,8,0.25)', color: '#0F5C06' }}
+              >
+                🇮🇳 Happy Independence Day
+              </div>
 
               {/* Live badge */}
               <div
