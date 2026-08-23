@@ -8,6 +8,7 @@ const NAV_LINKS = [
   ['Features', '#features'],
   ['Current Affairs', '#current-affairs'],
   ['General Studies', '/general-studies'],
+  ['Courses', '/courses'],
   ['Pricing', '#pricing'],
   ['FAQ', '#faq'],
 ] as const;

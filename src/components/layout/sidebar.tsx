@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import {
   LayoutDashboard, FileText, User, LogOut,
-  Newspaper, BookOpenCheck, BarChart2, Flame, PenLine, CalendarDays, X, ShieldCheck, Database, Milestone, BookOpen, MapPin,
+  Newspaper, BookOpenCheck, BarChart2, Flame, PenLine, CalendarDays, X, ShieldCheck, Database, Milestone, BookOpen, MapPin, GraduationCap,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/use-auth-store';
 import { useSidebarStore } from '@/store/use-sidebar-store';
@@ -220,6 +220,11 @@ export function Sidebar() {
                 <ActiveNavItem
                   item={{ name: 'Places in News', href: '/admin/places-in-news', icon: MapPin }}
                   active={isActive('/admin/places-in-news', pathname)}
+                  onNavigate={close}
+                />
+                <ActiveNavItem
+                  item={{ name: 'Courses', href: '/admin/courses', icon: GraduationCap }}
+                  active={isActive('/admin/courses', pathname)}
                   onNavigate={close}
                 />
               </div>
