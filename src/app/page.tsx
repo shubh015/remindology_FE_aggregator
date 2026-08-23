@@ -8,6 +8,7 @@ import { FAQS } from '@/components/landing/faq-data';
 import { HeroPreview } from '@/components/landing/HeroPreview';
 import { MobileNav } from '@/components/landing/MobileNav';
 import { NavAuthButtons } from '@/components/landing/NavAuthButtons';
+import { CoursesNavDropdown } from '@/components/landing/CoursesNavDropdown';
 import { WhyRemindology } from '@/components/landing/WhyRemindology';
 import { Pricing } from '@/components/landing/Pricing';
 import { CurrentAffairsTeaser } from '@/components/landing/CurrentAffairsTeaser';
@@ -80,7 +81,7 @@ export default function LandingPage() {
 
         {/* Main nav */}
         <div style={{ background: 'rgba(9,9,31,0.9)', backdropFilter: 'blur(16px)', borderBottom: BORDER_D }}>
-          <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
               <div
                 className="h-8 w-8 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-lg"
@@ -91,13 +92,24 @@ export default function LandingPage() {
               <span className="font-bold text-[17px]" style={TEXT_GRAD}>Remindology</span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-7">
-              {[['Features', '#features'], ['Current Affairs', '#current-affairs'], ['General Studies', '/general-studies'], ['Pricing', '#pricing'], ['FAQ', '#faq']].map(([label, href]) => (
+            <nav className="hidden md:flex items-center gap-1">
+              {[['Home', '/'], ['Current Affairs', '#current-affairs'], ['General Studies', '/general-studies']].map(([label, href]) => (
                 <a
                   key={label}
                   href={href}
-                  className="text-sm font-medium transition-colors hover:text-white"
-                  style={{ color: 'rgba(240,238,255,0.58)' }}
+                  className="text-sm font-medium transition-colors hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5 whitespace-nowrap"
+                  style={{ color: 'rgba(240,238,255,0.65)' }}
+                >
+                  {label}
+                </a>
+              ))}
+              <CoursesNavDropdown dark />
+              {[['Features', '#features'], ['Pricing', '#pricing']].map(([label, href]) => (
+                <a
+                  key={label}
+                  href={href}
+                  className="text-sm font-medium transition-colors hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5 whitespace-nowrap"
+                  style={{ color: 'rgba(240,238,255,0.65)' }}
                 >
                   {label}
                 </a>
@@ -128,7 +140,7 @@ export default function LandingPage() {
           style={{ bottom: '0', left: '-8%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(192,38,211,0.08) 0%, transparent 68%)' }}
         />
 
-        <div className="relative max-w-6xl mx-auto px-6 pt-20 sm:pt-28">
+        <div className="relative max-w-7xl mx-auto px-6 pt-20 sm:pt-28">
 
           {/* ── Main split: preview left | copy right ── */}
           <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-10 xl:gap-14 items-center pb-12">
@@ -274,7 +286,7 @@ export default function LandingPage() {
       ════════════════════════════════════════════════════════ */}
       <section className="relative overflow-hidden py-24" style={{ background: 'transparent' }}>
         <AmbientBlobs palette="sky" />
-        <div className="relative max-w-5xl mx-auto px-6">
+        <div className="relative max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
@@ -310,7 +322,7 @@ export default function LandingPage() {
       ════════════════════════════════════════════════════════ */}
       <section id="features" className="relative overflow-hidden py-24" style={{ background: 'transparent' }}>
         <AmbientBlobs palette="violet" />
-        <div className="relative max-w-5xl mx-auto px-6">
+        <div className="relative max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
@@ -341,7 +353,7 @@ export default function LandingPage() {
       ════════════════════════════════════════════════════════ */}
       <section id="new-features" className="relative overflow-hidden py-24" style={{ background: 'transparent' }}>
         <AmbientBlobs palette="amber" />
-        <div className="relative max-w-5xl mx-auto px-6">
+        <div className="relative max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
@@ -383,7 +395,7 @@ export default function LandingPage() {
       ════════════════════════════════════════════════════════ */}
       <section className="relative py-24 overflow-hidden" style={{ background: 'transparent' }}>
         <AmbientBlobs palette="emerald" />
-        <div className="relative max-w-5xl mx-auto px-6">
+        <div className="relative max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
@@ -418,7 +430,7 @@ export default function LandingPage() {
       <section id="how-it-works" className="relative py-24 overflow-hidden" style={{ background: 'transparent' }}>
         <AmbientBlobs palette="rose" />
 
-        <div className="relative max-w-5xl mx-auto px-6">
+        <div className="relative max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
@@ -502,7 +514,7 @@ export default function LandingPage() {
           STATS STRIP  ·  outcome-focused metrics
       ════════════════════════════════════════════════════════ */}
       <section style={{ background: 'rgba(124,58,237,0.02)', borderTop: '1px solid rgba(124,58,237,0.1)', borderBottom: '1px solid rgba(124,58,237,0.1)' }}>
-        <div className="max-w-5xl mx-auto px-6 py-12">
+        <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
               { v: '10 sec', l: 'From material to full study kit' },
@@ -524,7 +536,7 @@ export default function LandingPage() {
       ════════════════════════════════════════════════════════ */}
       <section id="testimonials" className="relative overflow-hidden py-24" style={{ background: 'transparent' }}>
         <AmbientBlobs palette="amber" />
-        <div className="relative max-w-5xl mx-auto px-6">
+        <div className="relative max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
@@ -554,7 +566,7 @@ export default function LandingPage() {
       ════════════════════════════════════════════════════════ */}
       <section id="pricing" className="relative overflow-hidden py-24" style={{ background: 'transparent' }}>
         <AmbientBlobs palette="violet" />
-        <div className="relative max-w-5xl mx-auto px-6">
+        <div className="relative max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
@@ -593,7 +605,7 @@ export default function LandingPage() {
         />
         <AmbientBlobs palette="emerald" />
 
-        <div className="relative max-w-5xl mx-auto px-6">
+        <div className="relative max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
@@ -673,7 +685,7 @@ export default function LandingPage() {
           FOOTER
       ════════════════════════════════════════════════════════ */}
       <footer style={{ background: MIDNIGHT, borderTop: BORDER_D }}>
-        <div className="max-w-6xl mx-auto px-6 py-12">
+        <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 mb-10">
             <div className="sm:col-span-2 lg:col-span-2">
               <Link href="/" className="flex items-center gap-2.5 mb-4">

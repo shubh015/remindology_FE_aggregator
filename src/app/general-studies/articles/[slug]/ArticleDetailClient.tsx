@@ -26,7 +26,8 @@ const GS_CONFIG: Record<string, { color: string; label: string }> = {
   GS4: { color: '#DC2626', label: 'GS4 · Ethics & Integrity' },
 };
 
-function stripHtml(text: string): string {
+function stripHtml(text: string | undefined | null): string {
+  if (!text) return '';
   return text.includes('<') ? text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : text;
 }
 
@@ -96,7 +97,7 @@ export function GSArticleDetailClient() {
     );
   }
 
-  const toc = article.sections.map((s) => ({ heading: s.heading, id: slugify(s.heading) }));
+  const toc = (article.sections ?? []).map((s) => ({ heading: s.heading, id: slugify(s.heading) }));
   const publishedDate = new Date(article.publishedAt).toLocaleDateString('en-IN', {
     day: 'numeric', month: 'long', year: 'numeric',
   });
@@ -149,7 +150,7 @@ export function GSArticleDetailClient() {
 
           {/* GS tags */}
           <div className="flex flex-wrap gap-2 mb-5">
-            {article.gsPaperTags.map((tag) => {
+            {(article.gsPaperTags ?? []).map((tag) => {
               const cfg = GS_CONFIG[tag];
               return cfg ? (
                 <span
@@ -197,11 +198,11 @@ export function GSArticleDetailClient() {
               </section>
 
               {/* Key Points */}
-              {article.keyPoints.length > 0 && (
+              {(article.keyPoints?.length ?? 0) > 0 && (
                 <section className="space-y-3.5">
                   <SectionHeading color={ACCENT}>Key Points</SectionHeading>
                   <ul className="space-y-3.5" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                    {article.keyPoints.map((point, i) => (
+                    {(article.keyPoints ?? []).map((point, i) => (
                       <li key={i} className="flex items-start gap-3">
                         <span
                           className="rounded-full shrink-0"
@@ -215,7 +216,7 @@ export function GSArticleDetailClient() {
               )}
 
               {/* AI-picked sections — generic loop, never switch on heading text */}
-              {article.sections.map((s) => (
+              {(article.sections ?? []).map((s) => (
                 <section key={s.heading} id={slugify(s.heading)} className="space-y-3.5">
                   <SectionHeading color={ACCENT}>{s.heading}</SectionHeading>
                   {s.content.includes('<') ? (
@@ -231,11 +232,11 @@ export function GSArticleDetailClient() {
               ))}
 
               {/* Mains Angle Questions */}
-              {article.mainsAngles.length > 0 && (
+              {(article.mainsAngles?.length ?? 0) > 0 && (
                 <section className="space-y-3.5">
                   <SectionHeading color={ACCENT}>Mains Angle Questions</SectionHeading>
                   <ol className="space-y-2.5" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                    {article.mainsAngles.map((angle, i) => (
+                    {(article.mainsAngles ?? []).map((angle, i) => (
                       <li key={i} className="flex items-start gap-3">
                         <span
                           className="h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-extrabold shrink-0"
@@ -251,11 +252,11 @@ export function GSArticleDetailClient() {
               )}
 
               {/* FAQs */}
-              {article.faqs.length > 0 && (
+              {(article.faqs?.length ?? 0) > 0 && (
                 <section className="space-y-3.5">
                   <SectionHeading color={ACCENT}>Frequently Asked Questions</SectionHeading>
                   <div className="space-y-4">
-                    {article.faqs.map((faq, i) => (
+                    {(article.faqs ?? []).map((faq, i) => (
                       <div key={i} className="flex items-start gap-3">
                         <HelpCircle className="h-4 w-4 shrink-0 mt-0.5" style={{ color: ACCENT, opacity: 0.6 }} />
                         <div>
@@ -273,9 +274,9 @@ export function GSArticleDetailClient() {
               )}
 
               {/* Topic tags */}
-              {article.topicTags.length > 0 && (
+              {(article.topicTags?.length ?? 0) > 0 && (
                 <div className="flex flex-wrap gap-1.5 pt-2" style={{ borderTop: `1px solid ${ACCENT}12` }}>
-                  {article.topicTags.map((tag) => (
+                  {(article.topicTags ?? []).map((tag) => (
                     <span
                       key={tag}
                       className="text-[11px] font-medium px-2.5 py-1 rounded-full"

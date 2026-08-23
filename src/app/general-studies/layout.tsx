@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { MobileNav } from '@/components/landing/MobileNav';
 import { NavAuthButtons } from '@/components/landing/NavAuthButtons';
+import { CoursesNavDropdown } from '@/components/landing/CoursesNavDropdown';
 
 const BRAND_GRAD = 'linear-gradient(135deg, #7C3AED, #C026D3)';
 const TEXT_GRAD  = {
@@ -27,7 +28,7 @@ export default function GeneralStudiesPublicLayout({
             borderBottom: BORDER_D,
           }}
         >
-          <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
 
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
@@ -41,19 +42,31 @@ export default function GeneralStudiesPublicLayout({
             </Link>
 
             {/* Centre nav */}
-            <nav className="hidden md:flex items-center gap-7">
+            <nav className="hidden md:flex items-center gap-1">
               {[
                 ['Home', '/'],
                 ['Current Affairs', '/current-affairs'],
                 ['General Studies', '/general-studies'],
+              ].map(([label, href]) => (
+                <Link
+                  key={label}
+                  href={href}
+                  className="text-sm font-medium transition-colors hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5 whitespace-nowrap"
+                  style={{ color: 'rgba(240,238,255,0.65)' }}
+                >
+                  {label}
+                </Link>
+              ))}
+              <CoursesNavDropdown dark />
+              {[
                 ['Features', '/#features'],
                 ['Pricing', '/#pricing'],
               ].map(([label, href]) => (
                 <Link
                   key={label}
                   href={href}
-                  className="text-sm font-medium transition-colors hover:text-white"
-                  style={{ color: 'rgba(240,238,255,0.58)' }}
+                  className="text-sm font-medium transition-colors hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5 whitespace-nowrap"
+                  style={{ color: 'rgba(240,238,255,0.65)' }}
                 >
                   {label}
                 </Link>
@@ -72,7 +85,7 @@ export default function GeneralStudiesPublicLayout({
 
       {/* Footer */}
       <footer style={{ background: '#09091F', borderTop: BORDER_D }}>
-        <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <Link href="/" className="flex items-center gap-2.5">
             <div
               className="h-7 w-7 rounded-xl flex items-center justify-center text-white font-bold text-xs"

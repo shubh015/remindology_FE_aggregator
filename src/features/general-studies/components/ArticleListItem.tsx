@@ -6,13 +6,14 @@ const GS_PAPER_COLORS: Record<string, string> = {
   GS1: '#7C3AED', GS2: '#0891B2', GS3: '#059669', GS4: '#DC2626',
 };
 
-function stripHtml(text: string): string {
+function stripHtml(text: string | undefined | null): string {
+  if (!text) return '';
   return text.includes('<') ? text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : text;
 }
 
 export function ArticleListItem({ article }: { article: GSArticle }) {
-  const accentColor = GS_PAPER_COLORS[article.gsPaperTags[0]] ?? '#7C3AED';
-  const icon = getGSIcon(article.topicTags[0] ?? article.title);
+  const accentColor = GS_PAPER_COLORS[article.gsPaperTags?.[0]] ?? '#7C3AED';
+  const icon = getGSIcon(article.topicTags?.[0] ?? article.title);
 
   return (
     <GSPlaceholderCard

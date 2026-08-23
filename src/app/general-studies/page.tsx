@@ -64,7 +64,7 @@ export default function GeneralStudiesIndexPage() {
           style={{ top: 0, right: '-8%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 68%)' }}
         />
 
-        <div className="relative max-w-6xl mx-auto px-6 pt-14 pb-16">
+        <div className="relative max-w-7xl mx-auto px-6 pt-14 pb-16">
           <div
             className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full mb-4"
             style={{ background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.35)', color: '#C4B5FD' }}
@@ -102,7 +102,7 @@ export default function GeneralStudiesIndexPage() {
 
       {/* ── Subjects ── */}
       <section style={{ background: '#FFFFFF' }}>
-        <div className="max-w-6xl mx-auto px-6 py-14 space-y-10">
+        <div className="max-w-7xl mx-auto px-6 py-14 space-y-10">
           {isLoading ? (
             <SubjectSkeleton />
           ) : isError ? (

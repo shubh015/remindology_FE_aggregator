@@ -68,7 +68,7 @@ export function NavAuthButtons({ dark = true, onNavigate }: Props) {
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="hidden md:flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition-colors cursor-pointer hover:bg-white/5"
+          className="hidden md:flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition-colors cursor-pointer hover:bg-white/5 whitespace-nowrap"
           style={{
             border: dark ? '1px solid rgba(167,139,250,0.22)' : '1px solid rgba(124,58,237,0.2)',
             color: dark ? 'rgba(196,181,253,0.7)' : '#7C3AED',

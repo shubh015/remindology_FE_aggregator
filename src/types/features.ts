@@ -314,6 +314,103 @@ export interface GSUpdateArticleInput {
   rawContent?: string;
 }
 
+// ── Courses ───────────────────────────────────────────────────────
+// Admin-authored exam hub pages (UPSC CSE, UPSC EPFO, UPPSC, ...) — content here
+// is manually entered by the admin, not AI-generated, since exam facts must be exact.
+
+export interface CourseExamPatternStage {
+  stage: string;
+  description: string;
+}
+
+export interface CourseBook {
+  title: string;
+  author?: string;
+  note?: string;
+}
+
+export interface CourseBooklistEntry {
+  subject: string;
+  books: CourseBook[];
+}
+
+export interface CourseExamInfoFact {
+  label: string;
+  value: string;
+}
+
+export interface CourseYearBreakdownRow {
+  subject: string;
+  questions: number;
+  marks?: number;
+}
+
+export interface CourseYearWiseBreakdown {
+  year: number;
+  notes?: string;
+  breakdown: CourseYearBreakdownRow[];
+}
+
+export interface CourseNotification {
+  id: string;
+  courseId: string | null;
+  courseName?: string | null;
+  courseSlug?: string | null;
+  title: string;
+  linkUrl: string;
+  notificationDate: string | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface Course {
+  id: string;
+  slug: string;
+  name: string;
+  shortDescription: string | null;
+  icon: string | null;
+  color: string | null;
+  displayOrder: number;
+  status: 'draft' | 'published';
+  overview: string | null;
+  examPattern: CourseExamPatternStage[] | null;
+  booklist: CourseBooklistEntry[] | null;
+  examInfo: CourseExamInfoFact[] | null;
+  yearWiseBreakdown: CourseYearWiseBreakdown[] | null;
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  notifications?: CourseNotification[];
+}
+
+export interface CourseCreateInput {
+  name: string;
+  shortDescription?: string;
+  icon?: string;
+  color?: string;
+  displayOrder?: number;
+}
+
+export interface CourseUpdateInput {
+  name?: string;
+  shortDescription?: string;
+  icon?: string;
+  color?: string;
+  displayOrder?: number;
+  overview?: string;
+  examPattern?: CourseExamPatternStage[];
+  booklist?: CourseBooklistEntry[];
+  examInfo?: CourseExamInfoFact[];
+  yearWiseBreakdown?: CourseYearWiseBreakdown[];
+}
+
+export interface CourseNotificationCreateInput {
+  courseId?: string;
+  title: string;
+  linkUrl: string;
+  notificationDate?: string;
+}
+
 export type PlaceCategory =
   | 'border-dispute' | 'defence' | 'disaster' | 'summit-visit'
   | 'environment-wildlife' | 'heritage-culture' | 'economy-infra' | 'other';
