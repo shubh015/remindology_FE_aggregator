@@ -12,6 +12,7 @@ import { CoursesNavDropdown } from '@/components/landing/CoursesNavDropdown';
 import { WhyRemindology } from '@/components/landing/WhyRemindology';
 import { Pricing } from '@/components/landing/Pricing';
 import { CurrentAffairsTeaser } from '@/components/landing/CurrentAffairsTeaser';
+import { ImportantBanner } from '@/components/landing/ImportantBanner';
 import { OCRCopyCheckShowcase } from '@/components/landing/OCRCopyCheckShowcase';
 import { AmbientBlobs } from '@/components/landing/AmbientBlobs';
 import { UPSCPrepGrid } from '@/components/landing/UPSCPrepGrid';
@@ -53,6 +54,9 @@ export default function LandingPage() {
         position: 'relative',
       }}
     >
+
+      {/* Floating "important update" card — only renders when an admin has flagged an article */}
+      <ImportantBanner />
 
       {/* ════════════════════════════════════════════════════════
           ANNOUNCEMENT BAR + NAVBAR

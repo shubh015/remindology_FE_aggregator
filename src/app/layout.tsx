@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
@@ -17,8 +17,13 @@ const SITE_URL = "https://www.remindology.com";
 const SITE_DESCRIPTION =
   "Accelerate your UPSC preparation with AI-powered summaries, topics, revision notes, and MCQs generated from your study materials.";
 
+export const viewport: Viewport = {
+  themeColor: "#7C3AED",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  manifest: "/manifest.json",
   title: {
     default: "Remindology | AI-Powered UPSC Learning Platform",
     template: "%s | Remindology",

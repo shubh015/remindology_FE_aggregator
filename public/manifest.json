@@ -1,0 +1,13 @@
+{
+  "name": "Remindology",
+  "short_name": "Remindology",
+  "description": "AI-powered UPSC learning platform — summaries, revision notes, MCQs and reminders.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7C3AED",
+  "icons": [
+    { "src": "/icon-512.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

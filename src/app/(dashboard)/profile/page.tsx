@@ -8,9 +8,10 @@ import { TARGET_EXAM_LABELS, type TargetExam } from '@/types/auth';
 import { Header } from '@/components/layout/header';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { User, Mail, BookOpen, LogOut, CheckCircle2, Loader2, Pencil, X, CalendarDays, BookMarked } from 'lucide-react';
+import { User, Mail, BookOpen, LogOut, CheckCircle2, Loader2, Pencil, X, CalendarDays, BookMarked, Bell, BellOff, Share, SquarePlus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { deleteCookie } from '@/lib/utils';
+import { usePushNotifications } from '@/hooks/use-push-notifications';
 
 // ── Exam options ──────────────────────────────────────────────────
 
@@ -24,6 +25,83 @@ const EXAM_OPTIONS: { key: TargetExam; label: string; subtitle: string; color: s
   { key: 'NDA_CDS',    label: TARGET_EXAM_LABELS.NDA_CDS,    subtitle: 'National Defence / Combined Defence', color: '#DC2626', bg: 'rgba(220,38,38,0.07)', border: 'rgba(220,38,38,0.22)'  },
   { key: 'STATE_PSC',  label: TARGET_EXAM_LABELS.STATE_PSC,  subtitle: 'State Public Service Commission',  color: '#7C3AED', bg: 'rgba(124,58,237,0.07)',  border: 'rgba(124,58,237,0.22)' },
 ];
+
+function NotificationsCard() {
+  const { status, busy, error, enable, disable } = usePushNotifications();
+
+  return (
+    <Card className="border-border bg-card shadow-sm">
+      <CardHeader className="border-b border-border pb-4">
+        <CardTitle className="text-sm font-bold text-foreground">Notifications</CardTitle>
+        <CardDescription className="text-xs">Reminders for daily challenges and revision due dates</CardDescription>
+      </CardHeader>
+      <CardContent className="pt-6 space-y-3">
+
+        {status === 'needs-ios-install' && (
+          <div className="flex items-start gap-4 p-3.5 rounded-lg bg-muted/20 border border-border">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <SquarePlus className="h-4 w-4" />
+            </div>
+            <div className="flex-1 min-w-0 space-y-1">
+              <p className="text-xs font-bold text-foreground">Add Remindology to your Home Screen</p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                iOS only supports notifications for installed apps. Tap <Share className="inline h-3 w-3 -mt-0.5" /> Share, then
+                &quot;Add to Home Screen&quot; — open Remindology from there to enable reminders.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {status === 'unsupported' && (
+          <div className="flex items-center gap-4 p-3.5 rounded-lg bg-muted/20 border border-border">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+              <BellOff className="h-4 w-4" />
+            </div>
+            <p className="text-xs text-muted-foreground">Notifications aren&apos;t supported in this browser.</p>
+          </div>
+        )}
+
+        {status === 'denied' && (
+          <div className="flex items-center gap-4 p-3.5 rounded-lg bg-muted/20 border border-border">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+              <BellOff className="h-4 w-4" />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Notifications are blocked for this site. Enable them in your browser&apos;s site settings, then refresh.
+            </p>
+          </div>
+        )}
+
+        {(status === 'subscribed' || status === 'unsubscribed') && (
+          <div className="flex items-center gap-4 p-3.5 rounded-lg bg-muted/20 border border-border">
+            <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${status === 'subscribed' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+              {status === 'subscribed' ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-foreground">
+                {status === 'subscribed' ? 'Notifications enabled' : 'Notifications disabled'}
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">
+                {status === 'subscribed' ? 'You’ll get reminders on this device.' : 'Turn on reminders for this device.'}
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant={status === 'subscribed' ? 'outline' : 'default'}
+              disabled={busy}
+              onClick={status === 'subscribed' ? disable : enable}
+              className="shrink-0 cursor-pointer font-semibold text-xs"
+            >
+              {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : status === 'subscribed' ? 'Disable' : 'Enable'}
+            </Button>
+          </div>
+        )}
+
+        {error && <p className="text-xs text-destructive">{error}</p>}
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -266,6 +344,9 @@ export default function ProfilePage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* ── Notifications ── */}
+        <NotificationsCard />
       </div>
     </div>
   );

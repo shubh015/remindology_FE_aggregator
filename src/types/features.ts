@@ -92,6 +92,7 @@ export interface CurrentAffairsArticle {
   examRelevance: Record<string, boolean>;
   enrichedData?: EnrichedData;
   practiceQuestions?: PracticeQuestion[];
+  isImportant?: boolean;
 }
 
 // ── Mains Answer Writing ──────────────────────────────────────────

@@ -12,7 +12,7 @@ import { currentAffairsService } from '@/services/current-affairs.service';
 import {
   Send, Trash2, AlertCircle, CheckCircle2, X,
   Loader2, Newspaper, ShieldCheck, BookOpen, Tag,
-  FileText, CheckCheck, XCircle, Layers, Pencil,
+  FileText, CheckCheck, XCircle, Layers, Pencil, Megaphone,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -229,6 +229,7 @@ type ArticleLike = {
   topicTags: string[];
   sourceName: string;
   summary: string;
+  isImportant?: boolean;
 };
 
 function DraftCard({
@@ -332,9 +333,13 @@ function DraftCard({
 function ArticleRow({
   article,
   onDelete,
+  onToggleImportant,
+  togglingImportant,
 }: {
   article: ArticleLike;
   onDelete: (id: string, title: string) => void;
+  onToggleImportant: (id: string, next: boolean) => void;
+  togglingImportant: boolean;
 }) {
   const dateStr = article.publishedDate
     ? new Date(article.publishedDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -359,6 +364,19 @@ function ArticleRow({
           ))}
         </div>
       </div>
+      <button
+        onClick={() => onToggleImportant(article.id, !article.isImportant)}
+        disabled={togglingImportant}
+        className={cn(
+          'shrink-0 h-8 w-8 rounded-xl flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50',
+          article.isImportant
+            ? 'text-white bg-gradient-to-br from-[#7C3AED] to-[#C026D3]'
+            : 'text-muted-foreground hover:text-[#7C3AED] hover:bg-primary/8'
+        )}
+        title={article.isImportant ? 'Remove landing-page card' : 'Show as landing-page card'}
+      >
+        <Megaphone className="h-4 w-4" />
+      </button>
       <button
         onClick={() => onDelete(article.id, article.title)}
         className="shrink-0 h-8 w-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/8 transition-colors cursor-pointer"
@@ -520,6 +538,21 @@ export default function AdminCurrentAffairsPage() {
       qc.invalidateQueries({ queryKey: ['current-affairs'] });
     },
     onError: () => showToast('error', 'Could not delete the article. Try again.'),
+  });
+
+  // ── Toggle "important" (landing-page card) mutation ─────────────
+  const [togglingImportantId, setTogglingImportantId] = useState<string | null>(null);
+  const toggleImportantMutation = useMutation({
+    mutationFn: ({ id, isImportant }: { id: string; isImportant: boolean }) =>
+      currentAffairsService.setImportant(id, isImportant),
+    onMutate: ({ id }) => setTogglingImportantId(id),
+    onSettled: () => setTogglingImportantId(null),
+    onSuccess: (_data, { isImportant }) => {
+      showToast('success', isImportant ? 'Now showing as the landing-page card.' : 'Removed from the landing-page card.');
+      qc.invalidateQueries({ queryKey: ['admin', 'current-affairs', 'recent'] });
+      qc.invalidateQueries({ queryKey: ['current-affairs'] });
+    },
+    onError: () => showToast('error', 'Could not update. Try again.'),
   });
 
   const set = (field: keyof typeof EMPTY_FORM, value: unknown) =>
@@ -845,6 +878,8 @@ export default function AdminCurrentAffairsPage() {
                     key={a.id}
                     article={a}
                     onDelete={(id, title) => setDeleteTarget({ id, title })}
+                    onToggleImportant={(id, next) => toggleImportantMutation.mutate({ id, isImportant: next })}
+                    togglingImportant={togglingImportantId === a.id}
                   />
                 ))}
               </div>
