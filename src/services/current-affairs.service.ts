@@ -67,6 +67,7 @@ function normalize(raw: Raw | null | undefined): CurrentAffairsArticle {
     examRelevance:     (r.examRelevance ?? r.exam_relevance ?? {}) as Record<string, boolean>,
     enrichedData:      normalizeEnrichedData(r.enriched_data ?? r.enrichedData),
     practiceQuestions: asTypedArray<PracticeQuestion>(r.practice_questions ?? r.practiceQuestions),
+    isImportant:       Boolean(r.isImportant ?? r.is_important),
   };
 }
 
@@ -78,6 +79,11 @@ export const currentAffairsService = {
   async getToday(): Promise<CurrentAffairsArticle[]> {
     const response = await publicApiClient.get<ApiResponse<Raw[]>>('/current-affairs/today');
     return normalizeList(response.data.data);
+  },
+
+  async getImportant(): Promise<CurrentAffairsArticle | null> {
+    const response = await publicApiClient.get<ApiResponse<Raw | null>>('/current-affairs/important');
+    return response.data.data ? normalize(response.data.data) : null;
   },
 
   async getRecent(limit = 20, exam?: string): Promise<CurrentAffairsArticle[]> {
@@ -151,6 +157,11 @@ export const currentAffairsService = {
 
   async publishDraft(id: string): Promise<CurrentAffairsArticle> {
     const response = await apiClient.patch<ApiResponse<Raw>>(`/current-affairs/${id}/publish`);
+    return normalize(response.data.data);
+  },
+
+  async setImportant(id: string, isImportant: boolean): Promise<CurrentAffairsArticle> {
+    const response = await apiClient.patch<ApiResponse<Raw>>(`/current-affairs/${id}/important`, { isImportant });
     return normalize(response.data.data);
   },
 

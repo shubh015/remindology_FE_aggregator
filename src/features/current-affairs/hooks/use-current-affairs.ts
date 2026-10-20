@@ -12,6 +12,16 @@ export function useTodaysCurrentAffairs() {
   });
 }
 
+export function useImportantArticle() {
+  return useQuery({
+    queryKey: ['current-affairs', 'important'],
+    queryFn: () => currentAffairsService.getImportant(),
+    staleTime: 2 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
+    retry: false,
+  });
+}
+
 export function useRecentCurrentAffairs(limit = 30, exam?: string) {
   return useQuery({
     queryKey: ['current-affairs', 'recent', limit, exam ?? null],
