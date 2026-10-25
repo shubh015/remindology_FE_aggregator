@@ -15,21 +15,24 @@ export default async function Image() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #5B21B6 0%, #7C3AED 45%, #C026D3 100%)',
+          background: '#16233E',
           position: 'relative',
         }}
       >
-        {/* Decorative dot grid, matching the site's hero background texture */}
+        {/* Quiet brass wash, matching the site's hero background texture */}
         <div
           style={{
             position: 'absolute',
-            inset: 0,
-            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.14) 3px, transparent 3px)',
-            backgroundSize: '48px 48px',
+            top: '-10%',
+            right: '-5%',
+            width: 700,
+            height: 700,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(138,106,18,0.35) 0%, transparent 68%)',
           }}
         />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 36 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 36, position: 'relative' }}>
           <div
             style={{
               display: 'flex',
@@ -37,21 +40,23 @@ export default async function Image() {
               justifyContent: 'center',
               width: 84,
               height: 84,
-              borderRadius: 22,
-              background: 'rgba(255,255,255,0.95)',
-              color: '#7C3AED',
-              fontSize: 48,
-              fontWeight: 800,
+              borderRadius: '50%',
+              background: '#24365C',
+              border: '3px solid #8A6A12',
+              color: '#D4AF37',
+              fontSize: 44,
+              fontWeight: 700,
+              fontFamily: 'Georgia, serif',
             }}
           >
             R
           </div>
-          <div style={{ display: 'flex', fontSize: 64, fontWeight: 800, color: '#FFFFFF' }}>
+          <div style={{ display: 'flex', fontSize: 64, fontWeight: 800, color: '#F7F4EC' }}>
             Remindology
           </div>
         </div>
 
-        <div style={{ display: 'flex', fontSize: 32, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
+        <div style={{ display: 'flex', fontSize: 32, fontWeight: 600, color: 'rgba(247,244,236,0.85)', position: 'relative' }}>
           AI-Powered UPSC Learning Platform
         </div>
       </div>
