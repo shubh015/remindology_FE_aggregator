@@ -9,8 +9,7 @@ export default function SignupPage() {
   return (
     <Card className="border-border bg-card shadow-sm">
       <CardHeader className="space-y-1 text-center">
-        <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl mb-2"
-          style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.15), rgba(192,38,211,0.1))', border: '1px solid rgba(124,58,237,0.2)' }}>
+        <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl mb-2 bg-primary/10 border border-primary/20">
           <Sparkles className="h-5 w-5 text-primary" />
         </div>
         <CardTitle className="text-lg font-bold">Create your account</CardTitle>
@@ -23,8 +22,7 @@ export default function SignupPage() {
         <GoogleAuthButton />
 
         {/* What you get */}
-        <div className="rounded-xl p-4 space-y-2.5"
-          style={{ background: 'rgba(124,58,237,0.05)', border: '1px solid rgba(124,58,237,0.1)' }}>
+        <div className="rounded-xl p-4 space-y-2.5 bg-primary/5 border border-primary/10">
           <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
             What you get
           </p>

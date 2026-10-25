@@ -32,8 +32,8 @@ const CARDS = [
     title: 'General Studies',
     description: 'History, polity, economy, environment, and core GS subjects explained systematically',
     icon: BookOpen,
-    color: '#8B5CF6',
-    bg: 'rgba(139, 92, 246, 0.08)',
+    color: '#64748B',
+    bg: 'rgba(100, 116, 139, 0.08)',
     href: '/general-studies',
   },
   {
@@ -48,14 +48,14 @@ const CARDS = [
     title: 'Blogs',
     description: 'Insights, opinions, and practical UPSC preparation advice from aspirants and mentors',
     icon: FileText,
-    color: '#10B981',
-    bg: 'rgba(16, 185, 129, 0.08)',
+    color: '#0D9488',
+    bg: 'rgba(13, 148, 136, 0.08)',
     href: '/signup',
   },
 ];
 
-const TEXT_DARK = '#1A1836';
-const TEXT_MID = '#6B63A0';
+const TEXT_DARK = '#16233E';
+const TEXT_MID = '#5B6478';
 
 export function UPSCPrepGrid() {
   return (
@@ -67,7 +67,7 @@ export function UPSCPrepGrid() {
             <Link
               key={card.title}
               href={card.href}
-              className="group rounded-3xl p-6 bg-white border border-slate-100/80 shadow-[0_4px_20px_rgba(124,58,237,0.02)] transition-all duration-500 ease-in-out hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(124,58,237,0.06)] hover:border-[#7C3AED]/20 flex flex-col justify-between"
+              className="group rounded-3xl p-6 bg-white border border-slate-100/80 shadow-[0_4px_20px_rgba(138,106,18,0.02)] transition-all duration-500 ease-in-out hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(138,106,18,0.06)] hover:border-[#8A6A12]/20 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center gap-3 mb-4 w-full">
@@ -81,7 +81,7 @@ export function UPSCPrepGrid() {
                   {/* Title pill container */}
                   <div className="flex-1 flex items-center justify-between px-4 py-2 rounded-2xl bg-[#F3F4F6]/50 border border-slate-100/50 group-hover:bg-[#F3F4F6] transition-colors duration-500 ease-in-out">
                     <span className="text-[13px] font-bold" style={{ color: TEXT_DARK }}>{card.title}</span>
-                    <ArrowRight className="h-4 w-4 text-[#6B63A0] transition-transform duration-500 group-hover:translate-x-0.5" />
+                    <ArrowRight className="h-4 w-4 text-[#5B6478] transition-transform duration-500 group-hover:translate-x-0.5" />
                   </div>
                 </div>
                 {/* Description */}

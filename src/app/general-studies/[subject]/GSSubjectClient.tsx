@@ -12,8 +12,7 @@ import { GSPlaceholderCard } from '@/features/general-studies/components/GSPlace
 import { getGSIcon } from '@/features/general-studies/components/gs-icons';
 import { ArticleListItem } from '@/features/general-studies/components/ArticleListItem';
 
-const MIDNIGHT = '#09091F';
-const ACCENT    = '#7C3AED';
+const ACCENT = '#8A6A12';
 
 export function GSSubjectClient() {
   const { subject: subjectSlug } = useParams<{ subject: string }>();
@@ -32,34 +31,33 @@ export function GSSubjectClient() {
 
   if (!isActiveSubject) {
     return (
-      <div style={{ fontFamily: 'var(--font-poppins), system-ui, sans-serif' }}>
-        <section className="relative overflow-hidden" style={{ background: MIDNIGHT }}>
+      <div>
+        <section className="relative overflow-hidden bg-background">
           <div className="relative max-w-4xl mx-auto px-6 pt-10 pb-14">
-            <div className="flex items-center gap-2 text-xs mb-6" style={{ color: 'rgba(196,181,253,0.5)' }}>
-              <Link href="/general-studies" className="hover:text-white transition-colors flex items-center gap-1">
+            <div className="flex items-center gap-2 text-xs mb-6 text-muted-foreground">
+              <Link href="/general-studies" className="hover:text-foreground transition-colors flex items-center gap-1">
                 <ArrowLeft className="h-3.5 w-3.5" />
                 General Studies
               </Link>
             </div>
             <h1
-              className="font-extrabold tracking-tight mb-3"
-              style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', lineHeight: 1.15, color: '#F0EEFF' }}
+              className="font-black tracking-tight mb-3 text-foreground"
+              style={{ fontSize: 'var(--text-display-sm)', lineHeight: 1.05, letterSpacing: '-0.01em' }}
             >
               {subjectsLoading ? 'Loading…' : subject?.name ?? subjectSlug}
             </h1>
           </div>
         </section>
-        <section style={{ background: '#FFFFFF' }}>
+        <section className="bg-white">
           <div className="max-w-4xl mx-auto px-6 py-20 flex flex-col items-center gap-3 text-center">
-            <Clock className="h-10 w-10" style={{ color: '#D1D5DB' }} />
-            <p className="text-lg font-semibold" style={{ color: '#1A1836' }}>Coming soon</p>
-            <p className="text-sm max-w-sm" style={{ color: '#9CA3AF' }}>
+            <Clock className="h-10 w-10 text-muted-foreground/40" />
+            <p className="text-lg font-semibold text-foreground">Coming soon</p>
+            <p className="text-sm max-w-sm text-muted-foreground">
               We're still writing notes for this subject. Check back soon, or explore History and Environment &amp; Ecology in the meantime.
             </p>
             <Link
               href="/general-studies"
-              className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl text-white mt-2"
-              style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)' }}
+              className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl text-white bg-primary mt-2"
             >
               <ArrowLeft className="h-4 w-4" />Back to General Studies
             </Link>
@@ -70,35 +68,32 @@ export function GSSubjectClient() {
   }
 
   return (
-    <div style={{ fontFamily: 'var(--font-poppins), system-ui, sans-serif' }}>
+    <div>
 
-      {/* ── Dark hero ── */}
-      <section className="relative overflow-hidden" style={{ background: MIDNIGHT }}>
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden bg-background">
         <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(167,139,250,0.07) 1px, transparent 1px)', backgroundSize: '30px 30px' }}
+          className="absolute pointer-events-none"
+          style={{ top: 0, right: '-8%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(138,106,18,0.06) 0%, transparent 68%)' }}
         />
         <div className="relative max-w-6xl mx-auto px-6 pt-10 pb-14">
 
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-xs mb-6" style={{ color: 'rgba(196,181,253,0.5)' }}>
-            <Link href="/general-studies" className="hover:text-white transition-colors flex items-center gap-1">
+          <div className="flex items-center gap-2 text-xs mb-6 text-muted-foreground">
+            <Link href="/general-studies" className="hover:text-foreground transition-colors flex items-center gap-1">
               <ArrowLeft className="h-3.5 w-3.5" />
               General Studies
             </Link>
           </div>
 
           <h1
-            className="font-extrabold tracking-tight mb-3"
-            style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', lineHeight: 1.15, color: '#F0EEFF' }}
+            className="font-black tracking-tight mb-3 text-foreground"
+            style={{ fontSize: 'var(--text-display-sm)', lineHeight: 1.05, letterSpacing: '-0.01em' }}
           >
             {subjectsLoading ? 'Loading…' : subject?.name ?? subjectSlug}
           </h1>
           {subject?.gsPaperTag && (
-            <span
-              className="inline-flex text-xs font-bold px-3 py-1 rounded-full"
-              style={{ background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.35)', color: '#A78BFA' }}
-            >
+            <span className="inline-flex text-xs font-bold px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary">
               {subject.gsPaperTag}
             </span>
           )}
@@ -106,7 +101,7 @@ export function GSSubjectClient() {
       </section>
 
       {/* ── Categories ── */}
-      <section style={{ background: '#FFFFFF' }}>
+      <section className="bg-white">
         <div className="max-w-5xl mx-auto px-6 py-14">
           {isLoading ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -147,8 +142,8 @@ export function GSSubjectClient() {
             </div>
           ) : (
             <div className="flex flex-col items-center gap-3 py-16 text-center">
-              <FileText className="h-8 w-8" style={{ color: '#D1D5DB' }} />
-              <p className="text-sm" style={{ color: '#9CA3AF' }}>
+              <FileText className="h-8 w-8 text-muted-foreground/40" />
+              <p className="text-sm text-muted-foreground">
                 No articles published yet for this subject.
               </p>
             </div>

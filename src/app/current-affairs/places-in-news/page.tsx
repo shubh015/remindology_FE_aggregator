@@ -39,13 +39,6 @@ const PhysicalMap = dynamic(
   },
 );
 
-const MIDNIGHT  = '#09091F';
-const TEXT_GRAD = {
-  background: 'linear-gradient(135deg, #A78BFA, #E879F9)',
-  WebkitBackgroundClip: 'text' as const,
-  WebkitTextFillColor: 'transparent',
-};
-
 type ViewMode = 'map' | 'list' | 'physical';
 
 function daysAgoISO(n: number): string {
@@ -82,7 +75,7 @@ function PlaceListItem({ place }: { place: PlaceInNews }) {
   return (
     <div className="rounded-xl border border-border bg-white p-4 space-y-1.5">
       <div className="flex items-center gap-2 flex-wrap">
-        <p className="text-sm font-bold" style={{ color: '#111827' }}>{place.name}</p>
+        <p className="text-sm font-bold" style={{ color: '#16233E' }}>{place.name}</p>
         <span
           className="text-[10px] font-bold px-2 py-0.5 rounded-full"
           style={{ background: `${cfg.color}14`, color: cfg.color, border: `1px solid ${cfg.color}33` }}
@@ -96,12 +89,12 @@ function PlaceListItem({ place }: { place: PlaceInNews }) {
           </span>
         )}
       </div>
-      <p className="text-xs leading-relaxed" style={{ color: '#6B7280' }}>{place.context}</p>
+      <p className="text-xs leading-relaxed" style={{ color: '#5B6478' }}>{place.context}</p>
       {place.currentAffairId && (
         <Link
           href={`/current-affairs/${place.currentAffairId}`}
           className="inline-flex items-center gap-1 text-xs font-bold hover:underline"
-          style={{ color: '#7C3AED' }}
+          style={{ color: '#8A6A12' }}
         >
           Read the article <ArrowRight className="h-3 w-3" />
         </Link>
@@ -116,8 +109,8 @@ function DayAccordionItem({ group, defaultOpen }: { group: DateGroup; defaultOpe
     <div
       className="rounded-2xl overflow-hidden"
       style={{
-        border: open ? '1px solid rgba(124,58,237,0.3)' : '1px solid rgba(124,58,237,0.12)',
-        background: open ? 'rgba(124,58,237,0.03)' : '#FFFFFF',
+        border: open ? '1px solid rgba(138,106,18,0.3)' : '1px solid rgba(138,106,18,0.12)',
+        background: open ? 'rgba(138,106,18,0.03)' : '#FFFFFF',
       }}
     >
       <button
@@ -126,21 +119,21 @@ function DayAccordionItem({ group, defaultOpen }: { group: DateGroup; defaultOpe
         style={{ background: 'transparent', border: 'none' }}
       >
         <div>
-          <p className="text-[10px] font-extrabold uppercase tracking-widest" style={{ color: '#7C3AED', opacity: 0.7 }}>
+          <p className="text-[10px] font-extrabold uppercase tracking-widest" style={{ color: '#8A6A12', opacity: 0.7 }}>
             {group.dayOfWeek}
           </p>
-          <p className="text-sm font-bold" style={{ color: '#111827' }}>{group.displayDate}</p>
+          <p className="text-sm font-bold" style={{ color: '#16233E' }}>{group.displayDate}</p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <span
             className="text-[11px] font-extrabold px-2.5 py-1 rounded-full"
-            style={{ background: 'rgba(124,58,237,0.08)', color: '#7C3AED' }}
+            style={{ background: 'rgba(138,106,18,0.08)', color: '#8A6A12' }}
           >
             {group.places.length} {group.places.length === 1 ? 'place' : 'places'}
           </span>
           <ChevronDown
             className="h-4 w-4 transition-transform"
-            style={{ color: '#7C3AED', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
+            style={{ color: '#8A6A12', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
           />
         </div>
       </button>
@@ -192,26 +185,22 @@ export default function PlacesInNewsPage() {
   const groups = useMemo(() => groupByDate(places ?? []), [places]);
 
   return (
-    <div style={{ color: '#1A1836' }}>
+    <div className="text-foreground">
 
-      {/* ── Dark hero ── */}
-      <section className="relative overflow-hidden" style={{ background: MIDNIGHT }}>
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(167,139,250,0.1) 1px, transparent 1px)', backgroundSize: '32px 32px' }}
-        />
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden bg-background">
         <div
           className="absolute pointer-events-none"
           style={{
             top: '50%', right: '-5%', transform: 'translateY(-50%)',
             width: 500, height: 500, borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 68%)',
+            background: 'radial-gradient(circle, rgba(138,106,18,0.06) 0%, transparent 68%)',
           }}
         />
 
         <div className="relative max-w-7xl mx-auto px-6 pt-14 pb-16">
-          <div className="flex items-center gap-2 text-xs mb-6" style={{ color: 'rgba(196,181,253,0.5)' }}>
-            <Link href="/current-affairs" className="hover:text-white transition-colors flex items-center gap-1">
+          <div className="flex items-center gap-2 text-xs mb-6 text-muted-foreground">
+            <Link href="/current-affairs" className="hover:text-foreground transition-colors flex items-center gap-1">
               <ArrowLeft className="h-3.5 w-3.5" />
               Current Affairs
             </Link>
@@ -220,40 +209,34 @@ export default function PlacesInNewsPage() {
           <div className="max-w-2xl">
             {view === 'physical' ? (
               <>
-                <div
-                  className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-5"
-                  style={{ background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.35)', color: '#C4B5FD' }}
-                >
+                <div className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-5 bg-primary/8 border border-primary/18 text-primary">
                   <Mountain className="h-3.5 w-3.5" />
                   UPSC Through Map
                 </div>
                 <h1
-                  className="font-extrabold tracking-tight mb-3"
-                  style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', lineHeight: 1.1, color: '#F0EEFF' }}
+                  className="font-black tracking-tight mb-3 text-foreground"
+                  style={{ fontSize: 'var(--text-display-md)', lineHeight: 1.05, letterSpacing: '-0.01em' }}
                 >
-                  Straits, ranges, rivers &amp; plates <span style={TEXT_GRAD}>— one atlas.</span>
+                  Straits, ranges, rivers &amp; plates <span className="text-primary">— one atlas.</span>
                 </h1>
-                <p style={{ color: 'rgba(196,181,253,0.65)', fontSize: '0.95rem', lineHeight: 1.8, maxWidth: 520 }}>
+                <p className="text-muted-foreground" style={{ fontSize: '0.95rem', lineHeight: 1.8, maxWidth: 520 }}>
                   Every major strait, mountain range, river and tectonic plate in the world,
                   toggle-able by layer — physical geography, the way GS1 actually needs it.
                 </p>
               </>
             ) : (
               <>
-                <div
-                  className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-5"
-                  style={{ background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.35)', color: '#C4B5FD' }}
-                >
+                <div className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-5 bg-primary/8 border border-primary/18 text-primary">
                   <MapPin className="h-3.5 w-3.5" />
                   Places in the News
                 </div>
                 <h1
-                  className="font-extrabold tracking-tight mb-3"
-                  style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', lineHeight: 1.1, color: '#F0EEFF' }}
+                  className="font-black tracking-tight mb-3 text-foreground"
+                  style={{ fontSize: 'var(--text-display-md)', lineHeight: 1.05, letterSpacing: '-0.01em' }}
                 >
-                  Every place that made <span style={TEXT_GRAD}>the news.</span>
+                  Every place that made <span className="text-primary">the news.</span>
                 </h1>
-                <p style={{ color: 'rgba(196,181,253,0.65)', fontSize: '0.95rem', lineHeight: 1.8, maxWidth: 520 }}>
+                <p className="text-muted-foreground" style={{ fontSize: '0.95rem', lineHeight: 1.8, maxWidth: 520 }}>
                   Border disputes, summits, disasters and more — mapped by location and
                   grouped by day, so geography stays part of your current affairs prep.
                 </p>
@@ -269,13 +252,13 @@ export default function PlacesInNewsPage() {
 
           {/* Controls: view toggle + date range */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: 'rgba(124,58,237,0.06)' }}>
+            <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: 'rgba(138,106,18,0.06)' }}>
               <button
                 onClick={() => setView('map')}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer"
                 style={view === 'map'
-                  ? { background: '#7C3AED', color: '#FFFFFF' }
-                  : { background: 'transparent', color: '#6B63A0' }}
+                  ? { background: '#8A6A12', color: '#FFFFFF' }
+                  : { background: 'transparent', color: '#5B6478' }}
               >
                 <MapIcon className="h-3.5 w-3.5" />
                 Map
@@ -284,8 +267,8 @@ export default function PlacesInNewsPage() {
                 onClick={() => setView('list')}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer"
                 style={view === 'list'
-                  ? { background: '#7C3AED', color: '#FFFFFF' }
-                  : { background: 'transparent', color: '#6B63A0' }}
+                  ? { background: '#8A6A12', color: '#FFFFFF' }
+                  : { background: 'transparent', color: '#5B6478' }}
               >
                 <List className="h-3.5 w-3.5" />
                 Day-wise
@@ -294,8 +277,8 @@ export default function PlacesInNewsPage() {
                 onClick={() => setView('physical')}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer"
                 style={view === 'physical'
-                  ? { background: '#7C3AED', color: '#FFFFFF' }
-                  : { background: 'transparent', color: '#6B63A0' }}
+                  ? { background: '#8A6A12', color: '#FFFFFF' }
+                  : { background: 'transparent', color: '#5B6478' }}
               >
                 <Mountain className="h-3.5 w-3.5" />
                 UPSC Through Map
@@ -328,7 +311,7 @@ export default function PlacesInNewsPage() {
                 // isolate: Leaflet's internal zoom-control layer uses z-index:1000, which
                 // would otherwise paint over the page's sticky header (z-50) on scroll —
                 // isolation:isolate scopes it to this box only.
-                <div className="relative isolate rounded-2xl overflow-hidden" style={{ height: 560, border: '1px solid rgba(124,58,237,0.12)' }}>
+                <div className="relative isolate rounded-2xl overflow-hidden" style={{ height: 560, border: '1px solid rgba(138,106,18,0.12)' }}>
                   {mapLoading ? (
                     <div className="flex items-center justify-center h-full">
                       <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -347,7 +330,7 @@ export default function PlacesInNewsPage() {
               {/* Category legend */}
               <div className="flex flex-wrap items-center gap-3 mt-5">
                 {Object.entries(CATEGORY_CONFIG).map(([key, cfg]) => (
-                  <span key={key} className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: '#6B7280' }}>
+                  <span key={key} className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: '#5B6478' }}>
                     <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: cfg.color }} />
                     {cfg.label}
                   </span>
@@ -367,7 +350,7 @@ export default function PlacesInNewsPage() {
               ) : listLoading ? (
                 <div className="space-y-3">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-16 rounded-2xl animate-pulse" style={{ background: 'rgba(124,58,237,0.05)' }} />
+                    <div key={i} className="h-16 rounded-2xl animate-pulse" style={{ background: 'rgba(138,106,18,0.05)' }} />
                   ))}
                 </div>
               ) : groups.length === 0 ? (
@@ -397,8 +380,8 @@ export default function PlacesInNewsPage() {
                       onClick={() => setSelectedSubject(subject.slug)}
                       className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
                       style={active
-                        ? { background: subject.color ?? '#7C3AED', color: '#FFFFFF' }
-                        : { background: 'rgba(124,58,237,0.06)', color: '#6B63A0' }}
+                        ? { background: subject.color ?? '#8A6A12', color: '#FFFFFF' }
+                        : { background: 'rgba(138,106,18,0.06)', color: '#5B6478' }}
                     >
                       {subject.icon && <span>{subject.icon}</span>}
                       {subject.name}
@@ -416,7 +399,7 @@ export default function PlacesInNewsPage() {
                 // isolate: Leaflet's internal zoom-control layer uses z-index:1000, which
                 // would otherwise paint over the page's sticky header (z-50) on scroll —
                 // isolation:isolate scopes it to this box only.
-                <div className="relative isolate rounded-2xl overflow-hidden" style={{ height: 560, border: '1px solid rgba(124,58,237,0.12)' }}>
+                <div className="relative isolate rounded-2xl overflow-hidden" style={{ height: 560, border: '1px solid rgba(138,106,18,0.12)' }}>
                   {physicalLoading ? (
                     <div className="flex items-center justify-center h-full">
                       <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />

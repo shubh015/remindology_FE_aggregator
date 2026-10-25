@@ -15,9 +15,6 @@ import {
 
 // ── Design tokens ──────────────────────────────────────────────────
 
-const MIDNIGHT   = '#09091F';
-const BRAND_GRAD = 'linear-gradient(135deg, #7C3AED, #C026D3)';
-
 const GS_CONFIG: Record<string, { color: string; bg: string; border: string; desc: string }> = {
   GS1: { color: '#7C3AED', bg: 'rgba(124,58,237,0.08)', border: 'rgba(124,58,237,0.2)', desc: 'Indian Heritage & Society' },
   GS2: { color: '#0891B2', bg: 'rgba(8,145,178,0.08)',  border: 'rgba(8,145,178,0.2)',  desc: 'Polity & International' },
@@ -46,8 +43,8 @@ function RenderFact({ fact, color }: { fact: string; color: string }) {
 function ArticleSection({ article, index }: { article: CurrentAffairsArticle; index: number }) {
   const primaryGS   = article.gsPaperTags[0];
   const gsCfg       = primaryGS ? GS_CONFIG[primaryGS] : null;
-  const accentColor = gsCfg?.color ?? '#7C3AED';
-  const accentBg    = gsCfg?.bg    ?? 'rgba(124,58,237,0.08)';
+  const accentColor = gsCfg?.color ?? '#8A6A12';
+  const accentBg    = gsCfg?.bg    ?? 'rgba(138,106,18,0.08)';
 
   const ed = article.enrichedData;
   const whyInNews = ed?.whyInNews || article.summary;
@@ -244,7 +241,7 @@ function ArticleSection({ article, index }: { article: CurrentAffairsArticle; in
           href={`/current-affairs/${article.id}`}
           className="dd-cta group relative block overflow-hidden rounded-2xl"
           style={{
-            background: `linear-gradient(135deg, ${accentColor} 0%, #C026D3 100%)`,
+            background: accentColor,
             '--accent': accentColor,
           } as React.CSSProperties}
         >
@@ -305,20 +302,20 @@ function ArticleSection({ article, index }: { article: CurrentAffairsArticle; in
 function DigestSkeleton() {
   return (
     <>
-      <section style={{ background: MIDNIGHT }}>
+      <section className="bg-background">
         <div className="max-w-6xl mx-auto px-6 pt-10 pb-14 space-y-4 animate-pulse">
-          <div className="h-3 w-40 rounded bg-white/10" />
-          <div className="h-10 w-64 rounded bg-white/10" />
+          <div className="h-3 w-40 rounded bg-foreground/10" />
+          <div className="h-10 w-64 rounded bg-foreground/10" />
           <div className="flex gap-2 mt-2">
-            <div className="h-5 w-16 rounded-full bg-white/10" />
-            <div className="h-5 w-16 rounded-full bg-white/10" />
+            <div className="h-5 w-16 rounded-full bg-foreground/10" />
+            <div className="h-5 w-16 rounded-full bg-foreground/10" />
           </div>
         </div>
       </section>
       <section style={{ background: '#FFFFFF' }}>
         <div className="max-w-6xl mx-auto px-6 py-10 space-y-5 animate-pulse">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-2xl bg-white p-6 space-y-3" style={{ border: '1px solid rgba(124,58,237,0.1)' }}>
+            <div key={i} className="rounded-2xl bg-white p-6 space-y-3 border border-border">
               <div className="flex gap-2">
                 <Skeleton className="h-5 w-24 rounded-full" />
               </div>
@@ -370,11 +367,10 @@ export function DailyDigestClient() {
       <section style={{ background: '#FFFFFF', minHeight: '60vh' }}>
         <div className="max-w-6xl mx-auto px-6 py-20 flex flex-col items-center gap-4 text-center">
           <AlertCircle className="h-12 w-12" style={{ color: '#DC2626', opacity: 0.5 }} />
-          <p className="text-lg font-semibold" style={{ color: '#1A1836' }}>No articles found for this date</p>
+          <p className="text-lg font-semibold text-foreground">No articles found for this date</p>
           <Link
             href="/current-affairs"
-            className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl text-white"
-            style={{ background: BRAND_GRAD }}
+            className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl text-white bg-primary"
           >
             <ArrowLeft className="h-4 w-4" />Back to Current Affairs
           </Link>
@@ -403,8 +399,8 @@ export function DailyDigestClient() {
           100% { transform: translateX(420%) skewX(-18deg); opacity: 0; }
         }
         @keyframes dd-pulse-glow {
-          0%, 100% { box-shadow: 0 4px 24px rgba(124,58,237,0.25); }
-          50%       { box-shadow: 0 8px 40px rgba(192,38,211,0.45); }
+          0%, 100% { box-shadow: 0 4px 24px rgba(138,106,18,0.25); }
+          50%       { box-shadow: 0 8px 40px rgba(138,106,18,0.45); }
         }
         @keyframes dd-sparkle-spin {
           0%   { transform: rotate(0deg) scale(1); }
@@ -422,7 +418,7 @@ export function DailyDigestClient() {
         }
         .dd-cta:hover {
           transform: translateY(-2px);
-          box-shadow: 0 12px 48px rgba(124,58,237,0.4) !important;
+          box-shadow: 0 12px 48px rgba(138,106,18,0.4) !important;
           animation: none;
         }
 
@@ -456,59 +452,49 @@ export function DailyDigestClient() {
         }
       `}</style>
 
-      {/* ── Dark hero ── */}
-      <section className="relative overflow-hidden" style={{ background: MIDNIGHT }}>
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: 'radial-gradient(circle, rgba(167,139,250,0.07) 1px, transparent 1px)',
-            backgroundSize: '30px 30px',
-          }}
-        />
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden bg-background">
         <div
           className="absolute pointer-events-none"
           style={{
             top: 0, right: '-8%', width: 400, height: 400, borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 68%)',
+            background: 'radial-gradient(circle, rgba(138,106,18,0.06) 0%, transparent 68%)',
           }}
         />
 
         <div className="relative max-w-6xl mx-auto px-6 pt-10 pb-14">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-xs mb-6" style={{ color: 'rgba(196,181,253,0.5)' }}>
-            <Link href="/current-affairs" className="hover:text-white transition-colors flex items-center gap-1">
+          <div className="flex items-center gap-2 text-xs mb-6 text-muted-foreground">
+            <Link href="/current-affairs" className="hover:text-foreground transition-colors flex items-center gap-1">
               <ArrowLeft className="h-3.5 w-3.5" />
               Current Affairs
             </Link>
             <span>/</span>
-            <span style={{ color: 'rgba(196,181,253,0.75)' }}>Daily Digest</span>
+            <span>Daily Digest</span>
           </div>
 
           {/* Label */}
-          <div
-            className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full mb-4"
-            style={{ background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.35)', color: '#C4B5FD' }}
-          >
+          <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full mb-4 bg-primary/8 border border-primary/18 text-primary">
             Daily Current Affairs
           </div>
 
           {/* Date heading */}
           {typeof displayDate === 'object' ? (
             <>
-              <p className="text-sm font-semibold mb-1" style={{ color: 'rgba(196,181,253,0.5)' }}>
+              <p className="text-sm font-semibold mb-1 text-muted-foreground">
                 {displayDate.dayOfWeek}
               </p>
               <h1
-                className="font-extrabold tracking-tight mb-5"
-                style={{ fontSize: 'clamp(1.8rem, 4vw, 2.75rem)', lineHeight: 1.1, color: '#F0EEFF' }}
+                className="font-black tracking-tight mb-5 text-foreground"
+                style={{ fontSize: 'var(--text-display-md)', lineHeight: 1.05, letterSpacing: '-0.01em' }}
               >
                 {displayDate.full}
               </h1>
             </>
           ) : (
             <h1
-              className="font-extrabold tracking-tight mb-5"
-              style={{ fontSize: 'clamp(1.8rem, 4vw, 2.75rem)', lineHeight: 1.1, color: '#F0EEFF' }}
+              className="font-black tracking-tight mb-5 text-foreground"
+              style={{ fontSize: 'var(--text-display-md)', lineHeight: 1.05, letterSpacing: '-0.01em' }}
             >
               {displayDate}
             </h1>
@@ -517,15 +503,15 @@ export function DailyDigestClient() {
           {/* Stats row */}
           <div className="flex flex-wrap items-center gap-5">
             <div>
-              <span className="font-extrabold text-white text-lg">{articles.length}</span>
-              <span className="text-[11px] ml-1.5" style={{ color: 'rgba(196,181,253,0.5)' }}>
+              <span className="font-extrabold text-foreground text-lg">{articles.length}</span>
+              <span className="text-[11px] ml-1.5 text-muted-foreground">
                 {articles.length === 1 ? 'Article' : 'Articles'}
               </span>
             </div>
             {totalFacts > 0 && (
               <div>
-                <span className="font-extrabold text-white text-lg">{totalFacts}</span>
-                <span className="text-[11px] ml-1.5" style={{ color: 'rgba(196,181,253,0.5)' }}>Facts</span>
+                <span className="font-extrabold text-foreground text-lg">{totalFacts}</span>
+                <span className="text-[11px] ml-1.5 text-muted-foreground">Facts</span>
               </div>
             )}
             {/* GS chips */}
@@ -557,18 +543,16 @@ export function DailyDigestClient() {
           ))}
 
           {/* Back + navigation */}
-          <div className="flex items-center justify-between pt-4" style={{ borderTop: '1px solid rgba(124,58,237,0.1)' }}>
+          <div className="flex items-center justify-between pt-4 border-t border-border">
             <Link
               href="/current-affairs"
-              className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl transition-all hover:shadow-sm"
-              style={{ border: '1px solid rgba(124,58,237,0.2)', color: '#7C3AED', background: 'rgba(124,58,237,0.04)' }}
+              className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl transition-all hover:shadow-sm border border-primary/20 text-primary bg-primary/4"
             >
               <ArrowLeft className="h-4 w-4" />All Dates
             </Link>
             <Link
               href="/signup"
-              className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl text-white hover:opacity-90 transition-opacity"
-              style={{ background: BRAND_GRAD }}
+              className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl text-white bg-primary hover:opacity-90 transition-opacity"
             >
               Get Full Access
               <ArrowRight className="h-4 w-4" />

@@ -6,7 +6,9 @@ import { ArrowRight, LayoutDashboard, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/store/use-auth-store';
 import { deleteCookie } from '@/lib/utils';
 
-const BRAND_GRAD = 'linear-gradient(135deg, #7C3AED, #C026D3)';
+const BRAND = '#8A6A12';
+const BRAND_SHADOW = 'rgba(138,106,18,0.28)';
+const BRAND_SHADOW_STRONG = 'rgba(138,106,18,0.32)';
 
 // Derives initials from a display name: "Shubham Singh" → "SS"
 function initials(name: string) {
@@ -19,12 +21,10 @@ function initials(name: string) {
 }
 
 interface Props {
-  /** true = dark navbar (landing), false = current-affairs public layout */
-  dark?: boolean;
   onNavigate?: () => void;
 }
 
-export function NavAuthButtons({ dark = true, onNavigate }: Props) {
+export function NavAuthButtons({ onNavigate }: Props = {}) {
   const { isAuthenticated, user, clearAuth } = useAuthStore();
   const router = useRouter();
 
@@ -42,14 +42,11 @@ export function NavAuthButtons({ dark = true, onNavigate }: Props) {
         <div className="flex items-center gap-2">
           <div
             className="h-8 w-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0"
-            style={{ background: BRAND_GRAD }}
+            style={{ background: BRAND }}
           >
             {initials(user.name)}
           </div>
-          <span
-            className="text-sm font-semibold hidden lg:block truncate max-w-28"
-            style={{ color: dark ? 'rgba(240,238,255,0.85)' : '#1A1836' }}
-          >
+          <span className="text-sm font-semibold hidden lg:block truncate max-w-28 text-foreground">
             {user.name.split(' ')[0]}
           </span>
         </div>
@@ -59,7 +56,7 @@ export function NavAuthButtons({ dark = true, onNavigate }: Props) {
           href="/dashboard"
           onClick={onNavigate}
           className="hidden md:flex items-center gap-1.5 text-sm font-semibold px-3.5 py-2 rounded-xl transition-all hover:opacity-90"
-          style={{ background: BRAND_GRAD, color: '#FFFFFF', boxShadow: '0 4px 16px rgba(124,58,237,0.35)' }}
+          style={{ background: BRAND, color: '#FFFFFF', boxShadow: `0 4px 16px ${BRAND_SHADOW}` }}
         >
           <LayoutDashboard className="h-3.5 w-3.5" />
           Dashboard
@@ -68,11 +65,8 @@ export function NavAuthButtons({ dark = true, onNavigate }: Props) {
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="hidden md:flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition-colors cursor-pointer hover:bg-white/5 whitespace-nowrap"
-          style={{
-            border: dark ? '1px solid rgba(167,139,250,0.22)' : '1px solid rgba(124,58,237,0.2)',
-            color: dark ? 'rgba(196,181,253,0.7)' : '#7C3AED',
-          }}
+          className="hidden md:flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition-colors cursor-pointer hover:bg-black/5 whitespace-nowrap"
+          style={{ border: '1px solid rgba(138,106,18,0.25)', color: BRAND }}
         >
           <LogOut className="h-3.5 w-3.5" />
           Log out
@@ -87,8 +81,7 @@ export function NavAuthButtons({ dark = true, onNavigate }: Props) {
       <Link
         href="/login"
         onClick={onNavigate}
-        className="text-sm font-medium transition-colors hover:text-white px-3 py-1.5 rounded-lg"
-        style={{ color: dark ? 'rgba(240,238,255,0.58)' : '#6B63A0' }}
+        className="text-sm font-medium transition-colors hover:text-foreground px-3 py-1.5 rounded-lg text-muted-foreground"
       >
         Sign In
       </Link>
@@ -96,7 +89,7 @@ export function NavAuthButtons({ dark = true, onNavigate }: Props) {
         href="/signup"
         onClick={onNavigate}
         className="inline-flex items-center gap-1.5 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-opacity whitespace-nowrap"
-        style={{ background: BRAND_GRAD, boxShadow: '0 4px 20px rgba(124,58,237,0.4)' }}
+        style={{ background: BRAND, boxShadow: `0 4px 20px ${BRAND_SHADOW_STRONG}` }}
       >
         Get Started
         <ArrowRight className="h-3.5 w-3.5" />
@@ -122,16 +115,16 @@ export function MobileNavAuthButtons({ onClose }: { onClose: () => void }) {
     return (
       <div className="flex flex-col gap-3 py-5">
         {/* Greeting */}
-        <div className="flex items-center gap-3 px-2 pb-2" style={{ borderBottom: '1px solid rgba(124,58,237,0.1)' }}>
+        <div className="flex items-center gap-3 px-2 pb-2 border-b border-foreground/8">
           <div
             className="h-9 w-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
-            style={{ background: BRAND_GRAD }}
+            style={{ background: BRAND }}
           >
             {initials(user.name)}
           </div>
           <div>
-            <p className="text-sm font-semibold" style={{ color: 'rgba(240,238,255,0.9)' }}>{user.name}</p>
-            <p className="text-[11px]" style={{ color: 'rgba(196,181,253,0.5)' }}>{user.email}</p>
+            <p className="text-sm font-semibold text-foreground">{user.name}</p>
+            <p className="text-[11px] text-muted-foreground">{user.email}</p>
           </div>
         </div>
 
@@ -139,7 +132,7 @@ export function MobileNavAuthButtons({ onClose }: { onClose: () => void }) {
           href="/dashboard"
           onClick={onClose}
           className="flex items-center justify-center gap-2 text-white text-sm font-bold py-3.5 px-4 rounded-xl"
-          style={{ background: BRAND_GRAD, boxShadow: '0 4px 20px rgba(124,58,237,0.4)' }}
+          style={{ background: BRAND, boxShadow: `0 4px 20px ${BRAND_SHADOW}` }}
         >
           <LayoutDashboard className="h-4 w-4" />
           Go to Dashboard
@@ -147,8 +140,8 @@ export function MobileNavAuthButtons({ onClose }: { onClose: () => void }) {
 
         <button
           onClick={handleLogout}
-          className="flex items-center justify-center gap-2 text-sm font-semibold py-3 px-4 rounded-xl cursor-pointer transition-colors hover:bg-white/5"
-          style={{ border: '1px solid rgba(167,139,250,0.28)', color: '#C4B5FD' }}
+          className="flex items-center justify-center gap-2 text-sm font-semibold py-3 px-4 rounded-xl cursor-pointer transition-colors hover:bg-black/5"
+          style={{ border: '1px solid rgba(138,106,18,0.25)', color: BRAND }}
         >
           <LogOut className="h-4 w-4" />
           Log Out
@@ -163,8 +156,8 @@ export function MobileNavAuthButtons({ onClose }: { onClose: () => void }) {
       <Link
         href="/login"
         onClick={onClose}
-        className="text-center text-sm font-semibold py-3 px-4 rounded-xl transition-colors hover:bg-white/5"
-        style={{ border: '1px solid rgba(167,139,250,0.28)', color: '#C4B5FD' }}
+        className="text-center text-sm font-semibold py-3 px-4 rounded-xl transition-colors hover:bg-black/5"
+        style={{ border: '1px solid rgba(138,106,18,0.25)', color: BRAND }}
       >
         Sign In
       </Link>
@@ -172,7 +165,7 @@ export function MobileNavAuthButtons({ onClose }: { onClose: () => void }) {
         href="/signup"
         onClick={onClose}
         className="flex items-center justify-center gap-2 text-white text-sm font-bold py-3.5 px-4 rounded-xl"
-        style={{ background: BRAND_GRAD, boxShadow: '0 4px 20px rgba(124,58,237,0.4)' }}
+        style={{ background: BRAND, boxShadow: `0 4px 20px ${BRAND_SHADOW}` }}
       >
         Get Started Free
         <ArrowRight className="h-4 w-4" />

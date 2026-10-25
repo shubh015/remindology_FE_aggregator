@@ -18,13 +18,6 @@ import type { CurrentAffairsArticle } from '@/types/features';
 
 // ── Constants ─────────────────────────────────────────────────────
 
-const MIDNIGHT  = '#09091F';
-const TEXT_GRAD = {
-  background: 'linear-gradient(135deg, #A78BFA, #E879F9)',
-  WebkitBackgroundClip: 'text' as const,
-  WebkitTextFillColor: 'transparent',
-};
-
 const GS_CONFIG: Record<string, { color: string; bg: string; border: string; label: string }> = {
   GS1: { color: '#7C3AED', bg: 'rgba(124,58,237,0.1)',  border: 'rgba(124,58,237,0.25)', label: 'GS1 · Indian Heritage & Society' },
   GS2: { color: '#0891B2', bg: 'rgba(8,145,178,0.1)',   border: 'rgba(8,145,178,0.25)',  label: 'GS2 · Polity & International' },
@@ -105,7 +98,7 @@ function getMonthOptions() {
 
 function CardSkeleton() {
   return (
-    <div className="rounded-2xl bg-white overflow-hidden animate-pulse" style={{ border: '1px solid rgba(124,58,237,0.1)' }}>
+    <div className="rounded-2xl bg-white overflow-hidden animate-pulse" style={{ border: '1px solid rgba(138,106,18,0.1)' }}>
       <div className="h-0.75 bg-muted" />
       <div className="p-5 space-y-3">
         <div className="flex items-center justify-between">
@@ -138,9 +131,9 @@ function DateCard({ group }: { group: DateGroup }) {
   // Pick the dominant GS colour (first GS found)
   const primaryGS   = group.gsPapers[0];
   const gsCfg       = primaryGS ? GS_CONFIG[primaryGS] : null;
-  const accentColor = gsCfg?.color  ?? '#7C3AED';
-  const accentBg    = gsCfg?.bg     ?? 'rgba(124,58,237,0.08)';
-  const accentBorder = gsCfg?.border ?? 'rgba(124,58,237,0.2)';
+  const accentColor = gsCfg?.color  ?? '#8A6A12';
+  const accentBg    = gsCfg?.bg     ?? 'rgba(138,106,18,0.08)';
+  const accentBorder = gsCfg?.border ?? 'rgba(138,106,18,0.2)';
 
   // Top 6 unique topic tags across all articles
   const allTopics = Array.from(
@@ -153,7 +146,7 @@ function DateCard({ group }: { group: DateGroup }) {
   return (
     <Link
       href={`/current-affairs/date/${group.dateKey}`}
-      className="group block rounded-2xl bg-white overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(124,58,237,0.14)]"
+      className="group block rounded-2xl bg-white overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(138,106,18,0.14)]"
       style={{ border: `1px solid ${accentBorder}` }}
     >
       {/* Colored top bar */}
@@ -291,9 +284,9 @@ function EmptyState({ filtered }: { filtered?: boolean }) {
 function ArticleCard({ article }: { article: CurrentAffairsArticle }) {
   const primaryGS    = article.gsPaperTags[0];
   const gsCfg        = primaryGS ? GS_CONFIG[primaryGS] : null;
-  const accentColor  = gsCfg?.color  ?? '#7C3AED';
-  const accentBg     = gsCfg?.bg     ?? 'rgba(124,58,237,0.08)';
-  const accentBorder = gsCfg?.border ?? 'rgba(124,58,237,0.2)';
+  const accentColor  = gsCfg?.color  ?? '#8A6A12';
+  const accentBg     = gsCfg?.bg     ?? 'rgba(138,106,18,0.08)';
+  const accentBorder = gsCfg?.border ?? 'rgba(138,106,18,0.2)';
 
   const dateLabel = article.publishedDate
     ? new Date(`${toISTDateKey(article.publishedDate)}T00:00:00`).toLocaleDateString('en-IN', {
@@ -304,7 +297,7 @@ function ArticleCard({ article }: { article: CurrentAffairsArticle }) {
   return (
     <Link
       href={`/current-affairs/${article.id}`}
-      className="group block rounded-2xl bg-white overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(124,58,237,0.14)]"
+      className="group block rounded-2xl bg-white overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(138,106,18,0.14)]"
       style={{ border: `1px solid ${accentBorder}` }}
     >
       <div className="h-0.75" style={{ background: accentColor }} />
@@ -442,56 +435,41 @@ export default function CurrentAffairsPublicPage() {
   });
 
   return (
-    <div style={{ color: '#1A1836' }}>
+    <div className="text-foreground">
 
-      {/* ── Dark hero ── */}
-      <section className="relative overflow-hidden" style={{ background: MIDNIGHT }}>
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: 'radial-gradient(circle, rgba(167,139,250,0.1) 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
-          }}
-        />
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden bg-background">
+        {/* Quiet accent wash, flat editorial — matches the homepage hero treatment */}
         <div
           className="absolute pointer-events-none"
           style={{
-            top: '50%', right: '-5%',
-            transform: 'translateY(-50%)',
-            width: 500, height: 500,
+            top: '-15%', right: '-6%',
+            width: 580, height: 580,
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 68%)',
+            background: 'radial-gradient(circle, rgba(138,106,18,0.06) 0%, transparent 68%)',
           }}
         />
 
         <div className="relative max-w-7xl mx-auto px-6 pt-14 pb-16">
           <div className="max-w-2xl">
             {/* Badge */}
-            <div
-              className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-5"
-              style={{
-                background: 'rgba(124,58,237,0.18)',
-                border: '1px solid rgba(124,58,237,0.35)',
-                color: '#C4B5FD',
-              }}
-            >
+            <div className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-5 bg-primary/8 border border-primary/18 text-primary">
               <span className="relative flex h-2 w-2">
-                <span
-                  className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                  style={{ background: '#34D399' }}
-                />
-                <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: '#34D399' }} />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-primary" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
               </span>
               Updated Daily · Free for Everyone
             </div>
 
-            <h1
-              className="font-extrabold tracking-tight mb-3"
-              style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', lineHeight: 1.1, color: '#F0EEFF' }}
-            >
-              Current Affairs <span style={TEXT_GRAD}>Digest</span>
+            <h1 className="tracking-tight mb-3">
+              <span className="block font-semibold text-muted-foreground mb-1" style={{ fontSize: 'clamp(0.9rem, 1.8vw, 1.05rem)' }}>
+                Updated every morning
+              </span>
+              <span className="block font-black text-foreground" style={{ fontSize: 'var(--text-display-md)', lineHeight: 1.05, letterSpacing: '-0.01em' }}>
+                Current Affairs <span className="text-primary">Digest</span>
+              </span>
             </h1>
-            <p style={{ color: 'rgba(196,181,253,0.65)', fontSize: '0.95rem', lineHeight: 1.8, maxWidth: 520 }}>
+            <p className="text-muted-foreground" style={{ fontSize: '0.95rem', lineHeight: 1.8, maxWidth: 520 }}>
               AI-curated news for UPSC, SSC &amp; State PSC aspirants — tagged by GS paper,
               with key facts and mains angles. Published every morning.
             </p>
@@ -504,8 +482,8 @@ export default function CurrentAffairsPublicPage() {
                 { v: 'Free', l: 'No sign-up needed' },
               ].map((s) => (
                 <div key={s.l}>
-                  <div className="font-extrabold text-base text-white">{s.v}</div>
-                  <div className="text-[10px] mt-0.5" style={{ color: 'rgba(196,181,253,0.45)' }}>{s.l}</div>
+                  <div className="font-extrabold text-base text-foreground">{s.v}</div>
+                  <div className="text-[10px] mt-0.5 text-muted-foreground">{s.l}</div>
                 </div>
               ))}
             </div>
@@ -513,13 +491,10 @@ export default function CurrentAffairsPublicPage() {
             {/* Places in News CTA */}
             <Link
               href="/current-affairs/places-in-news"
-              className="group inline-flex items-center gap-2.5 text-sm font-bold pl-2.5 pr-5 py-2.5 rounded-xl mt-6 text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(124,58,237,0.45)]"
-              style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)', boxShadow: '0 6px 20px rgba(124,58,237,0.35)' }}
+              className="group inline-flex items-center gap-2.5 text-sm font-bold pl-2.5 pr-5 py-2.5 rounded-xl mt-6 text-white bg-primary transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(138,106,18,0.4)]"
+              style={{ boxShadow: '0 6px 20px rgba(138,106,18,0.3)' }}
             >
-              <span
-                className="text-[10px] font-extrabold px-2 py-1 rounded-lg shrink-0"
-                style={{ background: 'rgba(255,255,255,0.22)', color: '#FDE68A' }}
-              >
+              <span className="text-[10px] font-extrabold px-2 py-1 rounded-lg shrink-0 bg-white/20 text-white">
                 NEW
               </span>
               <MapPin className="h-4 w-4 shrink-0" />
@@ -538,7 +513,7 @@ export default function CurrentAffairsPublicPage() {
           <Link
             href="/current-affairs/places-in-news"
             className="group relative overflow-hidden rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-5 p-6 sm:p-7 mb-8 transition-transform hover:-translate-y-0.5"
-            style={{ background: 'linear-gradient(135deg, #5B21B6 0%, #7C3AED 45%, #C026D3 100%)', boxShadow: '0 12px 32px rgba(124,58,237,0.25)' }}
+            style={{ background: 'linear-gradient(135deg, #5C4509 0%, #8A6A12 45%, #C79A2E 100%)', boxShadow: '0 12px 32px rgba(138,106,18,0.3)' }}
           >
             <div
               className="absolute pointer-events-none"
@@ -551,7 +526,7 @@ export default function CurrentAffairsPublicPage() {
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.22)', color: '#FDE68A' }}>
+                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-white/20 text-white">
                     NEW
                   </span>
                   <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.7)' }}>
@@ -567,10 +542,7 @@ export default function CurrentAffairsPublicPage() {
               </div>
             </div>
 
-            <span
-              className="relative shrink-0 inline-flex items-center gap-2 text-sm font-bold px-5 py-2.5 rounded-xl"
-              style={{ background: '#FFFFFF', color: '#7C3AED' }}
-            >
+            <span className="relative shrink-0 inline-flex items-center gap-2 text-sm font-bold px-5 py-2.5 rounded-xl bg-white text-primary">
               Explore the map
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </span>
@@ -630,10 +602,7 @@ export default function CurrentAffairsPublicPage() {
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-muted-foreground hidden sm:block">{todayFull}</span>
                     {!isLoading && dateGroups.length > 0 && (
-                      <span
-                        className="text-[11px] font-bold px-3 py-1 rounded-full"
-                        style={{ background: 'rgba(124,58,237,0.08)', color: '#7C3AED', border: '1px solid rgba(124,58,237,0.15)' }}
-                      >
+                      <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-primary/8 text-primary border border-primary/15">
                         {hasMore
                           ? `${visibleCount} of ${dateGroups.length} days`
                           : `${dateGroups.length} day${dateGroups.length !== 1 ? 's' : ''}`}
@@ -682,7 +651,7 @@ export default function CurrentAffairsPublicPage() {
                               ? 'text-white border-transparent'
                               : 'text-muted-foreground border-border bg-background hover:border-primary/30 hover:text-foreground',
                           )}
-                          style={isActive ? { background: cfg ? cfg.color : '#7C3AED' } : {}}
+                          style={isActive ? { background: cfg ? cfg.color : '#8A6A12' } : {}}
                           title={cfg?.label}
                         >
                           {p}
@@ -806,23 +775,15 @@ export default function CurrentAffairsPublicPage() {
                 <div className="flex flex-col items-center gap-3 mt-8">
                   <button
                     onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-                    className="inline-flex items-center gap-2 text-sm font-bold px-7 py-3 rounded-2xl border-2 transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer"
-                    style={{
-                      borderColor: 'rgba(124,58,237,0.3)',
-                      color: '#7C3AED',
-                      background: '#FFFFFF',
-                    }}
+                    className="inline-flex items-center gap-2 text-sm font-bold px-7 py-3 rounded-2xl border-2 bg-white text-primary border-primary/30 transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer"
                   >
                     <ChevronDown className="h-4 w-4" />
                     Load More
-                    <span
-                      className="text-[10px] font-extrabold px-2 py-0.5 rounded-full"
-                      style={{ background: 'rgba(124,58,237,0.1)', color: '#7C3AED' }}
-                    >
+                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                       {Math.min(PAGE_SIZE, dateGroups.length - visibleCount)} more days
                     </span>
                   </button>
-                  <p className="text-[11px]" style={{ color: '#9CA3AF' }}>
+                  <p className="text-[11px] text-muted-foreground">
                     Showing {visibleCount} of {dateGroups.length} days
                   </p>
                 </div>
@@ -834,7 +795,7 @@ export default function CurrentAffairsPublicPage() {
           {!isLoading && !isError && dateGroups.length > 0 && (
             <div
               className="mt-12 rounded-2xl overflow-hidden relative"
-              style={{ background: 'linear-gradient(135deg, #5B21B6 0%, #7C3AED 50%, #C026D3 100%)' }}
+              style={{ background: 'linear-gradient(135deg, #5C4509 0%, #8A6A12 50%, #C79A2E 100%)' }}
             >
               <div
                 className="absolute inset-0 pointer-events-none"
@@ -852,8 +813,8 @@ export default function CurrentAffairsPublicPage() {
                 </div>
                 <Link
                   href="/signup"
-                  className="shrink-0 inline-flex items-center gap-2 font-bold px-6 py-3 rounded-xl text-sm hover:opacity-95 transition-opacity"
-                  style={{ background: '#FFFFFF', color: '#7C3AED', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}
+                  className="shrink-0 inline-flex items-center gap-2 font-bold px-6 py-3 rounded-xl text-sm bg-white text-primary hover:opacity-95 transition-opacity"
+                  style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}
                 >
                   Get Started Free
                   <ArrowRight className="h-4 w-4" />

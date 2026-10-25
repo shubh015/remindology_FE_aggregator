@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins } from "next/font/google";
+import { Poppins, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -13,12 +13,20 @@ const poppins = Poppins({
   preload: true,
 });
 
+const sourceSerif = Source_Serif_4({
+  variable: "--font-serif-display",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  display: "block",
+  preload: true,
+});
+
 const SITE_URL = "https://www.remindology.com";
 const SITE_DESCRIPTION =
   "Accelerate your UPSC preparation with AI-powered summaries, topics, revision notes, and MCQs generated from your study materials.";
 
 export const viewport: Viewport = {
-  themeColor: "#7C3AED",
+  themeColor: "#8A6A12",
 };
 
 export const metadata: Metadata = {
@@ -59,7 +67,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.variable} h-full antialiased`}
+      className={`${poppins.variable} ${sourceSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         {/* app-shell: single fade-in on first paint, masks all hydration flash */}

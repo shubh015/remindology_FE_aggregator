@@ -9,9 +9,8 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCourse } from '@/features/courses/hooks/use-courses';
 
-const MIDNIGHT  = '#09091F';
-const TEXT_BODY  = '#1F2937';
-const TEXT_MUTED = '#6B7280';
+const TEXT_BODY  = '#16233E';
+const TEXT_MUTED = '#5B6478';
 
 function SectionHeading({ children, color }: { children: string; color: string }) {
   return (
@@ -82,8 +81,8 @@ export function CourseDetailClient() {
 
   if (isLoading) {
     return (
-      <div style={{ fontFamily: 'var(--font-poppins), system-ui, sans-serif' }}>
-        <section style={{ background: MIDNIGHT }}>
+      <div>
+        <section className="bg-background">
           <CourseSkeleton />
         </section>
       </div>
@@ -92,15 +91,14 @@ export function CourseDetailClient() {
 
   if (isError || !course) {
     return (
-      <div style={{ fontFamily: 'var(--font-poppins), system-ui, sans-serif' }}>
+      <div>
         <section style={{ background: '#FFFFFF', minHeight: '60vh' }}>
           <div className="max-w-3xl mx-auto px-6 py-20 flex flex-col items-center gap-4 text-center">
             <AlertCircle className="h-12 w-12" style={{ color: '#DC2626', opacity: 0.5 }} />
-            <p className="text-lg font-semibold" style={{ color: '#1A1836' }}>Course not found</p>
+            <p className="text-lg font-semibold text-foreground">Course not found</p>
             <Link
               href="/courses"
-              className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl text-white"
-              style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)' }}
+              className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl text-white bg-primary"
             >
               <ArrowLeft className="h-4 w-4" />Back to Courses
             </Link>
@@ -110,7 +108,7 @@ export function CourseDetailClient() {
     );
   }
 
-  const accent = course.color || '#7C3AED';
+  const accent = course.color || '#8A6A12';
   const hasContent = !!course.overview || !!course.examPattern?.length || !!course.booklist?.length
     || !!course.examInfo?.length || !!course.yearWiseBreakdown?.length;
 
@@ -128,22 +126,18 @@ export function CourseDetailClient() {
   };
 
   return (
-    <div style={{ fontFamily: 'var(--font-poppins), system-ui, sans-serif' }}>
+    <div>
 
-      {/* ── Dark hero ── */}
-      <section className="relative overflow-hidden" style={{ background: MIDNIGHT }}>
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(167,139,250,0.07) 1px, transparent 1px)', backgroundSize: '30px 30px' }}
-        />
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden bg-background">
         <div
           className="absolute pointer-events-none"
-          style={{ top: 0, right: '-10%', width: 440, height: 440, borderRadius: '50%', background: `radial-gradient(circle, ${accent}28 0%, transparent 68%)` }}
+          style={{ top: 0, right: '-10%', width: 440, height: 440, borderRadius: '50%', background: `radial-gradient(circle, ${accent}14 0%, transparent 68%)` }}
         />
 
         <div className="relative max-w-6xl mx-auto px-6 pt-10 pb-14">
-          <div className="flex items-center gap-2 text-xs mb-6" style={{ color: 'rgba(196,181,253,0.5)' }}>
-            <Link href="/courses" className="hover:text-white transition-colors flex items-center gap-1">
+          <div className="flex items-center gap-2 text-xs mb-6" style={{ color: TEXT_MUTED }}>
+            <Link href="/courses" className="hover:text-foreground transition-colors flex items-center gap-1">
               <ArrowLeft className="h-3.5 w-3.5" />
               Courses
             </Link>
@@ -151,21 +145,21 @@ export function CourseDetailClient() {
 
           <div
             className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full mb-4"
-            style={{ background: `${accent}22`, border: `1px solid ${accent}55`, color: accent }}
+            style={{ background: `${accent}15`, border: `1px solid ${accent}35`, color: accent }}
           >
             <GraduationCap className="h-3.5 w-3.5" />
             Course
           </div>
 
           <h1
-            className="font-extrabold tracking-tight mb-4"
-            style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.25rem)', lineHeight: 1.15, color: '#F0EEFF' }}
+            className="font-black tracking-tight mb-4"
+            style={{ fontSize: 'var(--text-display-sm)', lineHeight: 1.05, letterSpacing: '-0.01em', color: TEXT_BODY }}
           >
             {course.name}
           </h1>
 
           {course.shortDescription && (
-            <p className="text-sm max-w-2xl" style={{ color: 'rgba(196,181,253,0.65)' }}>
+            <p className="text-sm max-w-2xl" style={{ color: TEXT_MUTED }}>
               {course.shortDescription}
             </p>
           )}

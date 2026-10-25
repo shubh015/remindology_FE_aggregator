@@ -13,6 +13,26 @@ import {
 } from 'lucide-react';
 import { MobileFeatureCarousel } from './MobileFeatureCarousel';
 
+// ── Light-card palette — Clean Editorial ──
+const INK = '#16233E';
+const MUTED = '#5B6478';
+const ACCENT = '#8A6A12';
+const ACCENT_SOFT = 'rgba(138,106,18,0.08)';
+const ACCENT_BORDER = 'rgba(138,106,18,0.18)';
+const SURFACE = '#F7F4EC';
+const BORDER = 'rgba(22,35,62,0.08)';
+const BORDER_MED = 'rgba(22,35,62,0.1)';
+// Muted taxonomy hues for the Key Topics category legend — kept distinct
+// from ACCENT (deep green) and from the semantic success/pending greens
+// and ambers used elsewhere in these mockups, so categories stay readable
+// without competing with the one brand accent.
+const TAXONOMY_TEAL = '#3D7A8C';
+const TAXONOMY_TEAL_BG = 'rgba(61,122,140,0.1)';
+const TAXONOMY_BROWN = '#8A6D56';
+const TAXONOMY_BROWN_BG = 'rgba(138,109,86,0.1)';
+const TAXONOMY_AMBER = '#B45309';
+const TAXONOMY_AMBER_BG = 'rgba(180,83,9,0.1)';
+
 // ── Feature metadata ─────────────────────────────────────────────
 const FEATURES = [
   {
@@ -63,15 +83,15 @@ function UploadMockup() {
       <div className="flex items-center gap-3 mb-5">
         <div
           className="h-9 w-9 rounded-xl flex items-center justify-center"
-          style={{ background: 'rgba(124,58,237,0.12)' }}
+          style={{ background: ACCENT_SOFT }}
         >
-          <Sparkles className="h-4 w-4" style={{ color: '#7C3AED' }} />
+          <Sparkles className="h-4 w-4" style={{ color: ACCENT }} />
         </div>
         <div>
-          <p className="text-sm font-semibold" style={{ color: '#1A1836' }}>
+          <p className="text-sm font-semibold" style={{ color: INK }}>
             Upload Study Material
           </p>
-          <p className="text-[11px]" style={{ color: '#9D95C4' }}>
+          <p className="text-[11px]" style={{ color: MUTED }}>
             Paste any article, chapter, or notes
           </p>
         </div>
@@ -80,16 +100,16 @@ function UploadMockup() {
       <div>
         <label
           className="text-[10px] font-bold uppercase tracking-widest mb-1.5 block"
-          style={{ color: '#9D95C4' }}
+          style={{ color: MUTED }}
         >
           Document Title
         </label>
         <div
           className="rounded-xl px-3.5 py-2.5 text-xs"
           style={{
-            background: '#F5F4FF',
-            border: '1px solid rgba(124,58,237,0.15)',
-            color: '#9D95C4',
+            background: SURFACE,
+            border: `1px solid ${BORDER_MED}`,
+            color: MUTED,
           }}
         >
           e.g., GS Paper 2 — Indo-Pacific Relations
@@ -99,24 +119,24 @@ function UploadMockup() {
       <div>
         <label
           className="text-[10px] font-bold uppercase tracking-widest mb-1.5 block"
-          style={{ color: '#9D95C4' }}
+          style={{ color: MUTED }}
         >
           Content
         </label>
         <div
           className="rounded-xl p-3.5 text-xs"
           style={{
-            background: '#F5F4FF',
-            border: '1px solid rgba(124,58,237,0.15)',
+            background: SURFACE,
+            border: `1px solid ${BORDER_MED}`,
             minHeight: 80,
-            color: '#9D95C4',
+            color: MUTED,
           }}
         >
           Paste your article, editorial, or study notes here…
         </div>
         <div
           className="flex items-center justify-between mt-1.5 text-[10px]"
-          style={{ color: '#C4BAE8' }}
+          style={{ color: MUTED }}
         >
           <span>0 words · 0 chars</span>
           <span>Plain text</span>
@@ -125,14 +145,14 @@ function UploadMockup() {
 
       <div
         className="flex items-center gap-3 pt-3"
-        style={{ borderTop: '1px solid rgba(124,58,237,0.1)' }}
+        style={{ borderTop: `1px solid ${BORDER}` }}
       >
-        <p className="flex-1 min-w-0 text-[10px]" style={{ color: '#9D95C4' }}>
+        <p className="flex-1 min-w-0 text-[10px]" style={{ color: MUTED }}>
           AI will generate summary, notes, MCQs &amp; topics
         </p>
         <div
           className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-xl text-white shrink-0"
-          style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)', cursor: 'default' }}
+          style={{ background: ACCENT, cursor: 'default' }}
         >
           <ArrowUp className="h-3.5 w-3.5" />
           Analyse
@@ -148,26 +168,26 @@ function SummaryMockup() {
       <div className="flex items-center gap-2 mb-4">
         <span
           className="text-[10px] font-bold px-2.5 py-1 rounded-full"
-          style={{ background: 'rgba(124,58,237,0.12)', color: '#7C3AED' }}
+          style={{ background: ACCENT_SOFT, color: ACCENT }}
         >
           UPSC CSE
         </span>
-        <span className="text-xs" style={{ color: '#9D95C4' }}>
+        <span className="text-xs" style={{ color: MUTED }}>
           India&apos;s G20 Presidency
         </span>
       </div>
 
       <div
         className="rounded-xl p-4"
-        style={{ background: '#F5F4FF', border: '1px solid rgba(124,58,237,0.1)' }}
+        style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
       >
         <div className="flex items-center gap-2 mb-2">
-          <Brain className="h-3.5 w-3.5" style={{ color: '#7C3AED' }} />
-          <span className="text-[11px] font-bold" style={{ color: '#7C3AED' }}>
+          <Brain className="h-3.5 w-3.5" style={{ color: ACCENT }} />
+          <span className="text-[11px] font-bold" style={{ color: ACCENT }}>
             AI Summary
           </span>
         </div>
-        <p className="text-xs leading-relaxed" style={{ color: '#4B4580' }}>
+        <p className="text-xs leading-relaxed" style={{ color: MUTED }}>
           India&apos;s G20 Presidency centred on 3 priorities: inclusive growth, DPI
           (Digital Public Infrastructure), and climate finance — under the theme
           &apos;One Earth, One Family, One Future&apos;, spotlighting the Global South.
@@ -176,22 +196,22 @@ function SummaryMockup() {
 
       <div
         className="rounded-xl p-4"
-        style={{ background: '#F5F4FF', border: '1px solid rgba(124,58,237,0.1)' }}
+        style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
       >
         <div className="flex items-center gap-2 mb-2">
-          <Brain className="h-3.5 w-3.5" style={{ color: '#0891B2' }} />
-          <span className="text-[11px] font-bold" style={{ color: '#0891B2' }}>
+          <Brain className="h-3.5 w-3.5" style={{ color: ACCENT }} />
+          <span className="text-[11px] font-bold" style={{ color: ACCENT }}>
             AI Summary
           </span>
         </div>
-        <p className="text-xs leading-relaxed" style={{ color: '#4B4580' }}>
+        <p className="text-xs leading-relaxed" style={{ color: MUTED }}>
           Indian Constitution adopted 26 Nov 1949; enforced 26 Jan 1950.
           Dr. B.R. Ambedkar (Drafting Committee Chair) is its chief architect.
           World&apos;s longest written constitution.
         </p>
       </div>
 
-      <div className="flex items-center gap-1.5 text-[11px]" style={{ color: '#9D95C4' }}>
+      <div className="flex items-center gap-1.5 text-[11px]" style={{ color: MUTED }}>
         <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
         2 summaries generated · avg 1.9 s each
       </div>
@@ -209,13 +229,13 @@ function NotesMockup() {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-4">
-        <BookOpen className="h-3.5 w-3.5" style={{ color: '#7C3AED' }} />
-        <span className="text-xs font-bold" style={{ color: '#7C3AED' }}>
+        <BookOpen className="h-3.5 w-3.5" style={{ color: ACCENT }} />
+        <span className="text-xs font-bold" style={{ color: ACCENT }}>
           Revision Notes
         </span>
         <span
           className="text-[10px] ml-auto px-2 py-0.5 rounded-full"
-          style={{ background: 'rgba(5,150,105,0.1)', color: '#059669' }}
+          style={{ background: ACCENT_SOFT, color: ACCENT }}
         >
           4 points
         </span>
@@ -224,18 +244,18 @@ function NotesMockup() {
         <div
           key={i}
           className="flex items-start gap-3 rounded-xl px-3.5 py-3"
-          style={{ background: '#F5F4FF', border: '1px solid rgba(124,58,237,0.08)' }}
+          style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
         >
           <div
             className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5"
             style={{
-              background: 'linear-gradient(135deg, #7C3AED, #C026D3)',
+              background: ACCENT,
               color: '#FFFFFF',
             }}
           >
             {i + 1}
           </div>
-          <span className="text-xs leading-relaxed" style={{ color: '#4B4580' }}>
+          <span className="text-xs leading-relaxed" style={{ color: MUTED }}>
             {note}
           </span>
         </div>
@@ -254,18 +274,18 @@ function MCQMockup() {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-4">
-        <Target className="h-3.5 w-3.5" style={{ color: '#7C3AED' }} />
-        <span className="text-xs font-bold" style={{ color: '#7C3AED' }}>
+        <Target className="h-3.5 w-3.5" style={{ color: ACCENT }} />
+        <span className="text-xs font-bold" style={{ color: ACCENT }}>
           Practice MCQ
         </span>
         <span
           className="text-[10px] ml-auto px-2 py-0.5 rounded-full"
-          style={{ background: 'rgba(124,58,237,0.1)', color: '#7C3AED' }}
+          style={{ background: ACCENT_SOFT, color: ACCENT }}
         >
           Q 1 of 5
         </span>
       </div>
-      <p className="text-xs font-semibold mb-4" style={{ color: '#1A1836' }}>
+      <p className="text-xs font-semibold mb-4" style={{ color: INK }}>
         India&apos;s G20 Presidency primarily focused on which three pillars?
       </p>
       {options.map((opt, i) => (
@@ -273,16 +293,16 @@ function MCQMockup() {
           key={i}
           className="flex items-center gap-2.5 text-xs px-3 py-2.5 rounded-xl"
           style={{
-            background: opt.correct ? 'rgba(5,150,105,0.08)' : '#F5F4FF',
-            border: `1px solid ${opt.correct ? 'rgba(5,150,105,0.25)' : 'rgba(124,58,237,0.08)'}`,
-            color: opt.correct ? '#059669' : '#4B4580',
+            background: opt.correct ? 'rgba(5,150,105,0.08)' : SURFACE,
+            border: `1px solid ${opt.correct ? 'rgba(5,150,105,0.25)' : BORDER}`,
+            color: opt.correct ? '#059669' : MUTED,
           }}
         >
           <span
             className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
             style={{
-              background: opt.correct ? '#059669' : 'rgba(124,58,237,0.1)',
-              color: opt.correct ? '#FFFFFF' : '#7C3AED',
+              background: opt.correct ? '#059669' : ACCENT_SOFT,
+              color: opt.correct ? '#FFFFFF' : ACCENT,
             }}
           >
             {String.fromCharCode(65 + i)}
@@ -299,23 +319,23 @@ function MCQMockup() {
 
 function TopicsMockup() {
   const topics = [
-    { t: 'G20 Presidency', cat: 'Main Topic',  c: '#7C3AED', bg: 'rgba(124,58,237,0.1)' },
-    { t: 'Digital Public Infrastructure', cat: 'Key Concept', c: '#0891B2', bg: 'rgba(8,145,178,0.1)' },
-    { t: 'Climate Finance', cat: 'Key Concept', c: '#0891B2', bg: 'rgba(8,145,178,0.1)' },
-    { t: 'Global South',   cat: 'Term',         c: '#059669', bg: 'rgba(5,150,105,0.1)' },
-    { t: 'Inclusive Growth', cat: 'Term',        c: '#059669', bg: 'rgba(5,150,105,0.1)' },
-    { t: 'One Earth Philosophy', cat: 'Theme',   c: '#D97706', bg: 'rgba(217,119,6,0.1)' },
+    { t: 'G20 Presidency', cat: 'Main Topic',  c: ACCENT, bg: ACCENT_SOFT },
+    { t: 'Digital Public Infrastructure', cat: 'Key Concept', c: TAXONOMY_TEAL, bg: TAXONOMY_TEAL_BG },
+    { t: 'Climate Finance', cat: 'Key Concept', c: TAXONOMY_TEAL, bg: TAXONOMY_TEAL_BG },
+    { t: 'Global South',   cat: 'Term',         c: TAXONOMY_BROWN, bg: TAXONOMY_BROWN_BG },
+    { t: 'Inclusive Growth', cat: 'Term',        c: TAXONOMY_BROWN, bg: TAXONOMY_BROWN_BG },
+    { t: 'One Earth Philosophy', cat: 'Theme',   c: TAXONOMY_AMBER, bg: TAXONOMY_AMBER_BG },
   ];
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
-        <FileText className="h-3.5 w-3.5" style={{ color: '#7C3AED' }} />
-        <span className="text-xs font-bold" style={{ color: '#7C3AED' }}>
+        <FileText className="h-3.5 w-3.5" style={{ color: ACCENT }} />
+        <span className="text-xs font-bold" style={{ color: ACCENT }}>
           Key Topics
         </span>
         <span
           className="text-[10px] ml-auto px-2 py-0.5 rounded-full"
-          style={{ background: 'rgba(124,58,237,0.1)', color: '#7C3AED' }}
+          style={{ background: ACCENT_SOFT, color: ACCENT }}
         >
           6 extracted
         </span>
@@ -333,20 +353,20 @@ function TopicsMockup() {
       </div>
       <div
         className="pt-4"
-        style={{ borderTop: '1px solid rgba(124,58,237,0.08)' }}
+        style={{ borderTop: `1px solid ${BORDER}` }}
       >
         <p
           className="text-[10px] font-semibold mb-2"
-          style={{ color: '#9D95C4' }}
+          style={{ color: MUTED }}
         >
           Category legend
         </p>
         <div className="flex flex-wrap gap-1.5">
           {[
-            { l: 'Main Topic', c: '#7C3AED', bg: 'rgba(124,58,237,0.1)' },
-            { l: 'Key Concept', c: '#0891B2', bg: 'rgba(8,145,178,0.1)' },
-            { l: 'Term', c: '#059669', bg: 'rgba(5,150,105,0.1)' },
-            { l: 'Theme', c: '#D97706', bg: 'rgba(217,119,6,0.1)' },
+            { l: 'Main Topic', c: ACCENT, bg: ACCENT_SOFT },
+            { l: 'Key Concept', c: TAXONOMY_TEAL, bg: TAXONOMY_TEAL_BG },
+            { l: 'Term', c: TAXONOMY_BROWN, bg: TAXONOMY_BROWN_BG },
+            { l: 'Theme', c: TAXONOMY_AMBER, bg: TAXONOMY_AMBER_BG },
           ].map(item => (
             <span
               key={item.l}
@@ -364,7 +384,7 @@ function TopicsMockup() {
 
 function ProgressMockup() {
   const stats = [
-    { label: 'Total Uploads', value: '24', color: '#7C3AED', bg: 'rgba(124,58,237,0.1)' },
+    { label: 'Total Uploads', value: '24', color: ACCENT, bg: ACCENT_SOFT },
     { label: 'AI Completed',  value: '21', color: '#059669', bg: 'rgba(5,150,105,0.1)' },
     { label: 'Processing',    value: '3',  color: '#D97706', bg: 'rgba(217,119,6,0.1)' },
   ];
@@ -376,8 +396,8 @@ function ProgressMockup() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
-        <BarChart3 className="h-3.5 w-3.5" style={{ color: '#7C3AED' }} />
-        <span className="text-xs font-bold" style={{ color: '#7C3AED' }}>
+        <BarChart3 className="h-3.5 w-3.5" style={{ color: ACCENT }} />
+        <span className="text-xs font-bold" style={{ color: ACCENT }}>
           Progress Library
         </span>
       </div>
@@ -408,22 +428,22 @@ function ProgressMockup() {
           <div
             key={item.title}
             className="flex items-center gap-3 rounded-xl px-3 py-2.5"
-            style={{ background: '#F5F4FF', border: '1px solid rgba(124,58,237,0.08)' }}
+            style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
           >
             <div
               className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-              style={{ background: 'rgba(124,58,237,0.1)' }}
+              style={{ background: ACCENT_SOFT }}
             >
-              <FileText className="h-3.5 w-3.5" style={{ color: '#7C3AED' }} />
+              <FileText className="h-3.5 w-3.5" style={{ color: ACCENT }} />
             </div>
             <div className="flex-1 min-w-0">
               <p
                 className="text-xs font-semibold truncate"
-                style={{ color: '#1A1836' }}
+                style={{ color: INK }}
               >
                 {item.title}
               </p>
-              <p className="text-[10px]" style={{ color: '#9D95C4' }}>
+              <p className="text-[10px]" style={{ color: MUTED }}>
                 {item.date}
               </p>
             </div>
@@ -511,8 +531,8 @@ export function FeatureShowcase() {
       <div
         className="md:hidden rounded-3xl p-4 overflow-hidden"
         style={{
-          border: '1px solid rgba(124,58,237,0.12)',
-          boxShadow: '0 20px 60px rgba(124,58,237,0.1)',
+          border: `1px solid ${BORDER_MED}`,
+          boxShadow: '0 20px 60px rgba(22,35,62,0.06)',
           background: '#FFFFFF',
         }}
       >
@@ -524,8 +544,8 @@ export function FeatureShowcase() {
         ref={containerRef}
         className="hidden md:block rounded-3xl overflow-hidden"
         style={{
-          border: '1px solid rgba(124,58,237,0.12)',
-          boxShadow: '0 20px 60px rgba(124,58,237,0.1)',
+          border: `1px solid ${BORDER_MED}`,
+          boxShadow: '0 20px 60px rgba(22,35,62,0.06)',
         }}
       >
       <style dangerouslySetInnerHTML={{ __html: `
@@ -541,11 +561,11 @@ export function FeatureShowcase() {
         {/* ── Sidebar nav — icon-only scroll on mobile, vertical list on desktop ── */}
         <div
           className="p-3 md:p-4 flex flex-row overflow-x-auto md:flex-col border-b md:border-b-0 md:border-r min-w-0"
-          style={{ background: '#FAFAFF', borderColor: 'rgba(124,58,237,0.1)' }}
+          style={{ background: SURFACE, borderColor: BORDER }}
         >
           <p
             className="hidden md:block text-[10px] font-bold uppercase tracking-widest mb-3 px-2 shrink-0"
-            style={{ color: '#9D95C4' }}
+            style={{ color: MUTED }}
           >
             Dashboard Features
           </p>
@@ -558,37 +578,33 @@ export function FeatureShowcase() {
                 onClick={() => handleSelect(i)}
                 className="shrink-0 md:w-full flex items-center gap-0 md:gap-3 p-2 md:px-3 md:py-2.5 rounded-xl mb-0 md:mb-1 mr-1.5 md:mr-0 text-left transition-all duration-150"
                 style={{
-                  background: isActive
-                    ? 'linear-gradient(135deg, rgba(124,58,237,0.1), rgba(192,38,211,0.06))'
-                    : 'transparent',
-                  border: `1px solid ${isActive ? 'rgba(124,58,237,0.18)' : 'transparent'}`,
+                  background: isActive ? ACCENT_SOFT : 'transparent',
+                  border: `1px solid ${isActive ? ACCENT_BORDER : 'transparent'}`,
                   cursor: 'pointer',
                 }}
               >
                 <div
                   className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-150"
                   style={{
-                    background: isActive
-                      ? 'linear-gradient(135deg, #7C3AED, #C026D3)'
-                      : 'rgba(124,58,237,0.08)',
+                    background: isActive ? ACCENT : ACCENT_SOFT,
                   }}
                 >
                   <Icon
                     className="h-4 w-4"
-                    style={{ color: isActive ? '#FFFFFF' : '#7C3AED' }}
+                    style={{ color: isActive ? '#FFFFFF' : ACCENT }}
                   />
                 </div>
                 {/* Text label — hidden on mobile to keep sidebar compact */}
                 <div className="hidden md:block min-w-0 ml-3">
                   <p
                     className="text-xs font-semibold leading-tight truncate"
-                    style={{ color: isActive ? '#1A1836' : '#6B63A0' }}
+                    style={{ color: isActive ? INK : MUTED }}
                   >
                     {f.label}
                   </p>
                   <p
                     className="text-[10px] leading-tight mt-0.5 truncate"
-                    style={{ color: '#9D95C4' }}
+                    style={{ color: MUTED }}
                   >
                     {f.tagline}
                   </p>
@@ -603,14 +619,14 @@ export function FeatureShowcase() {
           {/* CSS-animated progress bar — no JS ticking, GPU-composited */}
           <div
             className="h-0.5 rounded-full mb-6 overflow-hidden"
-            style={{ background: 'rgba(124,58,237,0.1)' }}
+            style={{ background: BORDER_MED }}
           >
             <div
               key={animKey}
               className="h-full w-full rounded-full"
               style={{
                 transformOrigin: 'left center',
-                background: 'linear-gradient(to right, #7C3AED, #C026D3)',
+                background: ACCENT,
                 animation: `rmProgressSweepFS ${AUTO_ROTATE_MS}ms linear forwards`,
                 animationPlayState: isVisible ? 'running' : 'paused',
                 willChange: 'transform',
@@ -626,17 +642,17 @@ export function FeatureShowcase() {
               return (
                 <div
                   className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.12), rgba(192,38,211,0.07))' }}
+                  style={{ background: ACCENT_SOFT }}
                 >
-                  <Icon className="h-4 w-4" style={{ color: '#7C3AED' }} />
+                  <Icon className="h-4 w-4" style={{ color: ACCENT }} />
                 </div>
               );
             })()}
             <div>
-              <p className="text-sm font-bold" style={{ color: '#1A1836' }}>
+              <p className="text-sm font-bold" style={{ color: INK }}>
                 {feature.label}
               </p>
-              <p className="text-[11px]" style={{ color: '#9D95C4' }}>
+              <p className="text-[11px]" style={{ color: MUTED }}>
                 {feature.tagline}
               </p>
             </div>

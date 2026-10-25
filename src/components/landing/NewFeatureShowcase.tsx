@@ -13,18 +13,18 @@ const NEW_FEATURES = [
   { id: 'current-affairs', icon: Newspaper,    label: 'Current Affairs',      tagline: 'Daily news with mains angle',  color: '#38BDF8' },
   { id: 'mains-writing',   icon: PenLine,      label: 'Answer Writing',       tagline: 'AI paragraph scorecard',       color: '#34D399' },
   { id: 'weak-zones',      icon: TrendingDown, label: 'Weak Zone Tracker',      tagline: 'Know where you lose marks',    color: '#F43F5E' },
-  { id: 'study-plan',      icon: CalendarDays, label: '30-Day Plan',          tagline: 'AI-generated calendar',        color: '#818CF8' },
+  { id: 'study-plan',      icon: CalendarDays, label: '30-Day Plan',          tagline: 'AI-generated calendar',        color: '#8A6A12' },
   { id: 'detective',       icon: Search,       label: 'Prelims Detective',    tagline: 'Why each wrong answer failed', color: '#F59E0B' },
-  { id: 'mnemonics',       icon: Brain,        label: 'Memory Mnemonics',     tagline: 'Never forget a fact',          color: '#A78BFA' },
-  { id: 'exam-profile',    icon: BadgeCheck,   label: 'Exam Profile',         tagline: 'Personalised for your exam',   color: '#7C3AED' },
+  { id: 'mnemonics',       icon: Brain,        label: 'Memory Mnemonics',     tagline: 'Never forget a fact',          color: '#8A6A12' },
+  { id: 'exam-profile',    icon: BadgeCheck,   label: 'Exam Profile',         tagline: 'Personalised for your exam',   color: '#8A6A12' },
 ] as const;
 
 type NewFeatureId = typeof NEW_FEATURES[number]['id'];
 
-const SURFACE   = '#F5F4FF';
-const BORDER_S  = 'rgba(124,58,237,0.09)';
-const TEXT_DARK = '#1A1836';
-const TEXT_MID  = '#9D95C4';
+const SURFACE   = '#F7F4EC';
+const BORDER_S  = 'rgba(22,35,62,0.08)';
+const TEXT_DARK = '#16233E';
+const TEXT_MID  = '#5B6478';
 const AUTO_ROTATE_MS = 5000;
 
 // ── Mockup panels ─────────────────────────────────────────────────
@@ -40,7 +40,7 @@ function DailyChallengeMockup() {
         <span className="text-[10px] font-semibold" style={{ color: TEXT_MID }}>Q 2 / 5</span>
       </div>
       <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(251,146,60,0.12)' }}>
-        <div className="h-full rounded-full" style={{ width: '40%', background: 'linear-gradient(to right, #FB923C, #F59E0B)' }} />
+        <div className="h-full rounded-full" style={{ width: '40%', background: '#FB923C' }} />
       </div>
       <p className="text-xs font-semibold leading-snug pt-2" style={{ color: TEXT_DARK }}>
         Panchayati Raj was first implemented in which Indian state in 1959?
@@ -55,10 +55,10 @@ function DailyChallengeMockup() {
           style={{
             background: opt.correct ? 'rgba(5,150,105,0.08)' : SURFACE,
             border: `1px solid ${opt.correct ? 'rgba(5,150,105,0.25)' : BORDER_S}`,
-            color: opt.correct ? '#059669' : '#4B4580',
+            color: opt.correct ? '#059669' : '#5B6478',
           }}>
           <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
-            style={{ background: opt.correct ? '#059669' : 'rgba(124,58,237,0.1)', color: opt.correct ? '#fff' : '#7C3AED' }}>
+            style={{ background: opt.correct ? '#059669' : 'rgba(138,106,18,0.08)', color: opt.correct ? '#fff' : '#8A6A12' }}>
             {String.fromCharCode(65 + i)}
           </span>
           <span className="flex-1">{opt.t}</span>
@@ -83,7 +83,7 @@ function CurrentAffairsMockup() {
       </div>
       <div className="rounded-xl p-3 space-y-2" style={{ background: 'rgba(56,189,248,0.07)', border: '1px solid rgba(56,189,248,0.2)' }}>
         <p className="text-[11px] font-bold" style={{ color: TEXT_DARK }}>India-EU Free Trade Agreement: Latest Round</p>
-        <p className="text-[10px] leading-relaxed" style={{ color: '#4B4580' }}>
+        <p className="text-[10px] leading-relaxed" style={{ color: '#5B6478' }}>
           India and the EU resumed FTA talks in Brussels, focusing on digital trade, IP rights, and automotive tariffs…
         </p>
         <div className="flex gap-1.5 flex-wrap pt-1">
@@ -94,16 +94,16 @@ function CurrentAffairsMockup() {
         </div>
       </div>
       <div className="rounded-xl p-3" style={{ background: SURFACE, border: `1px solid ${BORDER_S}` }}>
-        <p className="text-[10px] font-bold mb-2" style={{ color: '#7C3AED' }}>Key Facts</p>
+        <p className="text-[10px] font-bold mb-2" style={{ color: '#8A6A12' }}>Key Facts</p>
         {['Negotiations since 2007; paused 2013–2022', 'India seeks duty reduction on textiles & pharma', '€100B bilateral trade target by 2030'].map((f, i) => (
-          <div key={i} className="flex items-start gap-1.5 text-[10px] mb-1" style={{ color: '#4B4580' }}>
-            <span className="mt-0.5 shrink-0" style={{ color: '#7C3AED' }}>•</span>{f}
+          <div key={i} className="flex items-start gap-1.5 text-[10px] mb-1" style={{ color: '#5B6478' }}>
+            <span className="mt-0.5 shrink-0" style={{ color: '#8A6A12' }}>•</span>{f}
           </div>
         ))}
       </div>
-      <div className="rounded-xl p-3" style={{ background: 'rgba(124,58,237,0.04)', border: `1px solid rgba(124,58,237,0.1)` }}>
-        <p className="text-[10px] font-bold mb-1" style={{ color: '#7C3AED' }}>Mains Angle (GS2)</p>
-        <p className="text-[10px] leading-relaxed" style={{ color: '#4B4580' }}>
+      <div className="rounded-xl p-3" style={{ background: 'rgba(138,106,18,0.04)', border: `1px solid rgba(138,106,18,0.1)` }}>
+        <p className="text-[10px] font-bold mb-1" style={{ color: '#8A6A12' }}>Mains Angle (GS2)</p>
+        <p className="text-[10px] leading-relaxed" style={{ color: '#5B6478' }}>
           Analyse India&apos;s FTA strategy in the context of supply chain diversification and QUAD commitments.
         </p>
       </div>
@@ -121,9 +121,9 @@ function MainsMockup() {
         <span className="text-[10px] font-bold px-2 py-1 rounded-lg shrink-0 ml-3"
           style={{ background: 'rgba(52,211,153,0.12)', color: '#059669' }}>⏱ 12:44</span>
       </div>
-      <div className="rounded-xl p-3 text-xs leading-relaxed" style={{ background: SURFACE, border: `1px solid ${BORDER_S}`, minHeight: 70, color: '#4B4580' }}>
+      <div className="rounded-xl p-3 text-xs leading-relaxed" style={{ background: SURFACE, border: `1px solid ${BORDER_S}`, minHeight: 70, color: '#5B6478' }}>
         India&apos;s semiconductor policy aims to reduce dependence on imports by building domestic fabrication capacity. The ₹76,000 crore incentive scheme targets…
-        <span style={{ color: '#C4BAE8' }}> |</span>
+        <span style={{ color: 'rgba(138,106,18,0.4)' }}> |</span>
       </div>
       <div className="flex justify-between text-[10px]" style={{ color: TEXT_MID }}>
         <span>47 / 150 words</span><span>Mains 2024 · GS3</span>
@@ -132,7 +132,7 @@ function MainsMockup() {
         <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#059669' }}>AI Scorecard</p>
         {[['Introduction', '3/4'], ['Arguments', '5/8'], ['Examples', '3/5'], ['Conclusion', '2/3']].map(([k, v]) => (
           <div key={k} className="flex items-center justify-between text-[11px]">
-            <span style={{ color: '#4B4580' }}>{k}</span>
+            <span style={{ color: '#5B6478' }}>{k}</span>
             <span className="font-bold" style={{ color: '#059669' }}>{v}</span>
           </div>
         ))}
@@ -161,15 +161,15 @@ function WeakZoneMockup() {
       {zones.map((z) => (
         <div key={z.topic} className="space-y-1">
           <div className="flex items-center justify-between text-[11px]">
-            <span style={{ color: '#4B4580' }}>{z.topic}</span>
+            <span style={{ color: '#5B6478' }}>{z.topic}</span>
             <span className="font-bold px-2 py-0.5 rounded-full text-[10px]" style={{ background: z.bg, color: z.color }}>{z.label}</span>
           </div>
-          <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(124,58,237,0.07)' }}>
+          <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(22,35,62,0.07)' }}>
             <div className="h-full rounded-full" style={{ width: `${z.pct}%`, background: z.color }} />
           </div>
         </div>
       ))}
-      <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-lg" style={{ background: 'rgba(124,58,237,0.08)', color: '#7C3AED' }}>
+      <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-lg" style={{ background: 'rgba(138,106,18,0.08)', color: '#8A6A12' }}>
         Practice Governance now →
       </div>
     </div>
@@ -178,19 +178,19 @@ function WeakZoneMockup() {
 
 function StudyPlanMockup() {
   const days = [
-    { d: 1, topic: 'Modern History — 1857', icon: BookOpen,     color: '#818CF8', bg: 'rgba(129,140,248,0.1)', today: true },
+    { d: 1, topic: 'Modern History — 1857', icon: BookOpen,     color: '#8A6A12', bg: 'rgba(138,106,18,0.1)',  today: true },
     { d: 2, topic: 'Current Affairs',        icon: Newspaper,   color: '#34D399', bg: 'rgba(52,211,153,0.1)'  },
     { d: 3, topic: 'Polity — Preamble',      icon: Zap,         color: '#F59E0B', bg: 'rgba(245,158,11,0.1)'  },
     { d: 4, topic: 'Economy — Budget',       icon: TrendingDown,color: '#F43F5E', bg: 'rgba(244,63,94,0.1)'   },
-    { d: 5, topic: 'Environment & Ecology',  icon: Brain,       color: '#A78BFA', bg: 'rgba(167,139,250,0.1)' },
+    { d: 5, topic: 'Environment & Ecology',  icon: Brain,       color: '#8A6A12', bg: 'rgba(138,106,18,0.1)'   },
     { d: 7, topic: 'FULL MOCK TEST',         icon: FlaskConical,color: '#F43F5E', bg: 'rgba(244,63,94,0.1)',  mock: true },
   ];
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-1">
-        <CalendarDays className="h-3.5 w-3.5" style={{ color: '#818CF8' }} />
+        <CalendarDays className="h-3.5 w-3.5" style={{ color: '#8A6A12' }} />
         <span className="text-xs font-bold" style={{ color: TEXT_DARK }}>30-Day Plan</span>
-        <span className="text-[10px] ml-auto px-2 py-0.5 rounded-full" style={{ background: 'rgba(129,140,248,0.1)', color: '#818CF8' }}>89 days left</span>
+        <span className="text-[10px] ml-auto px-2 py-0.5 rounded-full" style={{ background: 'rgba(138,106,18,0.1)', color: '#8A6A12' }}>89 days left</span>
       </div>
       <div className="grid grid-cols-2 gap-2">
         {days.map((day) => {
@@ -198,19 +198,19 @@ function StudyPlanMockup() {
           return (
             <div key={day.d} className="rounded-xl p-2.5"
               style={{
-                background: day.today ? 'rgba(124,58,237,0.07)' : day.mock ? 'rgba(244,63,94,0.05)' : SURFACE,
-                border: `1px solid ${day.today ? 'rgba(124,58,237,0.2)' : day.mock ? 'rgba(244,63,94,0.2)' : BORDER_S}`,
+                background: day.today ? 'rgba(138,106,18,0.07)' : day.mock ? 'rgba(244,63,94,0.05)' : SURFACE,
+                border: `1px solid ${day.today ? 'rgba(138,106,18,0.2)' : day.mock ? 'rgba(244,63,94,0.2)' : BORDER_S}`,
               }}>
               <div className="flex items-center gap-1.5 mb-1">
-                <span className="text-[9px] font-bold" style={{ color: day.today ? '#7C3AED' : TEXT_MID }}>Day {day.d}</span>
-                {day.today && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(124,58,237,0.15)', color: '#7C3AED' }}>Today</span>}
+                <span className="text-[9px] font-bold" style={{ color: day.today ? '#8A6A12' : TEXT_MID }}>Day {day.d}</span>
+                {day.today && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(138,106,18,0.15)', color: '#8A6A12' }}>Today</span>}
                 {day.mock && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(244,63,94,0.15)', color: '#F43F5E' }}>Mock</span>}
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="h-5 w-5 rounded flex items-center justify-center shrink-0" style={{ background: day.bg }}>
                   <Icon className="h-3 w-3" style={{ color: day.color }} />
                 </div>
-                <p className="text-[10px] font-semibold leading-tight" style={{ color: '#4B4580' }}>{day.topic}</p>
+                <p className="text-[10px] font-semibold leading-tight" style={{ color: '#5B6478' }}>{day.topic}</p>
               </div>
             </div>
           );
@@ -240,10 +240,10 @@ function DetectiveMockup() {
           style={{
             background: opt.correct ? 'rgba(5,150,105,0.08)' : opt.selected ? 'rgba(244,63,94,0.08)' : SURFACE,
             border: `1px solid ${opt.correct ? 'rgba(5,150,105,0.25)' : opt.selected ? 'rgba(244,63,94,0.25)' : BORDER_S}`,
-            color: opt.correct ? '#059669' : opt.selected ? '#F43F5E' : '#4B4580',
+            color: opt.correct ? '#059669' : opt.selected ? '#F43F5E' : '#5B6478',
           }}>
           <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
-            style={{ background: opt.correct ? '#059669' : opt.selected ? '#F43F5E' : 'rgba(124,58,237,0.1)', color: opt.correct || opt.selected ? '#fff' : '#7C3AED' }}>
+            style={{ background: opt.correct ? '#059669' : opt.selected ? '#F43F5E' : 'rgba(138,106,18,0.08)', color: opt.correct || opt.selected ? '#fff' : '#8A6A12' }}>
             {String.fromCharCode(65 + i)}
           </span>
           <span className="flex-1">{opt.t}</span>
@@ -257,7 +257,7 @@ function DetectiveMockup() {
           <span className="text-[11px] font-bold" style={{ color: '#B45309' }}>🔍 Why Article 19 is wrong</span>
         </div>
         <div className="px-3 py-2">
-          <p className="text-[10px] leading-relaxed" style={{ color: '#4B4580' }}>
+          <p className="text-[10px] leading-relaxed" style={{ color: '#5B6478' }}>
             Article 19 guarantees 6 fundamental freedoms but does NOT provide the right to move court for remedy — that is exclusively Article 32, called &lsquo;the heart and soul of the Constitution&rsquo; by Dr. Ambedkar.
           </p>
         </div>
@@ -270,13 +270,13 @@ function MnemonicsMockup() {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-1">
-        <Brain className="h-3.5 w-3.5" style={{ color: '#A78BFA' }} />
+        <Brain className="h-3.5 w-3.5" style={{ color: '#8A6A12' }} />
         <span className="text-xs font-bold" style={{ color: TEXT_DARK }}>Memory Mnemonics</span>
         <span className="text-[10px] ml-auto" style={{ color: TEXT_MID }}>5 generated</span>
       </div>
       {[
         {
-          type: 'Acronym', typeColor: '#7C3AED', typeBg: 'rgba(124,58,237,0.1)',
+          type: 'Acronym', typeColor: '#8A6A12', typeBg: 'rgba(138,106,18,0.1)',
           fact: 'G20 3 pillars: Inclusive growth, DPI, Climate finance',
           mnemonic: '"IDC" — Inclusive, Digital, Climate. I Don\'t Care → you MUST care about all three!',
         },
@@ -289,7 +289,7 @@ function MnemonicsMockup() {
         <div key={i} className="rounded-xl p-3.5 space-y-2" style={{ background: SURFACE, border: `1px solid ${BORDER_S}` }}>
           <span className="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide"
             style={{ background: m.typeBg, color: m.typeColor }}>{m.type}</span>
-          <p className="text-[10px] font-semibold leading-snug" style={{ color: '#4B4580' }}>{m.fact}</p>
+          <p className="text-[10px] font-semibold leading-snug" style={{ color: '#5B6478' }}>{m.fact}</p>
           <div className="rounded-lg p-2.5" style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.15)' }}>
             <p className="text-[10px] leading-relaxed" style={{ color: '#92400E' }}>💡 {m.mnemonic}</p>
           </div>
@@ -304,7 +304,7 @@ function ExamProfileMockup() {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-1">
-        <BadgeCheck className="h-3.5 w-3.5" style={{ color: '#7C3AED' }} />
+        <BadgeCheck className="h-3.5 w-3.5" style={{ color: '#8A6A12' }} />
         <span className="text-xs font-bold" style={{ color: TEXT_DARK }}>Your Exam Profile</span>
       </div>
       <p className="text-[11px]" style={{ color: TEXT_MID }}>Select your target — Remindology personalises everything around it.</p>
@@ -312,18 +312,18 @@ function ExamProfileMockup() {
         {exams.map((exam, i) => (
           <div key={exam} className="text-[11px] font-semibold px-3 py-2 rounded-xl"
             style={{
-              background: i === 0 ? 'rgba(124,58,237,0.1)' : SURFACE,
-              border: `1px solid ${i === 0 ? 'rgba(124,58,237,0.3)' : BORDER_S}`,
-              color: i === 0 ? '#7C3AED' : '#4B4580',
+              background: i === 0 ? 'rgba(138,106,18,0.1)' : SURFACE,
+              border: `1px solid ${i === 0 ? 'rgba(138,106,18,0.3)' : BORDER_S}`,
+              color: i === 0 ? '#8A6A12' : '#5B6478',
             }}>
             {exam}
           </div>
         ))}
       </div>
-      <div className="rounded-xl p-3 mt-1" style={{ background: 'rgba(124,58,237,0.05)', border: `1px solid rgba(124,58,237,0.12)` }}>
-        <p className="text-[10px] font-bold mb-2" style={{ color: '#7C3AED' }}>After selecting UPSC CSE:</p>
+      <div className="rounded-xl p-3 mt-1" style={{ background: 'rgba(138,106,18,0.05)', border: `1px solid rgba(138,106,18,0.12)` }}>
+        <p className="text-[10px] font-bold mb-2" style={{ color: '#8A6A12' }}>After selecting UPSC CSE:</p>
         {['Daily challenges use UPSC-level questions', 'Mains prompts from PYQs', '30-day plan covers all 4 GS papers', 'Current affairs tagged to GS1–GS4'].map(f => (
-          <div key={f} className="flex items-center gap-1.5 text-[10px] mb-1" style={{ color: '#4B4580' }}>
+          <div key={f} className="flex items-center gap-1.5 text-[10px] mb-1" style={{ color: '#5B6478' }}>
             <Check className="h-3 w-3 shrink-0" style={{ color: '#059669' }} />{f}
           </div>
         ))}
@@ -395,7 +395,7 @@ export function NewFeatureShowcase() {
       {/* ── Mobile — flicker-free manual carousel, no auto-rotate/IntersectionObserver ── */}
       <div
         className="md:hidden rounded-3xl p-4 overflow-hidden"
-        style={{ border: '1px solid rgba(124,58,237,0.12)', boxShadow: '0 20px 60px rgba(124,58,237,0.1)', background: '#FFFFFF' }}
+        style={{ border: '1px solid rgba(22,35,62,0.1)', boxShadow: '0 20px 60px rgba(22,35,62,0.08)', background: '#FFFFFF' }}
       >
         <MobileFeatureCarousel items={NEW_FEATURES} renderMockup={(id) => <NewMockup id={id as NewFeatureId} />} />
       </div>
@@ -404,7 +404,7 @@ export function NewFeatureShowcase() {
       <div
         ref={containerRef}
         className="hidden md:block rounded-3xl overflow-hidden"
-        style={{ border: '1px solid rgba(124,58,237,0.12)', boxShadow: '0 20px 60px rgba(124,58,237,0.1)' }}
+        style={{ border: '1px solid rgba(22,35,62,0.1)', boxShadow: '0 20px 60px rgba(22,35,62,0.08)' }}
       >
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes rmProgressSweepNFS {
@@ -417,7 +417,7 @@ export function NewFeatureShowcase() {
         {/* ── Left: feature grid ── */}
         <div
           className="p-4 sm:p-6 flex flex-col gap-4 border-b lg:border-b-0 lg:border-r"
-          style={{ background: '#FAFAFF', borderColor: 'rgba(124,58,237,0.1)' }}
+          style={{ background: '#F7F4EC', borderColor: 'rgba(22,35,62,0.1)' }}
         >
           <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: TEXT_MID }}>
             Click any feature to preview
@@ -435,7 +435,7 @@ export function NewFeatureShowcase() {
                   className="flex flex-col items-center gap-2 p-3 rounded-2xl transition-all duration-150 text-center cursor-pointer"
                   style={{
                     background: isAct ? `${f.color}12` : 'rgba(0,0,0,0)',
-                    border: `1.5px solid ${isAct ? `${f.color}40` : 'rgba(124,58,237,0.08)'}`,
+                    border: `1.5px solid ${isAct ? `${f.color}40` : 'rgba(22,35,62,0.08)'}`,
                     transform: isAct ? 'scale(1.02)' : 'scale(1)',
                   }}
                 >
@@ -445,7 +445,7 @@ export function NewFeatureShowcase() {
                   >
                     <Icon className="h-[18px] w-[18px]" style={{ color: isAct ? '#FFFFFF' : f.color }} />
                   </div>
-                  <p className="text-[11px] sm:text-[10px] font-semibold leading-tight" style={{ color: isAct ? '#1A1836' : '#6B63A0' }}>
+                  <p className="text-[11px] sm:text-[10px] font-semibold leading-tight" style={{ color: isAct ? TEXT_DARK : TEXT_MID }}>
                     {f.label}
                   </p>
                 </button>
@@ -455,13 +455,13 @@ export function NewFeatureShowcase() {
 
           {/* Progress bar + hint */}
           <div className="space-y-2">
-            <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(124,58,237,0.1)' }}>
+            <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(22,35,62,0.1)' }}>
               <div
                 key={animKey}
                 className="h-full w-full rounded-full"
                 style={{
                   transformOrigin: 'left center',
-                  background: `linear-gradient(to right, ${feature.color}, ${feature.color}CC)`,
+                  background: feature.color,
                   animation: `rmProgressSweepNFS ${AUTO_ROTATE_MS}ms linear forwards`,
                   animationPlayState: isVisible ? 'running' : 'paused',
                   willChange: 'transform',

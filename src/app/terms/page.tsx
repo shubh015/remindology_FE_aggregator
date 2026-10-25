@@ -1,10 +1,9 @@
 import Link from 'next/link';
 import { ArrowLeft, Mail } from 'lucide-react';
+import { PublicLayout } from '@/components/landing/PublicLayout';
 
-const BRAND_GRAD = 'linear-gradient(135deg, #7C3AED, #C026D3)';
-const MIDNIGHT = '#09091F';
-const TEXT_DARK = '#1A1836';
-const TEXT_MID = '#6B63A0';
+const TEXT_DARK = '#16233E';
+const TEXT_MID = '#5B6478';
 
 const EFFECTIVE_DATE = 'July 29, 2026';
 
@@ -18,7 +17,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <section className="mb-10">
       <h2
         className="text-xl font-bold mb-4 pb-3"
-        style={{ color: TEXT_DARK, borderBottom: '1px solid rgba(124,58,237,0.12)' }}
+        style={{ color: TEXT_DARK, borderBottom: '1px solid rgba(22,35,62,0.1)' }}
       >
         {title}
       </h2>
@@ -43,7 +42,7 @@ function Ul({ items }: { items: string[] }) {
     <ul className="space-y-1.5 ml-4">
       {items.map((item, i) => (
         <li key={i} className="flex items-start gap-2.5">
-          <span className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: '#7C3AED' }} />
+          <span className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0 bg-primary" />
           <span>{item}</span>
         </li>
       ))}
@@ -53,68 +52,39 @@ function Ul({ items }: { items: string[] }) {
 
 export default function TermsPage() {
   return (
-    <div style={{ fontFamily: 'var(--font-poppins), system-ui, sans-serif', background: '#F5F4FF', minHeight: '100vh' }}>
+    <PublicLayout tagline="AI study tool for every exam & every student">
 
-      {/* Header */}
-      <header style={{ background: MIDNIGHT, borderBottom: '1px solid rgba(124,58,237,0.2)' }}>
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div
-              className="h-8 w-8 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-md"
-              style={{ background: BRAND_GRAD }}
-            >
-              R
-            </div>
-            <span
-              className="text-[17px] font-bold"
-              style={{ background: 'linear-gradient(135deg, #A78BFA, #E879F9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-            >
-              Remindology
-            </span>
-          </Link>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-white"
-            style={{ color: 'rgba(196,181,253,0.6)' }}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to home
-          </Link>
-        </div>
-      </header>
-
-      {/* Page title */}
-      <div style={{ background: MIDNIGHT, borderBottom: '1px solid rgba(124,58,237,0.2)' }}>
-        <div className="max-w-4xl mx-auto px-6 py-12">
-          <div
-            className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full mb-4"
-            style={{ background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.35)', color: '#C4B5FD' }}
-          >
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-background">
+        <div
+          className="absolute pointer-events-none"
+          style={{ top: '-15%', right: '-6%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(138,106,18,0.06) 0%, transparent 68%)' }}
+        />
+        <div className="relative max-w-4xl mx-auto px-6 pt-12 pb-14">
+          <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full mb-4 bg-primary/8 border border-primary/18 text-primary">
             Legal
           </div>
           <h1
-            className="text-4xl font-extrabold tracking-tight mb-3"
-            style={{ color: '#F0EEFF' }}
+            className="font-black tracking-tight mb-3 text-foreground"
+            style={{ fontSize: 'var(--text-display-sm)', lineHeight: 1.05, letterSpacing: '-0.01em' }}
           >
             Terms of Service
           </h1>
-          <p style={{ color: 'rgba(196,181,253,0.6)', fontSize: '0.9rem' }}>
+          <p className="text-muted-foreground" style={{ fontSize: '0.9rem' }}>
             Effective date: {EFFECTIVE_DATE} · Last updated: {EFFECTIVE_DATE}
           </p>
         </div>
-      </div>
+      </section>
 
       {/* Content */}
+      <section className="bg-background">
       <div className="max-w-4xl mx-auto px-6 py-14">
-        <div
-          className="rounded-2xl p-8 sm:p-10"
-          style={{ background: '#FFFFFF', border: '1px solid rgba(124,58,237,0.1)', boxShadow: '0 4px 32px rgba(124,58,237,0.06)' }}
-        >
+        <div className="rounded-2xl p-8 sm:p-10 bg-white border border-border shadow-sm">
 
           <p className="text-[15px] leading-relaxed mb-10" style={{ color: TEXT_MID }}>
             Please read these Terms of Service (&quot;Terms&quot;) carefully before using Remindology (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;).
             By creating an account or using our Service, you agree to be bound by these Terms and our{' '}
-            <Link href="/privacy" className="font-semibold hover:underline" style={{ color: '#7C3AED' }}>Privacy Policy</Link>.
+            <Link href="/privacy" className="font-semibold hover:underline text-primary">Privacy Policy</Link>.
             If you do not agree, do not use the Service.
           </p>
 
@@ -151,7 +121,7 @@ export default function TermsPage() {
             <Sub title="3.2 Account Responsibility">
               <p>
                 You are responsible for all activity that occurs under your account. You must notify us immediately at{' '}
-                <a href="mailto:remindology2026@gmail.com" className="font-semibold hover:underline" style={{ color: '#7C3AED' }}>
+                <a href="mailto:remindology2026@gmail.com" className="font-semibold hover:underline text-primary">
                   remindology2026@gmail.com
                 </a>{' '}
                 if you believe your account has been compromised or accessed without your authorisation.
@@ -342,16 +312,12 @@ export default function TermsPage() {
             <p>
               Questions about these Terms? We&apos;re happy to help.
             </p>
-            <div
-              className="mt-4 p-5 rounded-xl"
-              style={{ background: 'rgba(124,58,237,0.05)', border: '1px solid rgba(124,58,237,0.12)' }}
-            >
+            <div className="mt-4 p-5 rounded-xl bg-primary/5 border border-primary/12">
               <p className="font-semibold mb-1" style={{ color: TEXT_DARK }}>Remindology</p>
               <p>India</p>
               <a
                 href="mailto:remindology2026@gmail.com"
-                className="inline-flex items-center gap-2 mt-2 font-semibold hover:underline"
-                style={{ color: '#7C3AED' }}
+                className="inline-flex items-center gap-2 mt-2 font-semibold hover:underline text-primary"
               >
                 <Mail className="h-4 w-4" />
                 remindology2026@gmail.com
@@ -365,8 +331,7 @@ export default function TermsPage() {
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link
             href="/privacy"
-            className="text-sm font-medium hover:underline"
-            style={{ color: '#7C3AED' }}
+            className="text-sm font-medium hover:underline text-primary"
           >
             Read our Privacy Policy →
           </Link>
@@ -380,23 +345,7 @@ export default function TermsPage() {
           </Link>
         </div>
       </div>
-
-      {/* Footer strip */}
-      <footer
-        className="border-t py-6"
-        style={{ background: MIDNIGHT, borderColor: 'rgba(124,58,237,0.2)' }}
-      >
-        <div className="max-w-4xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs" style={{ color: 'rgba(196,181,253,0.35)' }}>
-            © 2026 Remindology. All rights reserved.
-          </p>
-          <div className="flex items-center gap-4">
-            <Link href="/privacy" className="text-xs hover:text-white transition-colors" style={{ color: 'rgba(196,181,253,0.5)' }}>Privacy Policy</Link>
-            <Link href="/terms" className="text-xs hover:text-white transition-colors" style={{ color: 'rgba(196,181,253,0.5)' }}>Terms of Service</Link>
-          </div>
-        </div>
-      </footer>
-
-    </div>
+      </section>
+    </PublicLayout>
   );
 }

@@ -6,22 +6,19 @@ import { useRecentCurrentAffairs } from '@/features/current-affairs/hooks/use-cu
 import type { CurrentAffairsArticle } from '@/types/features';
 import { AmbientBlobs } from './AmbientBlobs';
 
-// ── GS paper color map (for accent bars) ────────────────────────
+// ── GS paper color map (for accent bars) — muted taxonomy hues that
+// don't compete with the single brand accent ─────────────────────
 const GS_COLOR: Record<string, string> = {
-  GS1: '#7C3AED',
+  GS1: '#475569',
   GS2: '#0891B2',
-  GS3: '#059669',
+  GS3: '#B45309',
   GS4: '#DC2626',
 };
 
-const TEXT_DARK = '#1A1836';
-const TEXT_MID = '#6B63A0';
-const TEXT_GRAD_LT = {
-  background: 'linear-gradient(135deg, #7C3AED, #C026D3)',
-  WebkitBackgroundClip: 'text' as const,
-  WebkitTextFillColor: 'transparent',
-};
-const BORDER_L = '1px solid rgba(124,58,237,0.12)';
+const ACCENT = '#8A6A12';
+const TEXT_DARK = '#16233E';
+const TEXT_MID = '#5B6478';
+const BORDER_L = '1px solid rgba(22,35,62,0.08)';
 
 function stripHtml(text: string): string {
   return text.includes('<') ? text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : text;
@@ -30,7 +27,7 @@ function stripHtml(text: string): string {
 // ── Article card ────────────────────────────────────────────────
 function ArticleCard({ article }: { article: CurrentAffairsArticle }) {
   const primaryGS = article.gsPaperTags[0];
-  const accentColor = primaryGS ? (GS_COLOR[primaryGS] ?? '#7C3AED') : '#7C3AED';
+  const accentColor = primaryGS ? (GS_COLOR[primaryGS] ?? ACCENT) : ACCENT;
   const dateStr = article.publishedDate
     ? new Date(article.publishedDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
     : '';
@@ -39,7 +36,7 @@ function ArticleCard({ article }: { article: CurrentAffairsArticle }) {
     <Link
       href={`/current-affairs/${article.id}`}
       className="group rounded-2xl overflow-hidden flex flex-col h-full transition-shadow duration-500 ease-in-out hover:shadow-xl"
-      style={{ background: '#FFFFFF', border: BORDER_L, boxShadow: '0 8px 28px rgba(124,58,237,0.08)' }}
+      style={{ background: '#FFFFFF', border: BORDER_L, boxShadow: '0 8px 28px rgba(22,35,62,0.08)' }}
     >
       {/* Accent bar */}
       <div className="h-0.75" style={{ background: accentColor }} />
@@ -52,9 +49,9 @@ function ArticleCard({ article }: { article: CurrentAffairsArticle }) {
               key={tag}
               className="text-[10px] font-bold px-2 py-0.5 rounded-full"
               style={{
-                background: `${GS_COLOR[tag] ?? '#7C3AED'}14`,
-                color: GS_COLOR[tag] ?? '#7C3AED',
-                border: `1px solid ${GS_COLOR[tag] ?? '#7C3AED'}33`,
+                background: `${GS_COLOR[tag] ?? ACCENT}14`,
+                color: GS_COLOR[tag] ?? ACCENT,
+                border: `1px solid ${GS_COLOR[tag] ?? ACCENT}33`,
               }}
             >
               {tag}
@@ -85,7 +82,7 @@ function ArticleCard({ article }: { article: CurrentAffairsArticle }) {
           </span>
           <span
             className="text-[10px] font-semibold flex items-center gap-0.5 group-hover:gap-1 transition-all duration-500 ease-in-out"
-            style={{ color: '#7C3AED' }}
+            style={{ color: ACCENT }}
           >
             Read <ChevronRight className="h-3 w-3" />
           </span>
@@ -102,16 +99,16 @@ function CardSkeleton() {
       className="rounded-2xl overflow-hidden animate-pulse"
       style={{ background: '#FFFFFF', border: BORDER_L }}
     >
-      <div className="h-[3px]" style={{ background: 'rgba(124,58,237,0.15)' }} />
+      <div className="h-0.75" style={{ background: 'rgba(22,35,62,0.1)' }} />
       <div className="p-5 space-y-3">
         <div className="flex gap-2">
-          <div className="h-4 w-10 rounded-full" style={{ background: 'rgba(124,58,237,0.08)' }} />
-          <div className="h-4 w-24 rounded-full" style={{ background: 'rgba(124,58,237,0.08)' }} />
+          <div className="h-4 w-10 rounded-full" style={{ background: 'rgba(22,35,62,0.06)' }} />
+          <div className="h-4 w-24 rounded-full" style={{ background: 'rgba(22,35,62,0.06)' }} />
         </div>
-        <div className="h-5 w-full rounded" style={{ background: 'rgba(124,58,237,0.08)' }} />
-        <div className="h-5 w-4/5 rounded" style={{ background: 'rgba(124,58,237,0.08)' }} />
-        <div className="h-3 w-full rounded" style={{ background: 'rgba(124,58,237,0.06)' }} />
-        <div className="h-3 w-3/4 rounded" style={{ background: 'rgba(124,58,237,0.06)' }} />
+        <div className="h-5 w-full rounded" style={{ background: 'rgba(22,35,62,0.06)' }} />
+        <div className="h-5 w-4/5 rounded" style={{ background: 'rgba(22,35,62,0.06)' }} />
+        <div className="h-3 w-full rounded" style={{ background: 'rgba(22,35,62,0.05)' }} />
+        <div className="h-3 w-3/4 rounded" style={{ background: 'rgba(22,35,62,0.05)' }} />
       </div>
     </div>
   );
@@ -142,9 +139,9 @@ export function CurrentAffairsTeaser() {
             <div
               className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-4"
               style={{
-                background: 'rgba(124,58,237,0.08)',
-                border: '1px solid rgba(124,58,237,0.15)',
-                color: '#7C3AED',
+                background: 'rgba(138,106,18,0.08)',
+                border: '1px solid rgba(138,106,18,0.18)',
+                color: ACCENT,
               }}
             >
               <CalendarDays className="h-3.5 w-3.5" />
@@ -156,7 +153,7 @@ export function CurrentAffairsTeaser() {
               style={{ fontSize: '2.2rem', color: TEXT_DARK, lineHeight: 1.15 }}
             >
               Stay updated.{' '}
-              <span style={TEXT_GRAD_LT}>Stay ahead.</span>
+              <span style={{ color: ACCENT }}>Stay ahead.</span>
             </h2>
             <p
               className="mt-2"
@@ -188,7 +185,7 @@ export function CurrentAffairsTeaser() {
               : (
                 <div
                   className="md:col-span-3 rounded-2xl p-10 text-center"
-                  style={{ background: '#F5F4FF', border: BORDER_L }}
+                  style={{ background: '#F7F4EC', border: BORDER_L }}
                 >
                   <p className="text-sm font-semibold" style={{ color: TEXT_MID }}>
                     Today&apos;s digest is being prepared — check back shortly after 6 AM IST.
@@ -204,8 +201,8 @@ export function CurrentAffairsTeaser() {
             href="/current-affairs"
             className="inline-flex items-center gap-2 font-bold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity text-sm text-white"
             style={{
-              background: 'linear-gradient(135deg, #7C3AED 0%, #C026D3 100%)',
-              boxShadow: '0 6px 24px rgba(124,58,237,0.25)',
+              background: ACCENT,
+              boxShadow: '0 6px 24px rgba(138,106,18,0.25)',
             }}
           >
             View all articles
