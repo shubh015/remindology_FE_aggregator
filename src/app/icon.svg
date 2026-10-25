@@ -1,18 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#7C3AED"/>
-      <stop offset="100%" stop-color="#C026D3"/>
-    </linearGradient>
+    <radialGradient id="navy" cx="32%" cy="28%" r="80%">
+      <stop offset="0%" stop-color="#2C4269"/>
+      <stop offset="100%" stop-color="#16233E"/>
+    </radialGradient>
   </defs>
-  <rect width="32" height="32" rx="8" fill="url(#bg)"/>
+  <circle cx="16" cy="16" r="14.5" fill="url(#navy)" stroke="#8A6A12" stroke-width="1.5"/>
   <text
     x="16"
-    y="23"
+    y="21.5"
     text-anchor="middle"
-    font-family="system-ui, -apple-system, sans-serif"
-    font-size="20"
-    font-weight="700"
-    fill="white"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="15"
+    font-weight="600"
+    fill="#D4AF37"
   >R</text>
 </svg>
