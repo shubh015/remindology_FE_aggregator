@@ -17,7 +17,7 @@ export interface MobileCarouselItem {
 // bar can on mobile viewports (address-bar resize / touch-scroll causing the
 // observer to cross its threshold repeatedly).
 export function MobileFeatureCarousel({
-  items, renderMockup, accent = '#7C3AED',
+  items, renderMockup, accent = '#8A6A12',
 }: {
   items: readonly MobileCarouselItem[];
   renderMockup: (id: string) => React.ReactNode;
@@ -74,7 +74,7 @@ export function MobileFeatureCarousel({
               style={{
                 scrollSnapAlign: 'center',
                 background: isActive ? `${itemAccent}14` : 'transparent',
-                border: `1.5px solid ${isActive ? `${itemAccent}40` : 'rgba(124,58,237,0.08)'}`,
+                border: `1.5px solid ${isActive ? `${itemAccent}40` : 'rgba(22,35,62,0.08)'}`,
                 minWidth: 78,
               }}
             >
@@ -86,7 +86,7 @@ export function MobileFeatureCarousel({
               </div>
               <span
                 className="text-[10px] font-semibold text-center leading-tight max-w-16"
-                style={{ color: isActive ? '#1A1836' : '#6B63A0' }}
+                style={{ color: isActive ? '#16233E' : '#5B6478' }}
               >
                 {item.label}
               </span>
@@ -106,7 +106,7 @@ export function MobileFeatureCarousel({
             style={{
               width: i === activeIndex ? 16 : 6,
               height: 6,
-              background: i === activeIndex ? activeAccent : 'rgba(124,58,237,0.18)',
+              background: i === activeIndex ? activeAccent : 'rgba(22,35,62,0.15)',
             }}
           />
         ))}
@@ -124,8 +124,8 @@ export function MobileFeatureCarousel({
           })()}
         </div>
         <div>
-          <p className="text-sm font-bold" style={{ color: '#1A1836' }}>{active.label}</p>
-          <p className="text-[11px]" style={{ color: '#9D95C4' }}>{active.tagline}</p>
+          <p className="text-sm font-bold" style={{ color: '#16233E' }}>{active.label}</p>
+          <p className="text-[11px]" style={{ color: '#5B6478' }}>{active.tagline}</p>
         </div>
       </div>
 

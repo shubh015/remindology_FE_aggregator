@@ -6,8 +6,8 @@ import { useState, useEffect } from 'react';
 const SUBJECTS = [
   {
     badge: 'UPSC CSE',
-    badgeColor: '#7C3AED',
-    badgeBg: 'rgba(124,58,237,0.1)',
+    badgeColor: '#8A6A12',
+    badgeBg: 'rgba(138,106,18,0.1)',
     title: "India's G20 Presidency",
     slug: 'indias-g20-presidency',
     input: "India's G20 Presidency focused on inclusive growth, digital public infrastructure, and climate financing. The 'One Earth, One Family, One Future' theme centred the needs of the Global South.",
@@ -36,11 +36,12 @@ const SUBJECTS = [
   },
 ];
 
-// ── Light-card palette — matches ProductDemo.tsx's mockup colors ──
-const TEXT_MID = '#9D95C4';
-const TEXT_BODY = '#4B4580';
-const SURFACE = '#F5F4FF';
-const BORDER_L = 'rgba(124,58,237,0.08)';
+// ── Light-card palette — Clean Editorial ──
+const TEXT_MID = '#5B6478';
+const TEXT_BODY = '#16233E';
+const SURFACE = '#F7F4EC';
+const BORDER_L = 'rgba(22,35,62,0.08)';
+const ACCENT = '#8A6A12';
 
 type Phase = 'typing' | 'processing' | 'revealing' | 'complete' | 'exiting';
 
@@ -132,7 +133,7 @@ export function HeroPreview() {
         {/* Browser bar — stays dark regardless of card theme, matching ProductDemo's mockup chrome */}
         <div
           className="flex items-center gap-2 px-4 py-3"
-          style={{ background: '#09091F', borderBottom: '1px solid rgba(124,58,237,0.2)' }}
+          style={{ background: '#16233E', borderBottom: '1px solid rgba(247,244,236,0.1)' }}
         >
           <div className="flex gap-1.5">
             {['#EF4444', '#F59E0B', '#10B981'].map((c, ci) => (
@@ -184,7 +185,7 @@ export function HeroPreview() {
                     display: 'inline-block',
                     width: 2,
                     height: '0.85em',
-                    background: '#7C3AED',
+                    background: ACCENT,
                     verticalAlign: 'middle',
                     marginLeft: 2,
                     borderRadius: 1,
@@ -232,7 +233,7 @@ export function HeroPreview() {
                         width: 7,
                         height: 7,
                         borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #7C3AED, #C026D3)',
+                        background: ACCENT,
                         animationName: 'loadingBounce',
                         animationDuration: '0.9s',
                         animationDelay: `${i * 0.18}s`,

@@ -10,13 +10,6 @@ import { ACTIVE_SUBJECT_SLUGS } from '@/features/general-studies/constants';
 
 // ── Design tokens (matching current-affairs public pages) ─────────
 
-const MIDNIGHT  = '#09091F';
-const TEXT_GRAD = {
-  background: 'linear-gradient(135deg, #A78BFA, #E879F9)',
-  WebkitBackgroundClip: 'text' as const,
-  WebkitTextFillColor: 'transparent',
-};
-
 const GS_CONFIG: Record<string, { color: string; bg: string; border: string; label: string }> = {
   GS1: { color: '#7C3AED', bg: 'rgba(124,58,237,0.1)', border: 'rgba(124,58,237,0.25)', label: 'GS1 · Indian Heritage & Society' },
   GS2: { color: '#0891B2', bg: 'rgba(8,145,178,0.1)',  border: 'rgba(8,145,178,0.25)',  label: 'GS2 · Polity & International' },
@@ -51,49 +44,40 @@ export default function GeneralStudiesIndexPage() {
   const paperOrder = ['GS1', 'GS2', 'GS3', 'GS4'].filter((p) => grouped[p]?.length);
 
   return (
-    <div style={{ fontFamily: 'var(--font-poppins), system-ui, sans-serif' }}>
+    <div>
 
-      {/* ── Dark hero ── */}
-      <section className="relative overflow-hidden" style={{ background: MIDNIGHT }}>
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(167,139,250,0.07) 1px, transparent 1px)', backgroundSize: '30px 30px' }}
-        />
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden bg-background">
         <div
           className="absolute pointer-events-none"
-          style={{ top: 0, right: '-8%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 68%)' }}
+          style={{ top: 0, right: '-8%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(138,106,18,0.06) 0%, transparent 68%)' }}
         />
 
         <div className="relative max-w-7xl mx-auto px-6 pt-14 pb-16">
-          <div
-            className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full mb-4"
-            style={{ background: 'rgba(124,58,237,0.18)', border: '1px solid rgba(124,58,237,0.35)', color: '#C4B5FD' }}
-          >
+          <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full mb-4 bg-primary/8 border border-primary/18 text-primary">
             <BookOpen className="h-3.5 w-3.5" />
             General Studies
           </div>
-          <h1
-            className="font-extrabold tracking-tight mb-4"
-            style={{ fontSize: 'clamp(1.8rem, 4vw, 2.75rem)', lineHeight: 1.15, color: '#F0EEFF' }}
-          >
-            Master every <span style={TEXT_GRAD}>GS subject</span>
+          <h1 className="tracking-tight mb-4">
+            <span className="block font-semibold text-muted-foreground mb-1" style={{ fontSize: 'clamp(0.9rem, 1.8vw, 1.05rem)' }}>
+              All 4 GS papers, AI-written
+            </span>
+            <span className="block font-black text-foreground" style={{ fontSize: 'var(--text-display-md)', lineHeight: 1.05, letterSpacing: '-0.01em' }}>
+              Master every <span className="text-primary">GS subject</span>
+            </span>
           </h1>
-          <p className="text-sm max-w-xl mb-8" style={{ color: 'rgba(196,181,253,0.6)' }}>
+          <p className="text-sm max-w-xl mb-8 text-muted-foreground">
             AI-written notes covering all 4 GS papers — structured for UPSC, SSC &amp; State PSC preparation.
           </p>
 
           <form onSubmit={handleSearch} className="max-w-md">
-            <div
-              className="flex items-center gap-2.5 px-4 py-3 rounded-xl"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(124,58,237,0.25)' }}
-            >
-              <Search className="h-4 w-4 shrink-0" style={{ color: 'rgba(196,181,253,0.5)' }} />
+            <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-white border border-border">
+              <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search topics, acts, events…"
-                className="flex-1 bg-transparent text-sm outline-none"
-                style={{ color: '#F0EEFF' }}
+                className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground"
               />
             </div>
           </form>
@@ -101,7 +85,7 @@ export default function GeneralStudiesIndexPage() {
       </section>
 
       {/* ── Subjects ── */}
-      <section style={{ background: '#FFFFFF' }}>
+      <section className="bg-white">
         <div className="max-w-7xl mx-auto px-6 py-14 space-y-10">
           {isLoading ? (
             <SubjectSkeleton />
@@ -127,16 +111,12 @@ export default function GeneralStudiesIndexPage() {
                           <div
                             key={subject.id}
                             aria-disabled="true"
-                            className="rounded-2xl bg-white p-5 cursor-not-allowed"
-                            style={{ border: '1px solid rgba(0,0,0,0.06)', opacity: 0.55 }}
+                            className="rounded-2xl bg-white p-5 cursor-not-allowed border border-border opacity-55"
                           >
-                            <p className="font-bold mb-1.5" style={{ fontSize: '1rem', color: '#6B7280' }}>
+                            <p className="font-bold mb-1.5 text-muted-foreground" style={{ fontSize: '1rem' }}>
                               {subject.name}
                             </p>
-                            <span
-                              className="inline-flex items-center text-[11px] font-bold px-2.5 py-1 rounded-full"
-                              style={{ background: 'rgba(107,114,128,0.1)', color: '#6B7280' }}
-                            >
+                            <span className="inline-flex items-center text-[11px] font-bold px-2.5 py-1 rounded-full bg-muted text-muted-foreground">
                               Coming Soon
                             </span>
                           </div>
@@ -150,7 +130,7 @@ export default function GeneralStudiesIndexPage() {
                           className="group rounded-2xl bg-white p-5 transition-all hover:-translate-y-0.5"
                           style={{ border: `1px solid ${cfg.border}`, boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}
                         >
-                          <p className="font-bold mb-1.5" style={{ fontSize: '1rem', color: '#111827' }}>
+                          <p className="font-bold mb-1.5 text-foreground" style={{ fontSize: '1rem' }}>
                             {subject.name}
                           </p>
                           <span

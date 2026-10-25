@@ -3,12 +3,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { Brain, BookOpen, FileText, CheckCircle2 } from 'lucide-react';
 
+// ── Clean Editorial palette ────────────────────────────────────────
+const INK = '#16233E';
+const MUTED = '#5B6478';
+const ACCENT = '#8A6A12';
+const ACCENT_SOFT = 'rgba(138,106,18,0.08)';
+const SURFACE = '#F7F4EC';
+const BORDER = 'rgba(22,35,62,0.08)';
+
 // ── Demo subjects ────────────────────────────────────────────────
 const DEMOS = [
   {
     badge: 'UPSC CSE',
-    color: '#7C3AED',
-    bg: 'rgba(124,58,237,0.12)',
+    color: ACCENT,
+    bg: ACCENT_SOFT,
     title: "India's G20 Presidency",
     input: `India's G20 Presidency focused on inclusive growth, digital public infrastructure (DPI), and climate financing for developing nations. The 'One Earth, One Family, One Future' theme emphasised a human-centric, planet-first approach and centred the needs of the Global South.`,
     summary: "India's G20 Presidency centred on inclusive growth, DPI rollout, and climate finance — under the theme 'One Earth, One Family, One Future', spotlighting Global South priorities.",
@@ -55,8 +63,8 @@ const DEMOS = [
   },
   {
     badge: 'State PSC',
-    color: '#059669',
-    bg: 'rgba(5,150,105,0.12)',
+    color: '#B45309',
+    bg: 'rgba(180,83,9,0.12)',
     title: 'NCERT Geography',
     input: `The Himalayas are young fold mountains formed by the collision of the Indian Plate with the Eurasian Plate approximately 50 million years ago. They form a continuous arc spanning 2,400 km from the Indus gorge in the west to the Brahmaputra gorge in the east.`,
     summary: "Himalayas = young fold mountains from Indian–Eurasian plate collision (~50 Ma). They arc 2,400 km from the Indus gorge to the Brahmaputra gorge.",
@@ -157,8 +165,8 @@ export function ProductDemo() {
             className="text-xs font-semibold px-4 py-2 rounded-full transition-all duration-200"
             style={{
               background: i === activeDemoIdx ? d.color : 'transparent',
-              border: `1.5px solid ${i === activeDemoIdx ? d.color : 'rgba(124,58,237,0.18)'}`,
-              color: i === activeDemoIdx ? '#FFFFFF' : '#6B63A0',
+              border: `1.5px solid ${i === activeDemoIdx ? d.color : BORDER}`,
+              color: i === activeDemoIdx ? '#FFFFFF' : MUTED,
               cursor: phase === 'generating' ? 'default' : 'pointer',
               transform: i === activeDemoIdx ? 'scale(1.04)' : 'scale(1)',
             }}
@@ -171,19 +179,19 @@ export function ProductDemo() {
       {/* Browser chrome card */}
       <div
         className="rounded-3xl overflow-hidden"
-        style={{ border: '1px solid rgba(124,58,237,0.14)', boxShadow: '0 24px 64px rgba(124,58,237,0.12)' }}
+        style={{ border: `1px solid ${BORDER}`, boxShadow: '0 24px 64px rgba(22,35,62,0.1)' }}
       >
-        {/* Fake browser bar */}
+        {/* Fake browser bar — stays dark regardless of card theme, matching HeroPreview's mockup chrome */}
         <div
           className="flex items-center gap-2 px-5 py-3"
-          style={{ background: '#09091F', borderBottom: '1px solid rgba(124,58,237,0.2)' }}
+          style={{ background: '#16233E', borderBottom: '1px solid rgba(247,244,236,0.1)' }}
         >
           {['#EF4444', '#F59E0B', '#10B981'].map((c, i) => (
             <div key={i} style={{ background: c, width: 11, height: 11, borderRadius: '50%', opacity: 0.7 }} />
           ))}
           <span
             className="text-xs ml-3 flex-1 min-w-0 truncate"
-            style={{ color: 'rgba(240,238,255,0.28)', fontFamily: 'monospace' }}
+            style={{ color: 'rgba(255,255,255,0.32)', fontFamily: 'monospace' }}
           >
             remindology.app/contents/{demo.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
           </span>
@@ -195,7 +203,7 @@ export function ProductDemo() {
           {/* ── Left: Material input ────────────── */}
           <div
             className="p-5 md:p-7 border-b md:border-b-0 md:border-r"
-            style={{ borderColor: 'rgba(124,58,237,0.08)' }}
+            style={{ borderColor: BORDER }}
           >
             <div className="flex items-center gap-2 mb-4">
               <span
@@ -204,7 +212,7 @@ export function ProductDemo() {
               >
                 {demo.badge}
               </span>
-              <span className="text-[11px] font-semibold" style={{ color: '#9D95C4' }}>
+              <span className="text-[11px] font-semibold" style={{ color: MUTED }}>
                 {demo.title}
               </span>
             </div>
@@ -212,9 +220,9 @@ export function ProductDemo() {
             <div
               className="rounded-xl p-4 text-sm leading-relaxed"
               style={{
-                background: '#F5F4FF',
-                border: '1px solid rgba(124,58,237,0.08)',
-                color: '#4B4580',
+                background: SURFACE,
+                border: `1px solid ${BORDER}`,
+                color: INK,
                 opacity: inputVisible ? 1 : 0,
                 transition: 'opacity 0.3s ease',
               }}
@@ -224,7 +232,7 @@ export function ProductDemo() {
 
             <div
               className="mt-4 flex items-center gap-2"
-              style={{ fontSize: '0.72rem', color: '#9D95C4' }}
+              style={{ fontSize: '0.72rem', color: MUTED }}
             >
               <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
               AI processing complete · 2.1 s
@@ -243,7 +251,7 @@ export function ProductDemo() {
                       key={i}
                       className="w-2.5 h-2.5 rounded-full"
                       style={{
-                        background: 'linear-gradient(135deg, #7C3AED, #C026D3)',
+                        background: ACCENT,
                         animationName: 'loadingBounce',
                         animationDuration: '0.9s',
                         animationDelay: `${i * 0.18}s`,
@@ -253,7 +261,7 @@ export function ProductDemo() {
                     />
                   ))}
                 </div>
-                <p className="text-xs font-medium" style={{ color: '#9D95C4' }}>
+                <p className="text-xs font-medium" style={{ color: MUTED }}>
                   Analysing content…
                 </p>
               </div>
@@ -271,7 +279,7 @@ export function ProductDemo() {
                 {/* Output tab strip */}
                 <div
                   className="flex gap-1 mb-5 p-1 rounded-xl"
-                  style={{ background: '#F5F4FF' }}
+                  style={{ background: SURFACE }}
                 >
                   {(['summary', 'notes', 'mcq'] as OutputTab[]).map(tab => (
                     <button
@@ -280,7 +288,7 @@ export function ProductDemo() {
                       className="flex-1 text-xs font-semibold py-2 rounded-lg transition-all duration-150"
                       style={{
                         background: activeTab === tab ? '#FFFFFF' : 'transparent',
-                        color: activeTab === tab ? '#7C3AED' : '#9D95C4',
+                        color: activeTab === tab ? ACCENT : MUTED,
                         boxShadow: activeTab === tab ? '0 1px 4px rgba(0,0,0,0.07)' : 'none',
                         cursor: 'pointer',
                         border: 'none',
@@ -296,15 +304,15 @@ export function ProductDemo() {
                   {activeTab === 'summary' && (
                     <div
                       className="rounded-xl p-4"
-                      style={{ background: '#F5F4FF', border: '1px solid rgba(124,58,237,0.08)' }}
+                      style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        <Brain className="h-3.5 w-3.5" style={{ color: '#7C3AED' }} />
-                        <span className="text-[11px] font-bold" style={{ color: '#7C3AED' }}>
+                        <Brain className="h-3.5 w-3.5" style={{ color: ACCENT }} />
+                        <span className="text-[11px] font-bold" style={{ color: ACCENT }}>
                           AI Summary
                         </span>
                       </div>
-                      <p className="text-xs leading-relaxed" style={{ color: '#4B4580' }}>
+                      <p className="text-xs leading-relaxed" style={{ color: INK }}>
                         {demo.summary}
                       </p>
                     </div>
@@ -313,11 +321,11 @@ export function ProductDemo() {
                   {activeTab === 'notes' && (
                     <div
                       className="rounded-xl p-4"
-                      style={{ background: '#F5F4FF', border: '1px solid rgba(124,58,237,0.08)' }}
+                      style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
                     >
                       <div className="flex items-center gap-2 mb-3">
-                        <BookOpen className="h-3.5 w-3.5" style={{ color: '#7C3AED' }} />
-                        <span className="text-[11px] font-bold" style={{ color: '#7C3AED' }}>
+                        <BookOpen className="h-3.5 w-3.5" style={{ color: ACCENT }} />
+                        <span className="text-[11px] font-bold" style={{ color: ACCENT }}>
                           Revision Notes
                         </span>
                       </div>
@@ -326,11 +334,11 @@ export function ProductDemo() {
                           <li
                             key={i}
                             className="flex items-start gap-2 text-xs"
-                            style={{ color: '#4B4580' }}
+                            style={{ color: INK }}
                           >
                             <span
                               className="shrink-0 font-bold"
-                              style={{ color: '#7C3AED', lineHeight: 1.6 }}
+                              style={{ color: ACCENT, lineHeight: 1.6 }}
                             >
                               •
                             </span>
@@ -344,17 +352,17 @@ export function ProductDemo() {
                   {activeTab === 'mcq' && (
                     <div
                       className="rounded-xl p-4"
-                      style={{ background: '#F5F4FF', border: '1px solid rgba(124,58,237,0.08)' }}
+                      style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
                     >
                       <div className="flex items-center gap-2 mb-3">
-                        <FileText className="h-3.5 w-3.5" style={{ color: '#7C3AED' }} />
-                        <span className="text-[11px] font-bold" style={{ color: '#7C3AED' }}>
+                        <FileText className="h-3.5 w-3.5" style={{ color: ACCENT }} />
+                        <span className="text-[11px] font-bold" style={{ color: ACCENT }}>
                           Practice MCQ
                         </span>
                       </div>
                       <p
                         className="text-xs font-semibold mb-3"
-                        style={{ color: '#1A1836' }}
+                        style={{ color: INK }}
                       >
                         {demo.mcq.q}
                       </p>
@@ -371,8 +379,8 @@ export function ProductDemo() {
                                   : '#FFFFFF',
                                 border: `1px solid ${isCorrect
                                   ? 'rgba(5,150,105,0.25)'
-                                  : 'rgba(124,58,237,0.08)'}`,
-                                color: isCorrect ? '#059669' : '#4B4580',
+                                  : BORDER}`,
+                                color: isCorrect ? '#059669' : INK,
                               }}
                             >
                               <span
@@ -380,8 +388,8 @@ export function ProductDemo() {
                                 style={{
                                   background: isCorrect
                                     ? '#059669'
-                                    : 'rgba(124,58,237,0.1)',
-                                  color: isCorrect ? '#FFFFFF' : '#7C3AED',
+                                    : ACCENT_SOFT,
+                                  color: isCorrect ? '#FFFFFF' : ACCENT,
                                 }}
                               >
                                 {String.fromCharCode(65 + i)}

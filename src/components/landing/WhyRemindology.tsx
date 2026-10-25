@@ -41,9 +41,9 @@ const ROWS = [
   },
 ];
 
-const BRAND_GRAD = 'linear-gradient(135deg, #7C3AED, #C026D3)';
-const TEXT_DARK  = '#1A1836';
-const TEXT_MID   = '#6B63A0';
+const ACCENT    = '#8A6A12';
+const TEXT_DARK = '#16233E';
+const TEXT_MID  = '#5B6478';
 
 function ToneCell({ tone, text }: { tone: 'good' | 'bad' | 'mid'; text: string }) {
   const cfg = {
@@ -71,25 +71,25 @@ export function WhyRemindology() {
   return (
     <div
       className="rounded-3xl overflow-hidden"
-      style={{ border: '1px solid rgba(124,58,237,0.14)', boxShadow: '0 20px 60px rgba(124,58,237,0.1)' }}
+      style={{ border: '1px solid rgba(22,35,62,0.1)', boxShadow: '0 20px 60px rgba(22,35,62,0.08)' }}
     >
       {/* Header row */}
       <div className="grid grid-cols-[1.1fr_1fr_1.15fr]">
-        <div className="p-4 sm:p-5" style={{ background: '#FAFAFF' }} />
+        <div className="p-4 sm:p-5" style={{ background: '#F7F4EC' }} />
         <div
           className="p-4 sm:p-5 text-center border-l"
-          style={{ background: '#FAFAFF', borderColor: 'rgba(124,58,237,0.1)' }}
+          style={{ background: '#F7F4EC', borderColor: 'rgba(22,35,62,0.1)' }}
         >
           <p className="text-xs sm:text-sm font-bold" style={{ color: TEXT_MID }}>
             The Old Way
           </p>
-          <p className="text-[10px] mt-0.5 hidden sm:block" style={{ color: '#A79FCB' }}>
+          <p className="text-[10px] mt-0.5 hidden sm:block" style={{ color: '#5B6478' }}>
             Manual grind
           </p>
         </div>
         <div
           className="p-4 sm:p-5 text-center relative overflow-hidden"
-          style={{ background: BRAND_GRAD }}
+          style={{ background: ACCENT }}
         >
           <p className="text-xs sm:text-sm font-bold text-white">Remindology</p>
           <p className="text-[10px] mt-0.5 hidden sm:block" style={{ color: 'rgba(255,255,255,0.7)' }}>
@@ -104,8 +104,8 @@ export function WhyRemindology() {
           key={row.dimension}
           className="grid grid-cols-[1.1fr_1fr_1.15fr] items-stretch"
           style={{
-            background: i % 2 === 0 ? '#FFFFFF' : '#FCFBFF',
-            borderTop: '1px solid rgba(124,58,237,0.07)',
+            background: i % 2 === 0 ? '#FFFFFF' : '#F7F4EC',
+            borderTop: '1px solid rgba(22,35,62,0.08)',
           }}
         >
           <div className="p-4 sm:p-5 flex items-center">
@@ -113,12 +113,12 @@ export function WhyRemindology() {
               {row.dimension}
             </p>
           </div>
-          <div className="p-4 sm:p-5 flex items-center border-l" style={{ borderColor: 'rgba(124,58,237,0.07)' }}>
+          <div className="p-4 sm:p-5 flex items-center border-l" style={{ borderColor: 'rgba(22,35,62,0.08)' }}>
             <ToneCell tone={row.manual.tone} text={row.manual.text} />
           </div>
           <div
             className="p-4 sm:p-5 flex items-center border-l"
-            style={{ borderColor: 'rgba(124,58,237,0.07)', background: 'rgba(124,58,237,0.035)' }}
+            style={{ borderColor: 'rgba(22,35,62,0.08)', background: 'rgba(138,106,18,0.035)' }}
           >
             <ToneCell tone={row.us.tone} text={row.us.text} />
           </div>
@@ -128,10 +128,10 @@ export function WhyRemindology() {
       {/* Footer strip */}
       <div
         className="flex items-center justify-center gap-2 py-3.5 px-4 text-center"
-        style={{ background: 'rgba(124,58,237,0.05)', borderTop: '1px solid rgba(124,58,237,0.1)' }}
+        style={{ background: 'rgba(138,106,18,0.08)', borderTop: '1px solid rgba(138,106,18,0.18)' }}
       >
-        <Clock className="h-3.5 w-3.5 shrink-0" style={{ color: '#7C3AED' }} />
-        <p className="text-xs font-semibold" style={{ color: '#7C3AED' }}>
+        <Clock className="h-3.5 w-3.5 shrink-0" style={{ color: ACCENT }} />
+        <p className="text-xs font-semibold" style={{ color: ACCENT }}>
           Students save an average of 5+ hours every week
         </p>
       </div>

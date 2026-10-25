@@ -31,38 +31,60 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
+
+  --font-serif-display: var(--font-serif-display);
+
+  --color-brand-pop: hsl(var(--brand-pop));
+  --color-brand-pop-foreground: hsl(var(--brand-pop-foreground));
 }
 
 :root {
-  --background: 220 33% 97%;
-  --foreground: 224 71.4% 4.1%;
+  /* "Navy & Brass" — deep navy ink on warm cream, a dark accessible brass
+     primary (buttons/links), plus a separate brighter "brand-pop" gold
+     reserved for stars/badges/success states only — never button fills,
+     where it wouldn't carry enough contrast against white text. Deliberately
+     not a green/blue/purple SaaS palette — it should read as a specific,
+     considered choice, not a generated-site default. See DESIGN.md. */
+  --background: 44 38% 95%;
+  --foreground: 220 45% 16%;
 
   --card: 0 0% 100%;
-  --card-foreground: 224 71.4% 4.1%;
+  --card-foreground: 220 45% 16%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 224 71.4% 4.1%;
+  --popover-foreground: 220 45% 16%;
 
-  --primary: 262.1 83.3% 57.8%;
-  --primary-foreground: 210 20% 98%;
+  --primary: 44 75% 31%;
+  --primary-foreground: 44 40% 97%;
 
-  --secondary: 220 14.3% 95.9%;
-  --secondary-foreground: 220.9 39.3% 11%;
+  --secondary: 44 25% 91%;
+  --secondary-foreground: 220 45% 16%;
 
-  --muted: 220 14.3% 95.9%;
-  --muted-foreground: 220 8.9% 46.1%;
+  --muted: 44 22% 91%;
+  --muted-foreground: 221 15% 41%;
 
-  --accent: 262.1 83.3% 95%;
-  --accent-foreground: 262.1 83.3% 30%;
+  --accent: 44 45% 90%;
+  --accent-foreground: 44 75% 31%;
 
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 20% 98%;
+  --destructive: 0 72% 42%;
+  --destructive-foreground: 44 40% 97%;
 
-  --border: 220 13% 89%;
-  --input: 220 13% 89%;
-  --ring: 262.1 83.3% 57.8%;
+  --border: 44 20% 85%;
+  --input: 44 20% 85%;
+  --ring: 44 75% 31%;
 
-  --radius: 0.75rem;
+  --radius: 0.5rem;
+
+  --brand-pop: 45 65% 52%;
+  --brand-pop-foreground: 220 45% 16%;
+
+  /* Clean Editorial display type scale — for serif headlines (--font-serif-display)
+     that fall outside Tailwind's default text-* steps. Everything else (body copy,
+     labels, captions) uses Tailwind's standard scale on top of the body font-size
+     set below. See DESIGN.md for when to reach for each one. */
+  --text-display-lg: clamp(2.25rem, 5vw, 3.5rem);
+  --text-display-md: clamp(1.8rem, 4vw, 2.8rem);
+  --text-display-sm: clamp(1.5rem, 3vw, 2rem);
 }
 
 .dark {

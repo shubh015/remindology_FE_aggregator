@@ -32,8 +32,8 @@ function ScanMockup() {
   return (
     <div style={{ width: '100%', maxWidth: 320 }}>
       <div style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        background: '#F7F6F2',
+        border: '1px solid rgba(22,35,62,0.08)',
         borderRadius: 14,
         padding: '14px 14px',
         position: 'relative',
@@ -43,18 +43,18 @@ function ScanMockup() {
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           marginBottom: 11, paddingBottom: 9,
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          borderBottom: '1px solid rgba(22,35,62,0.06)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Camera style={{ width: 12, height: 12, color: '#C4B5FD' }} />
+            <Camera style={{ width: 12, height: 12, color: '#8A6A12' }} />
             <span style={{
-              fontSize: 10, fontWeight: 700, color: 'rgba(196,181,253,0.65)',
+              fontSize: 10, fontWeight: 700, color: '#5B6478',
               letterSpacing: '0.1em', textTransform: 'uppercase' as const,
             }}>
               Mains Answer Sheet
             </span>
           </div>
-          <span style={{ fontSize: 9, color: 'rgba(196,181,253,0.35)' }}>GS II · Q.4</span>
+          <span style={{ fontSize: 9, color: '#5B6478' }}>GS II · Q.4</span>
         </div>
 
         {/* Sweeping scan line */}
@@ -62,8 +62,8 @@ function ScanMockup() {
           position: 'absolute',
           left: 0, right: 0,
           height: 2,
-          background: 'linear-gradient(90deg, transparent, rgba(167,139,250,0.35) 20%, #A78BFA 45%, #E879F9 55%, rgba(167,139,250,0.35) 80%, transparent)',
-          boxShadow: '0 0 10px 2px rgba(167,139,250,0.45)',
+          background: 'linear-gradient(90deg, transparent, rgba(138,106,18,0.35) 20%, #8A6A12 45%, #8A6A12 55%, rgba(138,106,18,0.35) 80%, transparent)',
+          boxShadow: '0 0 10px 2px rgba(138,106,18,0.45)',
           animation: 'rmOcrSweep 3.4s ease-in-out forwards',
           top: 0,
           zIndex: 10,
@@ -81,7 +81,7 @@ function ScanMockup() {
               <div style={{
                 position: 'absolute', inset: 0,
                 borderRadius: 3,
-                background: 'rgba(196,181,253,0.08)',
+                background: 'rgba(22,35,62,0.06)',
                 animation: 'rmHandwritingFade 0.4s ease forwards',
                 animationDelay: `${0.3 + i * LINE_DELAY}s`,
               }} />
@@ -89,7 +89,7 @@ function ScanMockup() {
               <span style={{
                 fontSize: 10,
                 fontFamily: "'Courier New', monospace",
-                color: '#C4B5FD',
+                color: '#16233E',
                 letterSpacing: '0.02em',
                 lineHeight: 1,
                 position: 'relative',
@@ -112,12 +112,12 @@ function ScanMockup() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 10 }}>
           <div style={{
             width: 6, height: 6, borderRadius: '50%',
-            background: '#A78BFA',
+            background: '#8A6A12',
             animation: 'rmPulse 1s ease-in-out infinite',
           }} />
           <span style={{
             fontSize: 9, fontWeight: 700,
-            color: 'rgba(167,139,250,0.5)',
+            color: 'rgba(138,106,18,0.7)',
             letterSpacing: '0.1em',
             textTransform: 'uppercase' as const,
           }}>
@@ -126,7 +126,7 @@ function ScanMockup() {
         </div>
       </div>
 
-      <p style={{ textAlign: 'center' as const, marginTop: 8, fontSize: 11, color: 'rgba(196,181,253,0.38)' }}>
+      <p style={{ textAlign: 'center' as const, marginTop: 8, fontSize: 11, color: '#5B6478' }}>
         Step 1 · Photograph &amp; Extract
       </p>
     </div>
@@ -137,8 +137,8 @@ function AnalyzeMockup() {
   return (
     <div style={{ width: '100%', maxWidth: 320, textAlign: 'center' as const }}>
       <div style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(124,58,237,0.2)',
+        background: '#F7F6F2',
+        border: '1px solid rgba(138,106,18,0.18)',
         borderRadius: 14,
         padding: '28px 20px',
       }}>
@@ -147,32 +147,32 @@ function AnalyzeMockup() {
           {[0, 1, 2].map(i => (
             <div key={i} style={{
               width: 9, height: 9, borderRadius: '50%',
-              background: '#A78BFA',
+              background: '#8A6A12',
               animation: 'rmDotBlink 1.3s ease-in-out infinite',
               animationDelay: `${i * 0.22}s`,
             }} />
           ))}
         </div>
 
-        <p style={{ fontSize: 13, fontWeight: 700, color: '#F0EEFF', marginBottom: 5 }}>
+        <p style={{ fontSize: 13, fontWeight: 700, color: '#16233E', marginBottom: 5 }}>
           Analyzing your answer…
         </p>
-        <p style={{ fontSize: 11, color: 'rgba(196,181,253,0.5)', marginBottom: 18, lineHeight: 1.5 }}>
+        <p style={{ fontSize: 11, color: '#5B6478', marginBottom: 18, lineHeight: 1.5 }}>
           Cross-referencing 2M+ academic sources
         </p>
 
         {/* Progress bar */}
-        <div style={{ background: 'rgba(124,58,237,0.12)', borderRadius: 999, height: 5, overflow: 'hidden', marginBottom: 6 }}>
+        <div style={{ background: 'rgba(138,106,18,0.08)', borderRadius: 999, height: 5, overflow: 'hidden', marginBottom: 6 }}>
           <div style={{
             height: '100%',
-            background: 'linear-gradient(90deg, #7C3AED, #C026D3)',
+            background: '#8A6A12',
             borderRadius: 999,
             animation: 'rmProgressFill 2.2s ease-out forwards',
           }} />
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 9, color: 'rgba(196,181,253,0.35)' }}>0 sources</span>
-          <span style={{ fontSize: 9, color: 'rgba(196,181,253,0.35)' }}>2,147,483 sources</span>
+          <span style={{ fontSize: 9, color: '#5B6478' }}>0 sources</span>
+          <span style={{ fontSize: 9, color: '#5B6478' }}>2,147,483 sources</span>
         </div>
 
         {/* Checking items */}
@@ -185,14 +185,14 @@ function AnalyzeMockup() {
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
               <div style={{
                 width: 14, height: 14, borderRadius: '50%', flexShrink: 0,
-                background: item.done ? 'rgba(52,211,153,0.15)' : 'rgba(124,58,237,0.1)',
-                border: `1px solid ${item.done ? 'rgba(52,211,153,0.35)' : 'rgba(124,58,237,0.2)'}`,
+                background: item.done ? 'rgba(52,211,153,0.15)' : 'rgba(138,106,18,0.08)',
+                border: `1px solid ${item.done ? 'rgba(52,211,153,0.35)' : 'rgba(138,106,18,0.18)'}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 {item.done && <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#34D399' }} />}
-                {!item.done && <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#7C3AED', animation: 'rmPulse 0.8s ease-in-out infinite' }} />}
+                {!item.done && <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#8A6A12', animation: 'rmPulse 0.8s ease-in-out infinite' }} />}
               </div>
-              <span style={{ fontSize: 10, color: item.done ? 'rgba(196,181,253,0.65)' : 'rgba(196,181,253,0.4)' }}>
+              <span style={{ fontSize: 10, color: item.done ? '#16233E' : '#5B6478' }}>
                 {item.label}
               </span>
             </div>
@@ -200,7 +200,7 @@ function AnalyzeMockup() {
         </div>
       </div>
 
-      <p style={{ textAlign: 'center' as const, marginTop: 8, fontSize: 11, color: 'rgba(196,181,253,0.38)' }}>
+      <p style={{ textAlign: 'center' as const, marginTop: 8, fontSize: 11, color: '#5B6478' }}>
         Step 2 · Cross-reference
       </p>
     </div>
@@ -268,10 +268,10 @@ function ResultMockup() {
 
           {/* Verdict text */}
           <div>
-            <p style={{ fontSize: 13, fontWeight: 800, color: '#F0EEFF', marginBottom: 4 }}>
+            <p style={{ fontSize: 13, fontWeight: 800, color: '#16233E', marginBottom: 4 }}>
               Mostly Original ✓
             </p>
-            <p style={{ fontSize: 11, color: 'rgba(196,181,253,0.58)', lineHeight: 1.55 }}>
+            <p style={{ fontSize: 11, color: '#5B6478', lineHeight: 1.55 }}>
               2 paragraphs need<br />more original analysis.
             </p>
           </div>
@@ -286,10 +286,10 @@ function ResultMockup() {
           ].map((row, i) => (
             <div key={i}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                <span style={{ fontSize: 10, color: 'rgba(196,181,253,0.55)' }}>{row.label}</span>
+                <span style={{ fontSize: 10, color: '#5B6478' }}>{row.label}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, color: row.color }}>{row.pct}% original</span>
               </div>
-              <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 999, height: 4, overflow: 'hidden' }}>
+              <div style={{ background: 'rgba(22,35,62,0.06)', borderRadius: 999, height: 4, overflow: 'hidden' }}>
                 <div style={{
                   height: '100%', borderRadius: 999,
                   background: row.pct > 60 ? '#34D399' : '#F59E0B',
@@ -304,7 +304,7 @@ function ResultMockup() {
         </div>
       </div>
 
-      <p style={{ textAlign: 'center' as const, marginTop: 8, fontSize: 11, color: 'rgba(196,181,253,0.38)' }}>
+      <p style={{ textAlign: 'center' as const, marginTop: 8, fontSize: 11, color: '#5B6478' }}>
         Step 3 · Originality Report
       </p>
     </div>
@@ -383,8 +383,8 @@ export function OCRCopyCheckShowcase() {
       <div
         className="rounded-3xl overflow-hidden"
         style={{
-          background: '#0D0D2B',
-          border: '1px solid rgba(124,58,237,0.18)',
+          background: '#FFFFFF',
+          border: '1px solid rgba(22,35,62,0.08)',
           position: 'relative',
         }}
       >
@@ -393,7 +393,7 @@ export function OCRCopyCheckShowcase() {
           position: 'absolute', top: '50%', left: '35%',
           transform: 'translate(-50%, -50%)',
           width: 560, height: 360, borderRadius: '50%',
-          background: 'radial-gradient(ellipse, rgba(52,211,153,0.06) 0%, rgba(124,58,237,0.08) 45%, transparent 72%)',
+          background: 'rgba(138,106,18,0.05)',
           pointerEvents: 'none',
         }} />
 
@@ -403,7 +403,7 @@ export function OCRCopyCheckShowcase() {
           <div
             className="flex items-center justify-center p-8"
             style={{
-              borderRight: '1px solid rgba(124,58,237,0.1)',
+              borderRight: '1px solid rgba(22,35,62,0.08)',
               minHeight: 380,
             }}
           >
@@ -421,9 +421,9 @@ export function OCRCopyCheckShowcase() {
               fontSize: 11, fontWeight: 700,
               padding: '5px 12px', borderRadius: 999,
               marginBottom: 16, alignSelf: 'flex-start' as const,
-              background: 'rgba(52,211,153,0.1)',
-              border: '1px solid rgba(52,211,153,0.25)',
-              color: '#34D399',
+              background: 'rgba(138,106,18,0.08)',
+              border: '1px solid rgba(138,106,18,0.18)',
+              color: '#8A6A12',
             }}>
               <ShieldCheck style={{ width: 13, height: 13 }} />
               New · OCR Answer Check
@@ -433,21 +433,19 @@ export function OCRCopyCheckShowcase() {
               fontSize: 'clamp(1.25rem, 2.4vw, 1.7rem)',
               fontWeight: 800,
               lineHeight: 1.2,
-              color: '#F0EEFF',
+              color: '#16233E',
               marginBottom: 12,
             }}>
               Write it by hand.{' '}
               <span style={{
-                background: 'linear-gradient(135deg, #34D399, #059669)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                color: '#8A6A12',
               }}>
                 Know it&apos;s yours.
               </span>
             </h3>
 
             <p style={{
-              color: 'rgba(196,181,253,0.62)',
+              color: '#5B6478',
               fontSize: '0.88rem',
               lineHeight: 1.8,
               marginBottom: 22,
@@ -468,13 +466,13 @@ export function OCRCopyCheckShowcase() {
                 <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}>
                   <div style={{
                     width: 16, height: 16, borderRadius: '50%', flexShrink: 0, marginTop: 1,
-                    background: 'rgba(52,211,153,0.12)',
-                    border: '1px solid rgba(52,211,153,0.28)',
+                    background: 'rgba(138,106,18,0.08)',
+                    border: '1px solid rgba(138,106,18,0.18)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#34D399' }} />
+                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#8A6A12' }} />
                   </div>
-                  <span style={{ fontSize: 13, color: 'rgba(196,181,253,0.72)', lineHeight: 1.5 }}>
+                  <span style={{ fontSize: 13, color: '#16233E', lineHeight: 1.5 }}>
                     {item}
                   </span>
                 </li>
@@ -489,11 +487,11 @@ export function OCRCopyCheckShowcase() {
                     width: p === phase ? 20 : 6,
                     height: 6,
                     borderRadius: 999,
-                    background: p === phase ? '#34D399' : 'rgba(255,255,255,0.1)',
+                    background: p === phase ? '#8A6A12' : 'rgba(22,35,62,0.1)',
                     transition: 'width 0.3s ease, background 0.3s ease',
                   }} />
                   {p === phase && (
-                    <span style={{ fontSize: 10, color: '#34D399', fontWeight: 600 }}>
+                    <span style={{ fontSize: 10, color: '#8A6A12', fontWeight: 600 }}>
                       {phaseLabel[p]}
                     </span>
                   )}
@@ -508,10 +506,10 @@ export function OCRCopyCheckShowcase() {
                 fontSize: 13, fontWeight: 700,
                 padding: '11px 20px', borderRadius: 12,
                 alignSelf: 'flex-start' as const,
-                background: 'linear-gradient(135deg, #059669, #34D399)',
+                background: '#8A6A12',
                 color: '#FFFFFF',
                 textDecoration: 'none',
-                boxShadow: '0 4px 20px rgba(16,185,129,0.28)',
+                boxShadow: '0 4px 20px rgba(138,106,18,0.28)',
                 transition: 'opacity 0.15s ease',
               }}
             >

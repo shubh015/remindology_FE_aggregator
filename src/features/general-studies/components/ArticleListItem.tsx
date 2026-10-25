@@ -12,7 +12,7 @@ function stripHtml(text: string | undefined | null): string {
 }
 
 export function ArticleListItem({ article }: { article: GSArticle }) {
-  const accentColor = GS_PAPER_COLORS[article.gsPaperTags?.[0]] ?? '#7C3AED';
+  const accentColor = GS_PAPER_COLORS[article.gsPaperTags?.[0]] ?? '#8A6A12';
   const icon = getGSIcon(article.topicTags?.[0] ?? article.title);
 
   return (

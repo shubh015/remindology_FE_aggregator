@@ -29,8 +29,7 @@ export function MobileNav() {
     <div className="md:hidden">
       <button
         onClick={() => setOpen(o => !o)}
-        className="p-2 rounded-lg transition-colors hover:bg-white/5"
-        style={{ color: 'rgba(240,238,255,0.78)' }}
+        className="p-2 rounded-lg transition-colors hover:bg-black/5 text-foreground"
         aria-label={open ? 'Close menu' : 'Open menu'}
         aria-expanded={open}
       >
@@ -47,27 +46,14 @@ export function MobileNav() {
           />
 
           {/* Drawer */}
-          <div
-            className="absolute left-0 right-0 top-full z-50"
-            style={{
-              background: 'rgba(9,9,31,0.98)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              borderBottom: '1px solid rgba(124,58,237,0.22)',
-              boxShadow: '0 24px 48px rgba(0,0,0,0.45)',
-            }}
-          >
+          <div className="absolute left-0 right-0 top-full z-50 bg-background/98 backdrop-blur-xl border-b border-border shadow-xl">
             <nav className="px-5 py-3 flex flex-col">
               {NAV_LINKS.map(([label, href]) => (
                 <a
                   key={label}
                   href={href}
                   onClick={() => setOpen(false)}
-                  className="text-[15px] font-medium py-4 px-2 transition-colors hover:text-white"
-                  style={{
-                    color: 'rgba(240,238,255,0.72)',
-                    borderBottom: '1px solid rgba(124,58,237,0.1)',
-                  }}
+                  className="text-[15px] font-medium py-4 px-2 transition-colors hover:text-foreground text-foreground/72 border-b border-foreground/8"
                 >
                   {label}
                 </a>

@@ -45,15 +45,15 @@ export function GSPlaceholderCard({
       {/* Text zone */}
       <div className="flex-1 flex flex-col p-5 min-h-0">
         <p
-          className="font-bold mb-1.5 truncate"
-          style={{ fontSize: '1rem', color: '#111827', lineHeight: 1.3 }}
+          className="font-bold mb-1.5 truncate text-foreground"
+          style={{ fontSize: '1rem', lineHeight: 1.3 }}
         >
           {title}
         </p>
         <p
-          className="text-sm flex-1 overflow-hidden"
+          className="text-sm flex-1 overflow-hidden text-muted-foreground"
           style={{
-            color: '#9CA3AF', lineHeight: 1.5,
+            lineHeight: 1.5,
             display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2,
           }}
         >
