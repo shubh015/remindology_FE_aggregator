@@ -5,9 +5,10 @@ import Link from 'next/link';
 import { ChevronDown, GraduationCap, ArrowRight } from 'lucide-react';
 import { useCourses } from '@/features/courses/hooks/use-courses';
 
-const BORDER = '1px solid rgba(22,35,62,0.1)';
 
-export function CoursesNavDropdown() {
+// `variant` is accepted for backwards compatibility; only the monochrome style exists now.
+export function CoursesNavDropdown(props: { variant?: 'default' | 'mono' } = {}) {
+  void props;
   const [open, setOpen] = useState(false);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { data: courses } = useCourses();
@@ -25,8 +26,7 @@ export function CoursesNavDropdown() {
       {/* Trigger */}
       <Link
         href="/courses"
-        className="flex items-center gap-1 text-sm font-medium transition-colors whitespace-nowrap px-3 py-1.5 rounded-lg hover:text-foreground hover:bg-black/3"
-        style={{ color: open ? '#16233E' : '#5B6478' }}
+        className={`nav-link flex items-center gap-1 whitespace-nowrap ${open ? 'text-ink!' : ''}`}
       >
         Courses
         <ChevronDown
@@ -38,19 +38,13 @@ export function CoursesNavDropdown() {
       {/* Dropdown panel */}
       {open && (
         <div
-          className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-60 rounded-2xl z-50 overflow-hidden bg-white"
-          style={{
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: BORDER,
-            boxShadow: '0 20px 48px rgba(22,35,62,0.12), 0 0 0 1px rgba(22,35,62,0.04)',
-          }}
+          className={'absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 rounded-[4px] z-50 overflow-hidden bg-paper-raised border border-rule shadow-lift-2'}
           onMouseEnter={show}
           onMouseLeave={hide}
         >
           {/* Label */}
-          <div className="px-4 py-2.5" style={{ borderBottom: BORDER }}>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+          <div className={'px-4 py-3 border-b border-rule'}>
+            <p className={'eyebrow'}>
               All Courses
             </p>
           </div>
@@ -59,39 +53,37 @@ export function CoursesNavDropdown() {
           <div className="py-1.5 max-h-72 overflow-y-auto">
             {courses && courses.length > 0 ? (
               courses.map((course) => {
-                const accent = course.color || '#8A6A12';
                 return (
                   <Link
                     key={course.id}
                     href={`/courses/${course.slug}`}
                     onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-black/3"
+                    className={'flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-paper-deep'}
                   >
                     <div
-                      className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0"
-                      style={{ background: `${accent}22`, color: accent }}
+                      className={'h-7 w-7 rounded-md flex items-center justify-center shrink-0 border border-rule bg-paper-deep text-ink'}
                     >
                       <GraduationCap className="h-3.5 w-3.5" />
                     </div>
-                    <span className="text-sm font-medium leading-snug text-foreground">
+                    <span className={'text-sm leading-snug text-ink'}>
                       {course.name}
                     </span>
                   </Link>
                 );
               })
             ) : (
-              <p className="px-4 py-3 text-sm text-muted-foreground">
+              <p className={'px-4 py-3 text-sm text-ink-muted'}>
                 Loading…
               </p>
             )}
           </div>
 
           {/* Footer CTA */}
-          <div className="px-4 py-2.5" style={{ borderTop: BORDER }}>
+          <div className={'px-4 py-3 border-t border-rule'}>
             <Link
               href="/courses"
               onClick={() => setOpen(false)}
-              className="flex items-center justify-between text-xs font-semibold transition-opacity hover:opacity-75 text-primary"
+              className={'flex items-center justify-between text-[13px] font-semibold text-ink transition-opacity hover:opacity-70'}
             >
               View all courses
               <ArrowRight className="h-3.5 w-3.5" />

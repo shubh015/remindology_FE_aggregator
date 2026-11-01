@@ -7,13 +7,13 @@ import { GoogleAuthButton } from '@/components/auth/GoogleAuthButton';
 
 export default function SignupPage() {
   return (
-    <Card className="border-border bg-card shadow-sm">
+    <Card className="rounded-[3px] border-rule bg-paper-raised shadow-none">
       <CardHeader className="space-y-1 text-center">
-        <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl mb-2 bg-primary/10 border border-primary/20">
-          <Sparkles className="h-5 w-5 text-primary" />
+        <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-[3px] mb-2 bg-paper-deep border border-rule">
+          <Sparkles className="h-4 w-4 text-ink" />
         </div>
-        <CardTitle className="text-lg font-bold">Create your account</CardTitle>
-        <CardDescription className="text-xs">
+        <CardTitle className="doc-h2 mb-0!">Create your account</CardTitle>
+        <CardDescription className="text-sm text-ink-muted">
           Start your AI-powered exam prep — free, no credit card needed
         </CardDescription>
       </CardHeader>
@@ -22,8 +22,8 @@ export default function SignupPage() {
         <GoogleAuthButton />
 
         {/* What you get */}
-        <div className="rounded-xl p-4 space-y-2.5 bg-primary/5 border border-primary/10">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+        <div className="rounded-[3px] p-4 space-y-2.5 bg-paper-deep border border-rule">
+          <p className="eyebrow">
             What you get
           </p>
           {[
@@ -32,25 +32,25 @@ export default function SignupPage() {
             'Current affairs with mains angle',
             'Personalised 30-day study plan',
           ].map((item) => (
-            <div key={item} className="flex items-start gap-2 text-xs text-muted-foreground">
-              <span className="text-primary font-bold mt-0.5 shrink-0">✓</span>
+            <div key={item} className="flex items-start gap-2 text-xs text-ink-soft">
+              <span className="text-ink font-semibold mt-0.5 shrink-0">✓</span>
               <span>{item}</span>
             </div>
           ))}
         </div>
 
-        <p className="text-center text-[10px] text-muted-foreground/70 leading-relaxed">
+        <p className="text-center text-[11px] text-ink-muted leading-relaxed">
           By continuing you agree to our{' '}
-          <Link href="/terms" className="underline hover:text-foreground">Terms</Link>
+          <Link href="/terms" className="underline underline-offset-2 hover:text-ink">Terms</Link>
           {' '}and{' '}
-          <Link href="/privacy" className="underline hover:text-foreground">Privacy Policy</Link>.
+          <Link href="/privacy" className="underline underline-offset-2 hover:text-ink">Privacy Policy</Link>.
         </p>
       </CardContent>
 
-      <CardFooter className="flex flex-col items-center border-t border-border pt-4">
-        <p className="text-xs text-muted-foreground">
+      <CardFooter className="flex flex-col items-center border-t border-rule pt-4">
+        <p className="text-xs text-ink-muted">
           Already have an account?{' '}
-          <Link href="/login" className="text-primary font-bold hover:underline">Sign In</Link>
+          <Link href="/login" className="ks-link font-semibold">Sign In</Link>
         </p>
       </CardFooter>
     </Card>

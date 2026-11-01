@@ -25,13 +25,8 @@ function ToastList({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: num
       {toasts.map((t) => (
         <div
           key={t.id}
-          className="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-lg pointer-events-auto animate-in slide-in-from-bottom-4 duration-200"
-          style={{
-            background: t.type === 'success' ? 'rgba(5,150,105,0.95)' : 'rgba(220,38,38,0.95)',
-            color: '#FFFFFF',
-            backdropFilter: 'blur(8px)',
-            minWidth: 280,
-          }}
+          className={`flex items-center gap-3 px-4 py-3 rounded-[3px] shadow-lift-2 pointer-events-auto animate-in slide-in-from-bottom-4 duration-200 text-paper ${t.type === 'success' ? 'bg-ink' : 'bg-[oklch(52%_.16_35)]'}`}
+          style={{ minWidth: 280 }}
         >
           {t.type === 'success'
             ? <CheckCircle2 className="h-4 w-4 shrink-0" />
@@ -70,29 +65,29 @@ function ConfirmDialog({
   onCancel: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-card border border-border rounded-2xl shadow-2xl p-6 max-w-sm w-full space-y-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40">
+      <div className="bg-paper-raised border border-rule rounded-[3px] shadow-lift-2 p-6 max-w-sm w-full space-y-4">
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-destructive/10">
-            <Trash2 className="h-5 w-5 text-destructive" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[3px] border border-rule bg-paper-deep">
+            <Trash2 className="h-5 w-5 text-[oklch(52%_.16_35)]" />
           </div>
           <div>
-            <p className="text-sm font-bold text-foreground">Delete knowledge source?</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Delete all chunks for <span className="font-mono font-bold text-foreground">"{source}"</span>? This cannot be undone.
+            <p className="text-sm font-semibold text-ink">Delete knowledge source?</p>
+            <p className="text-xs text-ink-muted mt-1">
+              Delete all chunks for <span className="font-label font-semibold text-ink">"{source}"</span>? This cannot be undone.
             </p>
           </div>
         </div>
         <div className="flex gap-3 pt-1">
           <button
             onClick={onCancel}
-            className="flex-1 rounded-xl border border-border bg-background py-2.5 text-sm font-semibold text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            className="flex-1 rounded-md border border-rule bg-paper-raised py-2.5 text-sm font-semibold text-ink hover:bg-paper-deep transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 rounded-xl bg-destructive py-2.5 text-sm font-bold text-destructive-foreground hover:opacity-90 transition-opacity cursor-pointer"
+            className="flex-1 rounded-md bg-[oklch(52%_.16_35)] py-2.5 text-sm font-semibold text-paper hover:opacity-90 transition-opacity cursor-pointer"
           >
             Delete
           </button>
@@ -106,14 +101,14 @@ function ConfirmDialog({
 
 function Label({ children, required }: { children: React.ReactNode; required?: boolean }) {
   return (
-    <label className="text-xs font-bold text-foreground uppercase tracking-wider">
-      {children}{required && <span className="text-destructive ml-0.5">*</span>}
+    <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+      {children}{required && <span className="text-[oklch(52%_.16_35)] ml-0.5">*</span>}
     </label>
   );
 }
 
 function FieldHint({ children }: { children: React.ReactNode }) {
-  return <p className="text-[11px] text-muted-foreground">{children}</p>;
+  return <p className="text-[11px] text-ink-muted">{children}</p>;
 }
 
 // ── Elapsed timer hook ────────────────────────────────────────────
@@ -138,16 +133,16 @@ function fmtElapsed(s: number) {
 
 function SuccessBanner({ result, showChars }: { result: IngestResult; showChars?: boolean }) {
   return (
-    <div className="flex items-start gap-3 rounded-2xl bg-emerald-500/8 border border-emerald-500/20 p-4">
-      <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
+    <div className="flex items-start gap-3 rounded-[2px] bg-paper-raised border border-rule-strong p-4">
+      <CheckCircle2 className="h-5 w-5 text-ink shrink-0 mt-0.5" />
       <div className="text-sm">
-        <p className="font-bold text-emerald-700 dark:text-emerald-400">Ingestion complete</p>
-        <p className="text-emerald-700/80 dark:text-emerald-400/80 mt-0.5">
-          Ingested <span className="font-bold">{result.chunksAdded}</span> chunks from{' '}
-          <span className="font-bold">{result.pages}</span> page{result.pages !== 1 ? 's' : ''} for source{' '}
-          <span className="font-mono font-bold">"{result.source}"</span>
+        <p className="font-semibold text-ink">Ingestion complete</p>
+        <p className="text-ink-soft mt-0.5">
+          Ingested <span className="font-semibold">{result.chunksAdded}</span> chunks from{' '}
+          <span className="font-semibold">{result.pages}</span> page{result.pages !== 1 ? 's' : ''} for source{' '}
+          <span className="font-label font-semibold">"{result.source}"</span>
           {showChars && result.extractedChars != null && (
-            <> (<span className="font-bold">{result.extractedChars.toLocaleString()}</span> characters extracted)</>
+            <> (<span className="font-semibold">{result.extractedChars.toLocaleString()}</span> characters extracted)</>
           )}
           .
         </p>
@@ -160,11 +155,11 @@ function SuccessBanner({ result, showChars }: { result: IngestResult; showChars?
 
 function ProcessingState({ elapsed, label }: { elapsed: number; label: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-violet-500/8 border border-violet-500/20 p-4">
-      <Loader2 className="h-4 w-4 text-violet-500 animate-spin shrink-0" />
+    <div className="flex items-center gap-3 rounded-[2px] bg-paper-deep border border-rule p-4">
+      <Loader2 className="h-4 w-4 text-ink animate-spin shrink-0" />
       <div className="flex-1">
-        <p className="text-sm font-semibold text-violet-700 dark:text-violet-400">{label}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">Elapsed: {fmtElapsed(elapsed)}</p>
+        <p className="text-sm font-semibold text-ink">{label}</p>
+        <p className="text-xs text-ink-muted mt-0.5">Elapsed: {fmtElapsed(elapsed)}</p>
       </div>
     </div>
   );
@@ -221,7 +216,7 @@ function AdminRagContent({
       <Header
         title="Knowledge Base"
         action={
-          <span className="flex items-center gap-1.5 text-xs font-bold text-violet-500 bg-violet-500/10 border border-violet-500/20 px-2.5 py-1 rounded-lg">
+          <span className="flex items-center gap-1.5 font-label text-[11px] uppercase tracking-[0.14em] text-ink bg-paper-deep border border-rule px-2.5 py-1 rounded-[2px]">
             <ShieldCheck className="h-3 w-3" />Admin
           </span>
         }
@@ -230,17 +225,17 @@ function AdminRagContent({
       <div className="flex-1 p-6 sm:p-8 max-w-3xl w-full mx-auto space-y-6">
 
         {/* Tab bar */}
-        <div className="flex gap-1 p-1 rounded-2xl bg-secondary/60 border border-border">
+        <div className="flex gap-1 p-1 rounded-[2px] bg-paper-deep border border-rule">
           {TABS.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               type="button"
               onClick={() => setTab(id)}
               className={cn(
-                'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer',
+                'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[3px] text-xs font-semibold transition-colors duration-150 ease-ks cursor-pointer',
                 tab === id
-                  ? 'bg-card text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground',
+                  ? 'bg-paper-raised text-ink border border-rule'
+                  : 'text-ink-muted hover:text-ink',
               )}
             >
               <Icon className="h-3.5 w-3.5" />
@@ -313,7 +308,7 @@ function IngestTextTab({ showToast }: { showToast: (t: ToastType, m: string) => 
       {state === 'success' && result && (
         <div className="space-y-3">
           <SuccessBanner result={result} />
-          <button type="button" onClick={reset} className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer">
+          <button type="button" onClick={reset} className="flex items-center gap-1.5 text-xs font-semibold text-ink-muted hover:text-ink cursor-pointer">
             <RotateCcw className="h-3 w-3" />Ingest another
           </button>
         </div>
@@ -324,13 +319,13 @@ function IngestTextTab({ showToast }: { showToast: (t: ToastType, m: string) => 
       )}
 
       {error && (
-        <div className="flex items-center gap-3 rounded-2xl bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive">
+        <div className="flex items-center gap-3 rounded-[2px] bg-paper-raised border border-[oklch(52%_.16_35)]/30 p-4 text-sm text-[oklch(52%_.16_35)]">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
-      <div className="rounded-2xl border border-border bg-card p-5 space-y-5">
+      <div className="rounded-[2px] border border-rule bg-paper-raised p-5 space-y-5">
         <div className="space-y-1.5">
           <Label required>Source</Label>
           <Input
@@ -338,7 +333,7 @@ function IngestTextTab({ showToast }: { showToast: (t: ToastType, m: string) => 
             onChange={(e) => setSource(e.target.value)}
             placeholder="ncert_polity_ch4"
             disabled={state === 'submitting'}
-            className="font-mono text-sm"
+            className="font-label text-sm"
           />
           <FieldHint>Unique snake_case identifier, e.g. ncert_polity_ch4 or pyq_2023_gs2</FieldHint>
         </div>
@@ -361,7 +356,7 @@ function IngestTextTab({ showToast }: { showToast: (t: ToastType, m: string) => 
             placeholder="Paste raw content here…"
             disabled={state === 'submitting'}
             rows={12}
-            className="font-mono text-sm resize-y"
+            className="font-label text-sm resize-y"
           />
           <FieldHint>{rawText.length.toLocaleString()} characters</FieldHint>
         </div>
@@ -373,12 +368,12 @@ function IngestTextTab({ showToast }: { showToast: (t: ToastType, m: string) => 
               checked={reingest}
               onChange={(e) => setReingest(e.target.checked)}
               disabled={state === 'submitting'}
-              className="mt-0.5 h-4 w-4 rounded border-border accent-violet-600 cursor-pointer"
+              className="mt-0.5 h-4 w-4 rounded border-rule accent-violet-600 cursor-pointer"
             />
             <div>
-              <span className="text-sm font-semibold text-foreground">Force re-ingest</span>
+              <span className="text-sm font-semibold text-ink">Force re-ingest</span>
               {reingest && (
-                <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                <p className="text-xs text-ink mt-0.5">
                   ⚠ This will delete all existing chunks for this source.
                 </p>
               )}
@@ -390,7 +385,7 @@ function IngestTextTab({ showToast }: { showToast: (t: ToastType, m: string) => 
       <button
         type="submit"
         disabled={state === 'submitting'}
-        className="w-full flex items-center justify-center gap-2 rounded-xl bg-violet-600 py-3 text-sm font-bold text-white hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        className="w-full flex items-center justify-center gap-2 rounded-md bg-ink py-3 text-sm font-semibold text-paper hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
       >
         {state === 'submitting' ? (
           <><Loader2 className="h-4 w-4 animate-spin" />Processing…</>
@@ -482,21 +477,21 @@ function IngestPdfTab({ showToast }: { showToast: (t: ToastType, m: string) => v
       {state === 'success' && result && (
         <div className="space-y-3">
           <SuccessBanner result={result} showChars />
-          <button type="button" onClick={reset} className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer">
+          <button type="button" onClick={reset} className="flex items-center gap-1.5 text-xs font-semibold text-ink-muted hover:text-ink cursor-pointer">
             <RotateCcw className="h-3 w-3" />Ingest another
           </button>
         </div>
       )}
 
       {state === 'uploading' && (
-        <div className="rounded-2xl bg-violet-500/8 border border-violet-500/20 p-4 space-y-2">
+        <div className="rounded-[2px] bg-paper-deep border border-rule p-4 space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-violet-700 dark:text-violet-400">Uploading…</p>
-            <p className="text-sm font-bold text-violet-600">{uploadPct}%</p>
+            <p className="text-sm font-semibold text-ink">Uploading…</p>
+            <p className="font-label text-sm text-ink tabular-nums">{uploadPct}%</p>
           </div>
-          <div className="h-2 rounded-full bg-violet-500/20 overflow-hidden">
+          <div className="h-1.5 rounded-full bg-paper-gray overflow-hidden">
             <div
-              className="h-full rounded-full bg-violet-500 transition-all duration-200"
+              className="h-full rounded-full bg-gold transition-[width] duration-200 ease-ks"
               style={{ width: `${uploadPct}%` }}
             />
           </div>
@@ -508,13 +503,13 @@ function IngestPdfTab({ showToast }: { showToast: (t: ToastType, m: string) => v
       )}
 
       {error && (
-        <div className="flex items-center gap-3 rounded-2xl bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive">
+        <div className="flex items-center gap-3 rounded-[2px] bg-paper-raised border border-[oklch(52%_.16_35)]/30 p-4 text-sm text-[oklch(52%_.16_35)]">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
-      <div className="rounded-2xl border border-border bg-card p-5 space-y-5">
+      <div className="rounded-[2px] border border-rule bg-paper-raised p-5 space-y-5">
 
         {/* File picker */}
         <div className="space-y-1.5">
@@ -522,27 +517,27 @@ function IngestPdfTab({ showToast }: { showToast: (t: ToastType, m: string) => v
           <div
             onClick={() => fileRef.current?.click()}
             className={cn(
-              'flex items-center gap-3 rounded-xl border-2 border-dashed p-4 transition-colors cursor-pointer',
-              file ? 'border-violet-500/40 bg-violet-500/5' : 'border-border hover:border-violet-500/30',
+              'flex items-center gap-3 rounded-[2px] border border-dashed p-4 transition-colors cursor-pointer',
+              file ? 'border-ink bg-paper-deep' : 'border-rule-strong hover:border-ink',
             )}
           >
-            <FileUp className={cn('h-5 w-5 shrink-0', file ? 'text-violet-500' : 'text-muted-foreground')} />
+            <FileUp className={cn('h-5 w-5 shrink-0', file ? 'text-ink' : 'text-ink-muted')} />
             {file ? (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground truncate">{file.name}</p>
-                <p className="text-[11px] text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                <p className="text-sm font-semibold text-ink truncate">{file.name}</p>
+                <p className="text-[11px] text-ink-muted">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
               </div>
             ) : (
               <div>
-                <p className="text-sm font-semibold text-foreground">Click to select PDF</p>
-                <p className="text-[11px] text-muted-foreground">Max 50 MB</p>
+                <p className="text-sm font-semibold text-ink">Click to select PDF</p>
+                <p className="text-[11px] text-ink-muted">Max 50 MB</p>
               </div>
             )}
             {file && (
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); reset(); }}
-                className="shrink-0 text-muted-foreground hover:text-destructive cursor-pointer"
+                className="shrink-0 text-ink-muted hover:text-[oklch(52%_.16_35)] cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -565,7 +560,7 @@ function IngestPdfTab({ showToast }: { showToast: (t: ToastType, m: string) => v
             onChange={(e) => setSource(e.target.value)}
             placeholder="ncert_polity"
             disabled={state !== 'idle'}
-            className="font-mono text-sm"
+            className="font-label text-sm"
           />
           <FieldHint>Unique snake_case identifier</FieldHint>
         </div>
@@ -587,12 +582,12 @@ function IngestPdfTab({ showToast }: { showToast: (t: ToastType, m: string) => v
               checked={reingest}
               onChange={(e) => setReingest(e.target.checked)}
               disabled={state !== 'idle'}
-              className="mt-0.5 h-4 w-4 rounded border-border accent-violet-600 cursor-pointer"
+              className="mt-0.5 h-4 w-4 rounded border-rule accent-violet-600 cursor-pointer"
             />
             <div>
-              <span className="text-sm font-semibold text-foreground">Force re-ingest</span>
+              <span className="text-sm font-semibold text-ink">Force re-ingest</span>
               {reingest && (
-                <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                <p className="text-xs text-ink mt-0.5">
                   ⚠ This will delete all existing chunks for this source.
                 </p>
               )}
@@ -604,7 +599,7 @@ function IngestPdfTab({ showToast }: { showToast: (t: ToastType, m: string) => v
       <button
         type="submit"
         disabled={state !== 'idle'}
-        className="w-full flex items-center justify-center gap-2 rounded-xl bg-violet-600 py-3 text-sm font-bold text-white hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        className="w-full flex items-center justify-center gap-2 rounded-md bg-ink py-3 text-sm font-semibold text-paper hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
       >
         {state !== 'idle' ? (
           <><Loader2 className="h-4 w-4 animate-spin" />
@@ -674,21 +669,21 @@ function KnowledgeSources({ showToast }: { showToast: (t: ToastType, m: string) 
   return (
     <div className="space-y-5">
       {/* Lookup input */}
-      <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
-        <p className="text-sm font-semibold text-foreground">Check source status</p>
+      <div className="rounded-[2px] border border-rule bg-paper-raised p-5 space-y-3">
+        <p className="text-sm font-semibold text-ink">Check source status</p>
         <div className="flex gap-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && checkStatus()}
             placeholder="ncert_polity_ch4"
-            className="font-mono text-sm flex-1"
+            className="font-label text-sm flex-1"
           />
           <button
             type="button"
             onClick={checkStatus}
             disabled={!input.trim()}
-            className="flex items-center gap-1.5 rounded-xl bg-violet-600 px-4 py-2 text-sm font-bold text-white hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shrink-0"
+            className="flex items-center gap-1.5 rounded-md bg-ink px-4 py-2 text-sm font-semibold text-paper hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shrink-0"
           >
             <Search className="h-3.5 w-3.5" />
             Check
@@ -698,30 +693,30 @@ function KnowledgeSources({ showToast }: { showToast: (t: ToastType, m: string) 
 
       {/* Results table */}
       {rows.length > 0 && (
-        <div className="rounded-2xl border border-border bg-card overflow-hidden">
+        <div className="rounded-[2px] border border-rule bg-paper-raised overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-secondary/40">
-                <th className="text-left px-4 py-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Source</th>
-                <th className="text-left px-4 py-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Chunks</th>
+              <tr className="border-b border-rule bg-paper-deep">
+                <th className="text-left px-4 py-3 font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">Source</th>
+                <th className="text-left px-4 py-3 font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">Chunks</th>
                 <th className="px-4 py-3 w-24" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-rule">
               {rows.map((row) => (
-                <tr key={row.source} className="hover:bg-secondary/20 transition-colors">
-                  <td className="px-4 py-3 font-mono text-sm font-semibold text-foreground">
+                <tr key={row.source} className="hover:bg-paper-deep transition-colors">
+                  <td className="px-4 py-3 font-label text-sm font-semibold text-ink">
                     {row.source}
                   </td>
                   <td className="px-4 py-3">
                     {row.loading ? (
-                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      <Loader2 className="h-4 w-4 animate-spin text-ink-muted" />
                     ) : row.error ? (
-                      <span className="text-xs text-destructive">Error</span>
+                      <span className="text-xs text-[oklch(52%_.16_35)]">Error</span>
                     ) : row.chunkCount === 0 ? (
-                      <span className="text-xs text-muted-foreground">0 chunks</span>
+                      <span className="text-xs text-ink-muted">0 chunks</span>
                     ) : (
-                      <span className="font-bold text-foreground">{row.chunkCount?.toLocaleString()}</span>
+                      <span className="font-semibold text-ink">{row.chunkCount?.toLocaleString()}</span>
                     )}
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -729,7 +724,7 @@ function KnowledgeSources({ showToast }: { showToast: (t: ToastType, m: string) 
                       type="button"
                       onClick={() => setConfirm(row.source)}
                       disabled={row.loading || deleting === row.source}
-                      className="flex items-center gap-1 text-xs font-semibold text-destructive hover:text-destructive/80 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer ml-auto"
+                      className="flex items-center gap-1 text-xs font-semibold text-[oklch(52%_.16_35)] hover:text-[oklch(52%_.16_35)]/80 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer ml-auto"
                     >
                       {deleting === row.source
                         ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -745,7 +740,7 @@ function KnowledgeSources({ showToast }: { showToast: (t: ToastType, m: string) 
       )}
 
       {rows.length === 0 && (
-        <div className="flex flex-col items-center gap-3 py-12 text-center text-muted-foreground">
+        <div className="flex flex-col items-center gap-3 py-12 text-center text-ink-muted">
           <Database className="h-8 w-8 opacity-30" />
           <p className="text-sm">Enter a source name above to check its status.</p>
         </div>

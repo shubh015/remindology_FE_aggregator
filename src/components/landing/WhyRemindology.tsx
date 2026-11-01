@@ -41,26 +41,17 @@ const ROWS = [
   },
 ];
 
-const ACCENT    = '#8A6A12';
-const TEXT_DARK = '#16233E';
-const TEXT_MID  = '#5B6478';
-
 function ToneCell({ tone, text }: { tone: 'good' | 'bad' | 'mid'; text: string }) {
-  const cfg = {
-    good: { Icon: Check, color: '#059669', bg: 'rgba(5,150,105,0.1)' },
-    bad:  { Icon: X,     color: '#F43F5E', bg: 'rgba(244,63,94,0.1)' },
-    mid:  { Icon: Minus, color: '#D97706', bg: 'rgba(217,119,6,0.1)' },
-  }[tone];
-  const { Icon, color, bg } = cfg;
+  const Icon = { good: Check, bad: X, mid: Minus }[tone];
+  const good = tone === 'good';
   return (
     <div className="flex items-start gap-2.5">
-      <span
-        className="mt-0.5 h-5 w-5 rounded-full flex items-center justify-center shrink-0"
-        style={{ background: bg }}
-      >
-        <Icon className="h-3 w-3" style={{ color }} strokeWidth={3} />
-      </span>
-      <span className="text-[13px] leading-snug" style={{ color: tone === 'good' ? TEXT_DARK : TEXT_MID }}>
+      <Icon
+        className={`mt-0.5 h-4 w-4 shrink-0 ${good ? 'text-ink' : 'text-ink-faint'}`}
+        strokeWidth={good ? 2.25 : 1.75}
+        aria-hidden="true"
+      />
+      <span className={`text-[14px] leading-snug ${good ? 'text-ink' : 'text-ink-faint'}`}>
         {text}
       </span>
     </div>
@@ -69,69 +60,53 @@ function ToneCell({ tone, text }: { tone: 'good' | 'bad' | 'mid'; text: string }
 
 export function WhyRemindology() {
   return (
-    <div
-      className="rounded-3xl overflow-hidden"
-      style={{ border: '1px solid rgba(22,35,62,0.1)', boxShadow: '0 20px 60px rgba(22,35,62,0.08)' }}
-    >
+    <div className="card-quiet overflow-hidden">
       {/* Header row */}
       <div className="grid grid-cols-[1.1fr_1fr_1.15fr]">
-        <div className="p-4 sm:p-5" style={{ background: '#F7F4EC' }} />
-        <div
-          className="p-4 sm:p-5 text-center border-l"
-          style={{ background: '#F7F4EC', borderColor: 'rgba(22,35,62,0.1)' }}
-        >
-          <p className="text-xs sm:text-sm font-bold" style={{ color: TEXT_MID }}>
+        <div className="p-4 sm:p-5" />
+        <div className="p-4 sm:p-5 text-center border-l border-rule">
+          <p className="text-xs sm:text-sm font-medium text-ink-muted">
             The Old Way
           </p>
-          <p className="text-[10px] mt-0.5 hidden sm:block" style={{ color: '#5B6478' }}>
+          <p className="font-label text-[10px] uppercase tracking-[0.12em] mt-1 hidden sm:block text-ink-faint">
             Manual grind
           </p>
         </div>
-        <div
-          className="p-4 sm:p-5 text-center relative overflow-hidden"
-          style={{ background: ACCENT }}
-        >
-          <p className="text-xs sm:text-sm font-bold text-white">Remindology</p>
-          <p className="text-[10px] mt-0.5 hidden sm:block" style={{ color: 'rgba(255,255,255,0.7)' }}>
+        <div className="p-4 sm:p-5 text-center border-l border-rule">
+          <p className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-ink">
+            <span className="h-1.5 w-1.5 rounded-full bg-gold" aria-hidden="true" />
+            Remindology
+          </p>
+          <p className="font-label text-[10px] uppercase tracking-[0.12em] mt-1 hidden sm:block text-ink-muted">
             AI study OS
           </p>
         </div>
       </div>
 
       {/* Body rows */}
-      {ROWS.map((row, i) => (
+      {ROWS.map((row) => (
         <div
           key={row.dimension}
-          className="grid grid-cols-[1.1fr_1fr_1.15fr] items-stretch"
-          style={{
-            background: i % 2 === 0 ? '#FFFFFF' : '#F7F4EC',
-            borderTop: '1px solid rgba(22,35,62,0.08)',
-          }}
+          className="grid grid-cols-[1.1fr_1fr_1.15fr] items-stretch border-t border-rule"
         >
           <div className="p-4 sm:p-5 flex items-center">
-            <p className="text-[13px] font-semibold leading-snug" style={{ color: TEXT_DARK }}>
+            <p className="text-[14px] font-medium leading-snug text-ink">
               {row.dimension}
             </p>
           </div>
-          <div className="p-4 sm:p-5 flex items-center border-l" style={{ borderColor: 'rgba(22,35,62,0.08)' }}>
+          <div className="p-4 sm:p-5 flex items-center border-l border-rule">
             <ToneCell tone={row.manual.tone} text={row.manual.text} />
           </div>
-          <div
-            className="p-4 sm:p-5 flex items-center border-l"
-            style={{ borderColor: 'rgba(22,35,62,0.08)', background: 'rgba(138,106,18,0.035)' }}
-          >
+          <div className="p-4 sm:p-5 flex items-center border-l border-rule">
             <ToneCell tone={row.us.tone} text={row.us.text} />
           </div>
         </div>
       ))}
 
       {/* Footer strip */}
-      <div
-        className="flex items-center justify-center gap-2 py-3.5 px-4 text-center"
-        style={{ background: 'rgba(138,106,18,0.08)', borderTop: '1px solid rgba(138,106,18,0.18)' }}
-      >
-        <Clock className="h-3.5 w-3.5 shrink-0" style={{ color: ACCENT }} />
-        <p className="text-xs font-semibold" style={{ color: ACCENT }}>
+      <div className="flex items-center justify-center gap-2 py-3.5 px-4 text-center bg-paper-deep border-t border-rule">
+        <Clock className="h-3.5 w-3.5 shrink-0 text-ink" />
+        <p className="text-xs font-medium text-ink-muted">
           Students save an average of 5+ hours every week
         </p>
       </div>

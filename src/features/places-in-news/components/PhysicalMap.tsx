@@ -12,6 +12,14 @@ const WORLD_ZOOM = 3;
 
 type LatLng = [number, number];
 
+// Monochrome map ink. API-supplied category colors are ignored; feature kinds are told
+// apart by shape (dot / diamond / peak triangle) and stroke pattern (solid, dotted,
+// dashed). Leaflet writes pathOptions.color into SVG presentation attributes, which
+// can't resolve CSS variables, so the path strokes need literal values.
+const MAP_INK = '#141414';    // ≈ --color-ink
+const MAP_MUTED = '#5C5C5C';  // ≈ --color-ink-muted
+const MAP_PAPER = '#FDFDFD';  // ≈ --color-paper-raised
+
 // pulse=true adds a ping ring behind the marker — used on touch devices (no hover
 // affordance) to visually invite a tap. Desktop markers stay static since hovering
 // already reveals the card.
@@ -21,7 +29,7 @@ function dotIcon(color: string, pulse: boolean): L.DivIcon {
     html: `
       <div style="position:relative; width:14px; height:14px;">
         ${pulse ? `<div class="marker-pulse-ring" style="background:${color}; border-radius:50%;"></div>` : ''}
-        <div style="position:relative; width:14px;height:14px;border-radius:50%;background:${color};border:2px solid #FFFFFF;box-shadow:0 1px 4px rgba(0,0,0,0.4);"></div>
+        <div style="position:relative; width:14px;height:14px;border-radius:50%;background:${color};border:2px solid var(--color-paper-raised);box-shadow:var(--shadow-lift-1);"></div>
       </div>
     `,
     iconSize: [14, 14],
@@ -37,7 +45,7 @@ function diamondIcon(color: string, pulse: boolean): L.DivIcon {
     html: `
       <div style="position:relative; width:13px; height:13px;">
         ${pulse ? `<div class="marker-pulse-ring" style="background:${color}; border-radius:2px; transform:rotate(45deg);"></div>` : ''}
-        <div style="position:relative; width:11px;height:11px;margin:1px;transform:rotate(45deg);background:${color};border:2px solid #FFFFFF;box-shadow:0 1px 4px rgba(0,0,0,0.4);"></div>
+        <div style="position:relative; width:11px;height:11px;margin:1px;transform:rotate(45deg);background:${color};border:2px solid var(--color-paper-raised);box-shadow:var(--shadow-lift-1);"></div>
       </div>
     `,
     iconSize: [13, 13],
@@ -49,7 +57,7 @@ function diamondIcon(color: string, pulse: boolean): L.DivIcon {
 function peakIcon(color: string): L.DivIcon {
   return L.divIcon({
     className: '',
-    html: `<div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:11px solid ${color};filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4));"></div>`,
+    html: `<div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:11px solid ${color};"></div>`,
     iconSize: [12, 11],
     iconAnchor: [6, 9],
   });
@@ -87,22 +95,23 @@ function useHoverEventHandlers(hoverCapable: boolean) {
 }
 
 // The detail card shown on click, shared by every feature kind (point/line/polygon).
-function FeatureCard({ name, categoryLabel, color, state, description }: {
-  name: string; categoryLabel: string; color: string; state?: string | null; description?: string | null;
+function FeatureCard({ name, categoryLabel, state, description }: {
+  name: string; categoryLabel: string; state?: string | null; description?: string | null;
 }) {
   return (
     <div style={{ minWidth: 200, maxWidth: 260 }}>
-      <p style={{ fontWeight: 700, fontSize: 13.5, marginBottom: 2, color: '#1A1836' }}>{name}</p>
-      <p style={{ fontSize: 11, fontWeight: 600, color, marginBottom: description ? 5 : 0 }}>
+      <p style={{ fontWeight: 600, fontSize: 13.5, marginBottom: 2, color: 'var(--color-ink)' }}>{name}</p>
+      <p style={{ fontFamily: 'var(--font-label)', fontSize: 10.5, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginBottom: description ? 5 : 0 }}>
         {categoryLabel}{state ? ` · ${state}` : ''}
       </p>
-      {description && <p style={{ fontSize: 12, lineHeight: 1.5, color: '#4B5563' }}>{description}</p>}
+      {description && <p style={{ fontSize: 12, lineHeight: 1.5, color: 'var(--color-ink-soft)' }}>{description}</p>}
     </div>
   );
 }
 
 function PointFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hoverCapable: boolean }) {
-  const { color, shape, name: categoryLabel } = feature.category;
+  const { shape, name: categoryLabel } = feature.category;
+  const color = 'var(--color-ink)';
   const icon = useMemo(
     () => (shape === 'diamond' ? diamondIcon(color, !hoverCapable) : dotIcon(color, !hoverCapable)),
     [color, shape, hoverCapable],
@@ -112,7 +121,7 @@ function PointFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hov
     <Marker position={[feature.lat!, feature.lng!]} icon={icon} eventHandlers={eventHandlers}>
       <Popup maxWidth={260} autoPan={false}>
         <FeatureCard
-          name={feature.name} categoryLabel={categoryLabel} color={color}
+          name={feature.name} categoryLabel={categoryLabel}
           state={feature.state} description={feature.description}
         />
       </Popup>
@@ -121,7 +130,8 @@ function PointFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hov
 }
 
 function RiverFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hoverCapable: boolean }) {
-  const { color, name: categoryLabel } = feature.category;
+  const { name: categoryLabel } = feature.category;
+  const color = MAP_MUTED;
   const path = feature.path!;
   const smoothed = useMemo(() => smoothPath(path.map((p) => [p.lat, p.lng] as LatLng)), [path]);
   const eventHandlers = useHoverEventHandlers(hoverCapable);
@@ -138,7 +148,7 @@ function RiverFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hov
         }}
       >
         <Popup maxWidth={260} autoPan={false}>
-          <FeatureCard name={feature.name} categoryLabel={categoryLabel} color={color} description={feature.description} />
+          <FeatureCard name={feature.name} categoryLabel={categoryLabel} description={feature.description} />
         </Popup>
       </Polyline>
       {path.map((p, i) => (
@@ -146,7 +156,7 @@ function RiverFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hov
           key={i}
           center={[p.lat, p.lng]}
           radius={3.5}
-          pathOptions={{ color, fillColor: '#FFFFFF', fillOpacity: 1, weight: 2 }}
+          pathOptions={{ color, fillColor: MAP_PAPER, fillOpacity: 1, weight: 2 }}
         >
           {p.label && <Tooltip>{p.label}</Tooltip>}
         </CircleMarker>
@@ -156,10 +166,11 @@ function RiverFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hov
 }
 
 function MountainRangeFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hoverCapable: boolean }) {
-  const { color, name: categoryLabel } = feature.category;
+  const { name: categoryLabel } = feature.category;
+  const color = MAP_INK;
   const path = feature.path!;
   const positions = path.map((p) => [p.lat, p.lng] as LatLng);
-  const icon = useMemo(() => peakIcon(color), [color]);
+  const icon = useMemo(() => peakIcon('var(--color-ink)'), []);
   const eventHandlers = useHoverEventHandlers(hoverCapable);
 
   return (
@@ -170,7 +181,7 @@ function MountainRangeFeature({ feature, hoverCapable }: { feature: PhysicalFeat
         pathOptions={{ color, weight: 2.5, opacity: 0.7, dashArray: '2 6', lineCap: 'round' }}
       >
         <Popup maxWidth={260} autoPan={false}>
-          <FeatureCard name={feature.name} categoryLabel={categoryLabel} color={color} description={feature.description} />
+          <FeatureCard name={feature.name} categoryLabel={categoryLabel} description={feature.description} />
         </Popup>
       </Polyline>
       {path.map((p, i) => (
@@ -183,7 +194,8 @@ function MountainRangeFeature({ feature, hoverCapable }: { feature: PhysicalFeat
 }
 
 function PlateFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hoverCapable: boolean }) {
-  const { color, name: categoryLabel } = feature.category;
+  const { name: categoryLabel } = feature.category;
+  const color = MAP_MUTED;
   const positions = feature.path!.map((p) => [p.lat, p.lng] as LatLng);
   const eventHandlers = useHoverEventHandlers(hoverCapable);
   return (
@@ -196,7 +208,7 @@ function PlateFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hov
       pathOptions={{ color, weight: 1.5, opacity: 0.55, fill: false, dashArray: '4 4' }}
     >
       <Popup maxWidth={260} autoPan={false}>
-        <FeatureCard name={feature.name} categoryLabel={categoryLabel} color={color} description={feature.description} />
+        <FeatureCard name={feature.name} categoryLabel={categoryLabel} description={feature.description} />
       </Popup>
     </Polygon>
   );
@@ -206,26 +218,28 @@ function PlateFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hov
 // treatments above — so newly-added categories (via the admin API) always render with
 // something reasonable instead of silently not appearing.
 function GenericLineFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hoverCapable: boolean }) {
-  const { color, name: categoryLabel } = feature.category;
+  const { name: categoryLabel } = feature.category;
+  const color = MAP_INK;
   const positions = feature.path!.map((p) => [p.lat, p.lng] as LatLng);
   const eventHandlers = useHoverEventHandlers(hoverCapable);
   return (
     <Polyline positions={positions} eventHandlers={eventHandlers} pathOptions={{ color, weight: 3, opacity: 0.8 }}>
       <Popup maxWidth={260} autoPan={false}>
-        <FeatureCard name={feature.name} categoryLabel={categoryLabel} color={color} description={feature.description} />
+        <FeatureCard name={feature.name} categoryLabel={categoryLabel} description={feature.description} />
       </Popup>
     </Polyline>
   );
 }
 
 function GenericPolygonFeature({ feature, hoverCapable }: { feature: PhysicalFeature; hoverCapable: boolean }) {
-  const { color, name: categoryLabel } = feature.category;
+  const { name: categoryLabel } = feature.category;
+  const color = MAP_INK;
   const positions = feature.path!.map((p) => [p.lat, p.lng] as LatLng);
   const eventHandlers = useHoverEventHandlers(hoverCapable);
   return (
     <Polygon positions={positions} eventHandlers={eventHandlers} pathOptions={{ color, weight: 1.5, opacity: 0.7, fill: false }}>
       <Popup maxWidth={260} autoPan={false}>
-        <FeatureCard name={feature.name} categoryLabel={categoryLabel} color={color} description={feature.description} />
+        <FeatureCard name={feature.name} categoryLabel={categoryLabel} description={feature.description} />
       </Popup>
     </Polygon>
   );
@@ -273,7 +287,7 @@ export function PhysicalMap({
         maxBounds={[[-90, -180], [90, 180]]}
         maxBoundsViscosity={1.0}
         scrollWheelZoom
-        style={{ height: '100%', width: '100%', borderRadius: 16 }}
+        style={{ height: '100%', width: '100%', borderRadius: 2 }}
       >
         {/* Esri World Physical Map — pure shaded-relief terrain (elevation, mountains, water),
             no political/administrative boundaries rendered at all, no API key required.

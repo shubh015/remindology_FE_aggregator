@@ -83,18 +83,18 @@ export function Calendar({ value, onSelect, min, max, className }: CalendarProps
         <button
           type="button"
           onClick={() => shiftMonth(-1)}
-          className="h-8 w-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
+          className="h-8 w-8 flex items-center justify-center rounded-md text-ink-muted hover:bg-paper-gray hover:text-ink transition-colors cursor-pointer"
           aria-label="Previous month"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
-        <p className="text-sm font-bold text-foreground">
+        <p className="text-sm font-semibold text-ink">
           {MONTHS[view.month]} {view.year}
         </p>
         <button
           type="button"
           onClick={() => shiftMonth(1)}
-          className="h-8 w-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
+          className="h-8 w-8 flex items-center justify-center rounded-md text-ink-muted hover:bg-paper-gray hover:text-ink transition-colors cursor-pointer"
           aria-label="Next month"
         >
           <ChevronRight className="h-4 w-4" />
@@ -104,7 +104,7 @@ export function Calendar({ value, onSelect, min, max, className }: CalendarProps
       {/* Weekday header */}
       <div className="grid grid-cols-7 mb-1">
         {WEEKDAYS.map(w => (
-          <div key={w} className="h-8 flex items-center justify-center text-[11px] font-bold text-muted-foreground/70">
+          <div key={w} className="h-8 flex items-center justify-center font-label text-[10.5px] font-medium uppercase tracking-[0.08em] text-ink-muted">
             {w}
           </div>
         ))}
@@ -124,10 +124,10 @@ export function Calendar({ value, onSelect, min, max, className }: CalendarProps
               disabled={disabled}
               onClick={() => onSelect(toISO(d))}
               className={cn(
-                'h-9 rounded-lg text-sm font-medium flex items-center justify-center transition-colors cursor-pointer',
-                isSelected && 'bg-primary text-primary-foreground font-bold shadow-sm shadow-primary/30 hover:bg-primary',
-                !isSelected && isToday && 'text-primary font-bold ring-1 ring-primary/40',
-                !isSelected && !isToday && 'text-foreground hover:bg-primary/10',
+                'h-9 rounded-[3px] text-sm font-medium tabular-nums flex items-center justify-center transition-colors cursor-pointer',
+                isSelected && 'bg-ink text-paper font-semibold hover:bg-ink',
+                !isSelected && isToday && 'text-ink font-semibold ring-1 ring-gold',
+                !isSelected && !isToday && 'text-ink-soft hover:bg-paper-gray',
                 disabled && 'opacity-30 pointer-events-none',
               )}
             >

@@ -15,44 +15,45 @@ const SECONDARY_LINKS = [
   ['Pricing', '/#pricing'],
 ] as const;
 
-/** Shared sticky nav for all Clean Editorial public pages (current-affairs, courses, general-studies). */
+/**
+ * Shared floating nav for the homepage and all public pages. A rounded,
+ * translucent bar inset from the top and sides that stays pinned while the
+ * page scrolls underneath it (impeccable.style-style floating nav).
+ */
 export function PublicHeader() {
   return (
-    <header className="sticky top-0 z-50">
-      <div className="bg-background/92 backdrop-blur-xl border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 px-[clamp(12px,3vw,24px)] pt-3 pointer-events-none">
+      <div
+        className="pointer-events-auto relative mx-auto max-w-[1200px] h-14 flex items-center justify-between gap-4 rounded-full border border-rule shadow-lift-2 pl-5 pr-2.5 sm:pr-3"
+        style={{
+          background: 'color-mix(in oklch, var(--color-paper-raised) 88%, transparent)',
+          backdropFilter: 'blur(14px) saturate(1.2)',
+          WebkitBackdropFilter: 'blur(14px) saturate(1.2)',
+        }}
+      >
+        {/* Logo */}
+        <Link href="/" aria-label="Remindology home" className="shrink-0">
+          <Logo size={26} />
+        </Link>
 
-          {/* Logo */}
-          <Link href="/">
-            <Logo size={32} />
-          </Link>
+        {/* Centre nav */}
+        <nav className="hidden lg:flex items-center gap-[clamp(16px,2vw,30px)]">
+          {PRIMARY_LINKS.map(([label, href]) => (
+            <Link key={label} href={href} className="nav-link text-[0.9rem]! whitespace-nowrap">
+              {label}
+            </Link>
+          ))}
+          <CoursesNavDropdown />
+          {SECONDARY_LINKS.map(([label, href]) => (
+            <Link key={label} href={href} className="nav-link text-[0.9rem]! whitespace-nowrap">
+              {label}
+            </Link>
+          ))}
+        </nav>
 
-          {/* Centre nav */}
-          <nav className="hidden md:flex items-center gap-1">
-            {PRIMARY_LINKS.map(([label, href]) => (
-              <Link
-                key={label}
-                href={href}
-                className="text-sm font-medium transition-colors hover:text-foreground px-3 py-1.5 rounded-lg hover:bg-foreground/5 whitespace-nowrap text-foreground/65"
-              >
-                {label}
-              </Link>
-            ))}
-            <CoursesNavDropdown />
-            {SECONDARY_LINKS.map(([label, href]) => (
-              <Link
-                key={label}
-                href={href}
-                className="text-sm font-medium transition-colors hover:text-foreground px-3 py-1.5 rounded-lg hover:bg-foreground/5 whitespace-nowrap text-foreground/65"
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
-
-          {/* CTA — auth-aware */}
+        {/* Right side: auth-aware CTA + mobile menu */}
+        <div className="flex items-center gap-2">
           <NavAuthButtons />
-
           <MobileNav />
         </div>
       </div>

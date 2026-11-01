@@ -7,27 +7,41 @@ const FOOTER_LINKS = [
   ['Sign Up', '/signup'],
 ] as const;
 
-/** Shared footer for all Clean Editorial public pages. `tagline` is the only per-section copy. */
+/** Shared footer for all public pages. `tagline` is the only per-section copy. */
 export function PublicFooter({ tagline }: { tagline: string }) {
   return (
-    <footer className="bg-foreground border-t border-background/10">
-      <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
-        <Link href="/">
-          <Logo size={28} />
-        </Link>
-        <p className="text-xs text-center text-background/40">
-          {tagline}
-        </p>
-        <div className="flex items-center gap-5">
-          {FOOTER_LINKS.map(([l, h]) => (
-            <Link
-              key={l}
-              href={h}
-              className="text-xs transition-colors hover:text-background text-background/65"
-            >
-              {l}
+    <footer className="bg-paper-deep border-t border-rule">
+      <div className="ks-container py-14">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 mb-10">
+          <div className="sm:col-span-2 grid gap-4 content-start">
+            <Link href="/" className="inline-flex" aria-label="Remindology home">
+              <Logo size={28} variant="mono" />
             </Link>
-          ))}
+            <p className="text-sm text-ink-muted max-w-[360px] m-0" style={{ lineHeight: 1.7 }}>
+              {tagline}
+            </p>
+          </div>
+          <div>
+            <h4 className="eyebrow mb-5">Explore</h4>
+            <ul className="grid gap-3 list-none p-0 m-0">
+              {FOOTER_LINKS.map(([l, h]) => (
+                <li key={l}>
+                  <Link href={h} className="nav-link text-sm!">
+                    {l}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="pt-8 border-t border-rule flex flex-col md:flex-row items-center justify-between gap-3">
+          <p className="font-label text-[11px] uppercase tracking-[0.12em] text-ink-muted m-0">
+            © 2026 Remindology. All rights reserved.
+          </p>
+          <p className="font-label text-[11px] uppercase tracking-[0.12em] text-ink-muted m-0">
+            Made for students across India
+          </p>
         </div>
       </div>
     </footer>

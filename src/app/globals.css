@@ -36,47 +36,77 @@
 
   --color-brand-pop: hsl(var(--brand-pop));
   --color-brand-pop-foreground: hsl(var(--brand-pop-foreground));
+
+  /* ── Minimal monochrome theme (".theme-mono") ─────────────────────
+     Near-black ink on neutral paper with a single gold accent used
+     sparingly. Typography: Alumni Sans (display), Albert Sans (UI/body),
+     JetBrains Mono (eyebrows/labels). Applied to the homepage first. */
+  --color-paper: oklch(97.8% 0 0);
+  --color-paper-raised: oklch(99.5% 0 0);
+  --color-paper-deep: oklch(95% 0 0);
+  --color-paper-gray: oklch(92% 0 0);
+  --color-ink: oklch(13% 0 0);
+  --color-ink-soft: oklch(22% 0 0);
+  --color-ink-muted: oklch(46% 0 0);
+  --color-ink-faint: oklch(62% 0 0);
+  --color-rule: oklch(13% 0 0 / 0.08);
+  --color-rule-strong: oklch(13% 0 0 / 0.16);
+  --color-edge: oklch(13% 0 0 / 0.45);
+  --color-gold: oklch(84% 0.19 80.46);
+  --color-gold-deep: oklch(61% 0.085 78);
+
+  --font-display: var(--font-alumni), "Albert Sans", Arial, sans-serif;
+  --font-ui: var(--font-albert), "Avenir Next", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-label: var(--font-jetbrains), ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --shadow-lift-1: 0 1px 1px oklch(13% 0 0 / .05), 0 2px 3px oklch(13% 0 0 / .04), 0 6px 12px oklch(13% 0 0 / .05);
+  --shadow-lift-2: 0 1px 1px oklch(13% 0 0 / .04), 0 3px 5px oklch(13% 0 0 / .05), 0 12px 20px oklch(13% 0 0 / .06), 0 32px 48px oklch(13% 0 0 / .07);
+
+  --ease-ks: cubic-bezier(.2, .8, .2, 1);
 }
 
 :root {
-  /* "Navy & Brass" — deep navy ink on warm cream, a dark accessible brass
-     primary (buttons/links), plus a separate brighter "brand-pop" gold
-     reserved for stars/badges/success states only — never button fills,
-     where it wouldn't carry enough contrast against white text. Deliberately
-     not a green/blue/purple SaaS palette — it should read as a specific,
-     considered choice, not a generated-site default. See DESIGN.md. */
-  --background: 44 38% 95%;
-  --foreground: 220 45% 16%;
+  /* Minimal monochrome theme (modelled on impeccable.style): near-black
+     ink on neutral paper, one gold accent ("brand-pop") used sparingly for
+     tiny highlights only. Semantic tokens below drive components/ui/* and
+     every bg-primary / text-muted-foreground style class. */
+  --background: 0 0% 97.3%;
+  --foreground: 0 0% 9%;
 
-  --card: 0 0% 100%;
-  --card-foreground: 220 45% 16%;
+  --card: 0 0% 99.4%;
+  --card-foreground: 0 0% 9%;
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 220 45% 16%;
+  --popover: 0 0% 99.4%;
+  --popover-foreground: 0 0% 9%;
 
-  --primary: 44 75% 31%;
-  --primary-foreground: 44 40% 97%;
+  --primary: 0 0% 5%;
+  --primary-foreground: 0 0% 98%;
 
-  --secondary: 44 25% 91%;
-  --secondary-foreground: 220 45% 16%;
+  --secondary: 0 0% 93%;
+  --secondary-foreground: 0 0% 9%;
 
-  --muted: 44 22% 91%;
-  --muted-foreground: 221 15% 41%;
+  --muted: 0 0% 94%;
+  --muted-foreground: 0 0% 38%;
 
-  --accent: 44 45% 90%;
-  --accent-foreground: 44 75% 31%;
+  --accent: 0 0% 92%;
+  --accent-foreground: 0 0% 5%;
 
-  --destructive: 0 72% 42%;
-  --destructive-foreground: 44 40% 97%;
+  --destructive: 12 68% 42%;
+  --destructive-foreground: 0 0% 98%;
 
-  --border: 44 20% 85%;
-  --input: 44 20% 85%;
-  --ring: 44 75% 31%;
+  --border: 0 0% 89%;
+  --input: 0 0% 86%;
+  --ring: 0 0% 5%;
 
   --radius: 0.5rem;
 
-  --brand-pop: 45 65% 52%;
-  --brand-pop-foreground: 220 45% 16%;
+  --brand-pop: 43 89% 54%;
+  --brand-pop-foreground: 0 0% 5%;
+
+  /* Font aliases: legacy inline references to the old Poppins / Source Serif
+     variables now resolve to the new families. */
+  --font-poppins: var(--font-albert);
+  --font-serif-display: var(--font-albert);
 
   /* Clean Editorial display type scale — for serif headlines (--font-serif-display)
      that fall outside Tailwind's default text-* steps. Everything else (body copy,
@@ -117,22 +147,371 @@
   --ring: 263.4 90% 70%;
 }
 
-* {
-  border-color: var(--color-border);
+/* Base defaults live in the base layer so Tailwind utilities
+   (border-*, text-*, leading-*) always override them. */
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  p, li, td, th {
+    line-height: 1.7;
+  }
 }
 
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-poppins), system-ui, sans-serif;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-family: var(--font-albert), "Avenir Next", "Helvetica Neue", Arial, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   font-size: 14px;
   line-height: 1.65;
 }
 
-p, li, td, th {
-  font-size: inherit;
-  line-height: 1.7;
+
+@layer components {
+/* ── Minimal monochrome theme ─────────────────────────────── */
+.theme-mono *,
+.theme-mono *::before,
+.theme-mono *::after {
+  border-color: var(--color-rule);
+}
+
+.theme-mono {
+  --ks-section-pad: clamp(72px, 8vw, 120px);
+  background: var(--color-paper);
+  color: var(--color-ink-soft);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.6;
+  font-feature-settings: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+.theme-mono ::selection { background: var(--color-gold); color: var(--color-ink); }
+
+.ks-container {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 40px);
+}
+.ks-section { padding-block: var(--ks-section-pad); }
+.ks-section + .ks-section { border-top: 1px solid var(--color-rule); }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-label);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+.eyebrow-dot {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--color-gold);
+  box-shadow: 0 0 0 1px oklch(13% 0 0 / .12), 0 0 4px oklch(84% .19 80 / .6);
+}
+
+.display-title {
+  font-family: var(--font-display);
+  font-weight: 200;
+  font-size: clamp(3.2rem, 6.2vw, 5.6rem);
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--color-ink);
+  text-wrap: balance;
+  margin: 0;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2.4rem, 3.6vw, 3.4rem);
+  line-height: 1.04;
+  color: var(--color-ink);
+  text-wrap: balance;
+  margin: 0;
+}
+.section-lead {
+  max-width: 62ch;
+  color: var(--color-ink-soft);
+  font-size: 1rem;
+  line-height: 1.8;
+  text-wrap: pretty;
+  margin: 0;
+}
+.card-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-ink);
+}
+
+.btn-ink,
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 8px;
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .15s var(--ease-ks), border-color .15s var(--ease-ks), color .15s var(--ease-ks), transform .16s var(--ease-ks);
+}
+.btn-ink { background: var(--color-ink); color: var(--color-paper); border: 1px solid var(--color-ink); }
+.btn-ink:hover { background: oklch(24% 0 0); }
+.btn-outline { background: transparent; color: var(--color-ink); border: 1px solid var(--color-edge); }
+.btn-outline:hover { border-color: var(--color-ink); }
+.btn-ink:active,
+.btn-outline:active { transform: scale(.98); }
+.btn-sm { height: 34px; padding: 0 14px; font-size: 0.8125rem; }
+
+.card-quiet {
+  background: var(--color-paper-raised);
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lift-1);
+  transition: transform .15s var(--ease-ks), box-shadow .15s var(--ease-ks), border-color .15s var(--ease-ks);
+}
+.card-quiet.is-interactive:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lift-2);
+  border-color: var(--color-rule-strong);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--color-rule-strong);
+  background: var(--color-paper-raised);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+}
+
+.ks-link {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-color: oklch(13% 0 0 / .28);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color .15s var(--ease-ks);
+}
+.ks-link:hover { text-decoration-color: var(--color-gold); }
+
+.nav-link {
+  color: var(--color-ink-muted);
+  font-size: 0.9375rem;
+  transition: color .12s var(--ease-ks);
+}
+.nav-link:hover { color: var(--color-ink); }
+
+/* ── Cards (impeccable.style/slop "rule-card" / "gallery-card") ──────
+   Flat, 2px radius, 1px rule border, no shadow. Optional grey visual strip
+   on top, mono tags, semibold title, muted description, mono "→" link. */
+.ks-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+}
+.ks-card {
+  display: grid;
+  align-content: start;
+  overflow: hidden;
+  background: var(--color-paper-raised);
+  border: 1px solid var(--color-rule);
+  border-radius: 2px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color .18s var(--ease-ks), background-color .18s var(--ease-ks);
+}
+a.ks-card:hover, button.ks-card:hover, .ks-card.is-interactive:hover {
+  border-color: color-mix(in oklch, var(--color-ink) 34%, transparent);
+}
+.ks-card.is-active { border-color: var(--color-ink); }
+.ks-card-visual {
+  position: relative;
+  overflow: hidden;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-paper-deep);
+  border-bottom: 1px solid var(--color-rule);
+}
+.ks-card-visual > img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.ks-card-body { display: grid; align-content: start; gap: 8px; padding: 16px 18px 20px; }
+.ks-card-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 4px; }
+.ks-card-title {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: .98rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-ink);
+}
+.ks-card-desc { margin: 0; font-size: .86rem; line-height: 1.5; color: var(--color-ink-muted); }
+.ks-card-meta {
+  font-family: var(--font-label);
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+.ks-card-link {
+  justify-self: start;
+  margin-top: 4px;
+  font-family: var(--font-label);
+  font-size: .74rem;
+  color: var(--color-ink);
+  text-decoration: underline 1px;
+  text-decoration-color: oklch(13% 0 0 / .28);
+  text-underline-offset: 4px;
+  transition: text-decoration-color .16s var(--ease-ks);
+}
+.ks-card-link::after { content: " →"; }
+.ks-card:hover .ks-card-link, .ks-card-link:hover { text-decoration-color: var(--color-ink); }
+
+.ks-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 2px;
+  border: 1px solid oklch(88% 0 0);
+  background: var(--color-paper-gray);
+  font-family: var(--font-label);
+  font-size: .62rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+}
+.ks-tag-outline { background: transparent; color: var(--color-ink-muted); }
+.ks-tag-ink { background: var(--color-ink); border-color: var(--color-ink); color: var(--color-paper); }
+.ks-tag-gold {
+  background: color-mix(in oklch, var(--color-gold) 16%, transparent);
+  border-color: color-mix(in oklch, var(--color-gold) 55%, transparent);
+  color: var(--color-ink);
+}
+.ks-tag-alert {
+  color: oklch(52% .16 35);
+  background: color-mix(in oklch, oklch(52% .16 35) 10%, transparent);
+  border-color: color-mix(in oklch, oklch(52% .16 35) 30%, transparent);
+}
+
+/* Group header above a card grid (slop "anti-patterns-section-header") */
+.ks-group-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-rule);
+}
+.ks-group-title {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: var(--color-ink);
+}
+.ks-group-count {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: .72rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+/* ── Reading typography (impeccable.style/docs) ─────────────────────
+   Albert Sans headings at weight 650, 16px body at 1.65, mono labels. */
+.doc-title {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: clamp(2rem, 4.4vw, 2.6rem);
+  font-weight: 650;
+  line-height: 1.12;
+  letter-spacing: 0;
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+.doc-lede { margin: 0; max-width: 56ch; font-size: 1.125rem; line-height: 1.65; color: var(--color-ink-soft); }
+.doc-h2 {
+  margin: 0 0 12px;
+  font-family: var(--font-ui);
+  font-size: 1.5rem;
+  font-weight: 650;
+  line-height: 1.25;
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+.doc-h3 { margin: 0 0 8px; font-family: var(--font-ui); font-size: 1.0625rem; font-weight: 600; line-height: 1.35; color: var(--color-ink); }
+.doc-note { margin: 0; font-size: .95rem; line-height: 1.6; color: var(--color-ink-muted); }
+
+.doc-prose { color: var(--color-ink-soft); font-size: 1rem; line-height: 1.65; }
+.doc-prose > * + * { margin-top: 1em; }
+.doc-prose p { margin: 0; }
+.doc-prose p + p { margin-top: 1em; }
+.doc-prose h2 { margin: 2em 0 .6em; font-family: var(--font-ui); font-size: 1.5rem; font-weight: 600; line-height: 1.3; color: var(--color-ink); scroll-margin-top: 96px; }
+.doc-prose h3 { margin: 1.6em 0 .5em; font-family: var(--font-ui); font-size: 1.0625rem; font-weight: 600; line-height: 1.35; color: var(--color-ink); scroll-margin-top: 96px; }
+.doc-prose h4 { margin: 1.4em 0 .4em; font-size: 1rem; font-weight: 600; letter-spacing: .02em; color: var(--color-ink); }
+.doc-prose ul, .doc-prose ol { margin: 0; padding-left: 1.4rem; line-height: 1.6; }
+.doc-prose ul { list-style: disc; }
+.doc-prose ol { list-style: decimal; }
+.doc-prose li + li { margin-top: .5em; }
+.doc-prose li::marker { color: var(--color-ink-muted); }
+.doc-prose li > p { margin: 0; }
+.doc-prose a { color: var(--color-ink); text-decoration: underline 1px; text-decoration-color: oklch(13% 0 0 / .28); text-underline-offset: 4px; transition: text-decoration-color .16s var(--ease-ks); }
+.doc-prose a:hover { text-decoration-color: var(--color-ink); }
+.doc-prose strong, .doc-prose b { color: var(--color-ink); font-weight: 600; }
+.doc-prose em { font-style: italic; }
+.doc-prose code { font-family: var(--font-label); font-size: .84em; padding: .14em .36em; border-radius: 3px; background: var(--color-paper-gray); color: var(--color-ink); }
+.doc-prose pre { margin: 0; padding: 22px 24px; overflow-x: auto; border: 1px solid var(--color-rule); border-radius: 3px; background: var(--color-paper-deep); font-family: var(--font-label); font-size: .84rem; line-height: 1.6; }
+.doc-prose pre code { padding: 0; background: none; font-size: inherit; }
+.doc-prose blockquote { margin: 1.4em 0; padding: 6px 0 6px 22px; border-left: 2px solid var(--color-gold); color: var(--color-ink-soft); font-style: italic; }
+.doc-prose hr { height: 1px; margin: 32px 0; border: 0; background: var(--color-rule); }
+.doc-prose table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.doc-prose th, .doc-prose td { padding: 10px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--color-rule); }
+.doc-prose th { font-family: var(--font-label); font-size: .7rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--color-ink-muted); border-bottom-color: var(--color-rule-strong); }
+.doc-prose mark { background: color-mix(in oklch, var(--color-gold) 28%, transparent); color: inherit; padding: 0 .15em; border-radius: 2px; }
+
+/* Docs-style side navigation (table of contents) */
+.doc-nav-label { margin: 0 0 6px; padding-left: 14px; font-size: .8125rem; font-weight: 650; letter-spacing: .01em; color: var(--color-ink); }
+.doc-nav-link {
+  display: block;
+  padding: 4px 0 4px 12px;
+  border-left: 2px solid transparent;
+  font-size: .875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+  text-decoration: none;
+  transition: color .16s var(--ease-ks), border-color .16s var(--ease-ks);
+}
+.doc-nav-link:hover { color: var(--color-ink); }
+.doc-nav-link.is-active, .doc-nav-link[aria-current] { color: var(--color-ink); font-weight: 600; border-left-color: var(--color-gold); }
 }
 
 /* ── Landing page: floating symbol animation ──────────── */
@@ -313,6 +692,7 @@ p, li, td, th {
 .rich-editor-content strong { font-weight: 700; }
 .rich-editor-content em { font-style: italic; }
 .rich-editor-content mark {
+  /* monochrome theme: soft gold highlight */
   background: rgba(250, 204, 21, 0.35);
   border-radius: 2px;
   padding: 0 1px;

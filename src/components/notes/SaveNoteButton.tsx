@@ -49,8 +49,8 @@ export function SaveNoteButton({
       aria-label={isSaved ? 'Remove from revision trail' : 'Save for revision'}
       title={isSaved ? 'Saved — click to remove' : 'Save for revision'}
       className={cn(
-        'shrink-0 flex items-center justify-center h-6 w-6 rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
-        isSaved ? 'text-primary hover:text-primary/70' : 'text-muted-foreground/50 hover:text-primary',
+        'shrink-0 flex items-center justify-center h-6 w-6 rounded-[3px] transition-colors duration-150 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
+        isSaved ? 'text-foreground hover:text-muted-foreground' : 'text-muted-foreground hover:text-foreground',
         className,
       )}
       style={justToggled ? { animation: 'checkPop 0.35s cubic-bezier(0.34,1.56,0.64,1)' } : undefined}

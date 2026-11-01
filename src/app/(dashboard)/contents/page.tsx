@@ -41,7 +41,7 @@ export default function ContentsPage() {
       <Header
         title="My Study Contents"
         action={
-          <Button onClick={() => setIsUploadOpen(true)} size="sm" className="cursor-pointer font-semibold gap-2 px-4 h-9 text-sm rounded-xl shadow-sm shadow-primary/20">
+          <Button onClick={() => setIsUploadOpen(true)} size="sm" className="cursor-pointer font-semibold gap-2 px-4 h-9 text-sm rounded-[3px]">
             <PlusCircle className="h-4 w-4" />
             Upload Content
           </Button>
@@ -51,34 +51,34 @@ export default function ContentsPage() {
       <div className="flex-1 p-8 space-y-6 max-w-5xl w-full mx-auto">
         {/* Search */}
         <div className="relative max-w-sm">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-muted" />
           <Input
             placeholder="Search by title..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="pl-10 h-10 text-sm rounded-xl"
+            className="pl-10 h-10 text-sm rounded-[3px]"
           />
         </div>
 
         {/* List */}
         {isLoading ? (
           <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map((i) => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}
+            {[1, 2, 3, 4, 5].map((i) => <Skeleton key={i} className="h-16 w-full rounded-[2px]" />)}
           </div>
         ) : isError ? (
-          <div className="flex items-center gap-3 rounded-xl bg-destructive/10 p-4 text-sm text-destructive border border-destructive/20">
+          <div className="flex items-center gap-3 rounded-[2px] bg-paper-raised p-4 text-sm text-[oklch(52%_.16_35)] border border-rule">
             <AlertCircle className="h-5 w-5 shrink-0" />
             <span>Error fetching study contents: {error?.message || 'Please try again later.'}</span>
           </div>
         ) : filteredContents.length > 0 ? (
           <div className="space-y-4">
-            <div className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+            <div className="rounded-[2px] border border-rule bg-paper-raised overflow-hidden">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-border bg-secondary/40">
-                    <th className="px-5 py-3.5 text-xs font-semibold text-muted-foreground uppercase tracking-widest">Title</th>
-                    <th className="px-5 py-3.5 text-xs font-semibold text-muted-foreground uppercase tracking-widest">Uploaded</th>
-                    <th className="px-5 py-3.5 text-xs font-semibold text-muted-foreground uppercase tracking-widest">Status</th>
+                  <tr className="border-b border-rule bg-paper-deep">
+                    <th className="px-5 py-3.5 font-label text-[11px] font-normal text-ink-muted uppercase tracking-[0.14em]">Title</th>
+                    <th className="px-5 py-3.5 font-label text-[11px] font-normal text-ink-muted uppercase tracking-[0.14em]">Uploaded</th>
+                    <th className="px-5 py-3.5 font-label text-[11px] font-normal text-ink-muted uppercase tracking-[0.14em]">Status</th>
                     <th className="px-5 py-3.5 text-right" />
                   </tr>
                 </thead>
@@ -86,17 +86,17 @@ export default function ContentsPage() {
                   {paginatedContents.map((item, idx) => (
                     <tr
                       key={item.id}
-                      className={`border-b border-border hover:bg-secondary/40 transition-colors last:border-0 ${idx % 2 !== 0 ? 'bg-secondary/10' : ''}`}
+                      className={`border-b border-rule hover:bg-paper-deep transition-colors duration-150 ease-ks last:border-0 ${idx % 2 !== 0 ? 'bg-paper/60' : ''}`}
                     >
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[3px] border border-rule bg-paper-deep text-ink">
                             <FileText className="h-3.5 w-3.5" />
                           </div>
-                          <span className="text-sm font-semibold text-foreground max-w-[260px] truncate">{item.title}</span>
+                          <span className="text-sm font-semibold text-ink max-w-[260px] truncate">{item.title}</span>
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-sm text-muted-foreground whitespace-nowrap">
+                      <td className="px-5 py-4 text-sm text-ink-muted tabular-nums whitespace-nowrap">
                         {new Date(item.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                       </td>
                       <td className="px-5 py-4">
@@ -110,7 +110,7 @@ export default function ContentsPage() {
                       <td className="px-5 py-4 text-right">
                         <Link
                           href={`/contents/${item.id}`}
-                          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline cursor-pointer"
+                          className="inline-flex items-center gap-1.5 ks-link text-sm font-medium text-ink cursor-pointer"
                         >
                           Open
                           <ArrowRight className="h-3.5 w-3.5" />
@@ -124,16 +124,16 @@ export default function ContentsPage() {
 
             {/* Pagination */}
             <div className="flex items-center justify-between pt-1">
-              <span className="text-xs text-muted-foreground">
+              <span className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted tabular-nums">
                 Showing {Math.min(filteredContents.length, (currentPage - 1) * ITEMS_PER_PAGE + 1)}–{Math.min(filteredContents.length, currentPage * ITEMS_PER_PAGE)} of {filteredContents.length}
               </span>
               <div className="flex items-center gap-1.5">
-                <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg cursor-pointer"
+                <Button variant="outline" size="icon" className="h-8 w-8 rounded-[3px] cursor-pointer"
                   onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span className="text-xs font-semibold px-3 text-foreground">{currentPage} / {totalPages}</span>
-                <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg cursor-pointer"
+                <span className="font-label text-xs px-3 text-ink tabular-nums">{currentPage} / {totalPages}</span>
+                <Button variant="outline" size="icon" className="h-8 w-8 rounded-[3px] cursor-pointer"
                   onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>
                   <ChevronRight className="h-4 w-4" />
                 </Button>

@@ -63,10 +63,10 @@ function LoginForm() {
   };
 
   return (
-    <Card className="border-border bg-card shadow-sm">
+    <Card className="rounded-[3px] border-rule bg-paper-raised shadow-none">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-lg font-bold">Welcome back</CardTitle>
-        <CardDescription className="text-xs">
+        <CardTitle className="doc-h2 mb-0!">Welcome back</CardTitle>
+        <CardDescription className="text-sm text-ink-muted">
           Sign in to continue your exam prep
         </CardDescription>
       </CardHeader>
@@ -77,26 +77,26 @@ function LoginForm() {
         {/* Secondary: email/password — for existing accounts only */}
         <details className="group">
           <summary className="flex items-center justify-center gap-2 cursor-pointer select-none list-none">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-[11px] font-medium text-muted-foreground group-open:hidden whitespace-nowrap">
+            <div className="flex-1 h-px bg-rule" />
+            <span className="text-[11px] font-medium text-ink-muted group-open:hidden whitespace-nowrap">
               signed up with email? sign in here
             </span>
-            <span className="text-[11px] font-medium text-muted-foreground hidden group-open:inline whitespace-nowrap">
+            <span className="text-[11px] font-medium text-ink-muted hidden group-open:inline whitespace-nowrap">
               hide email sign in
             </span>
-            <div className="flex-1 h-px bg-border" />
+            <div className="flex-1 h-px bg-rule" />
           </summary>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
             {error && (
-              <div className="flex items-start gap-2 rounded-md bg-destructive/10 p-3 text-xs text-destructive border border-destructive/20">
+              <div className="flex items-start gap-2 rounded-[3px] bg-destructive/5 p-3 text-xs text-destructive border border-destructive/20">
                 <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                 <span>{error}</span>
               </div>
             )}
 
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider" htmlFor="email">
+              <label className="font-label text-[11px] font-medium text-ink-muted uppercase tracking-[0.14em]" htmlFor="email">
                 Email Address
               </label>
               <Input
@@ -108,16 +108,16 @@ function LoginForm() {
                 {...register('email')}
               />
               {errors.email && (
-                <p className="text-[10px] text-destructive font-semibold mt-0.5">{errors.email.message}</p>
+                <p className="text-[11px] text-destructive font-medium mt-0.5">{errors.email.message}</p>
               )}
             </div>
 
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider" htmlFor="password">
+                <label className="font-label text-[11px] font-medium text-ink-muted uppercase tracking-[0.14em]" htmlFor="password">
                   Password
                 </label>
-                <Link href="/forgot-password" className="text-[11px] font-semibold text-primary hover:underline">
+                <Link href="/forgot-password" className="ks-link text-[11px] font-medium">
                   Forgot password?
                 </Link>
               </div>
@@ -133,17 +133,17 @@ function LoginForm() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 text-muted-foreground/60 hover:text-foreground transition-colors focus:outline-none cursor-pointer"
+                  className="absolute right-3 top-2.5 text-ink-muted hover:text-ink transition-colors duration-150 ease-ks focus:outline-none cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {errors.password && (
-                <p className="text-[10px] text-destructive font-semibold mt-0.5">{errors.password.message}</p>
+                <p className="text-[11px] text-destructive font-medium mt-0.5">{errors.password.message}</p>
               )}
             </div>
 
-            <Button type="submit" className="w-full font-semibold cursor-pointer" disabled={isLoading}>
+            <Button type="submit" className="w-full font-medium cursor-pointer" disabled={isLoading}>
               {isLoading ? (
                 <><Loader2 className="h-4 w-4 animate-spin" />Signing in…</>
               ) : (
@@ -153,10 +153,10 @@ function LoginForm() {
           </form>
         </details>
       </CardContent>
-      <CardFooter className="flex flex-col items-center border-t border-border pt-4">
-        <p className="text-xs text-muted-foreground">
+      <CardFooter className="flex flex-col items-center border-t border-rule pt-4">
+        <p className="text-xs text-ink-muted">
           Don&apos;t have an account?{' '}
-          <Link href="/signup" className="text-primary font-bold hover:underline">
+          <Link href="/signup" className="ks-link font-semibold">
             Create account
           </Link>
         </p>
@@ -168,8 +168,8 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="flex justify-center p-8 bg-card border border-border rounded-lg shadow-sm">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      <div className="flex justify-center p-8 bg-paper-raised border border-rule rounded-[3px]">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-ink border-t-transparent" />
       </div>
     }>
       <LoginForm />

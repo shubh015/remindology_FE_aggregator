@@ -2,9 +2,6 @@ import Link from 'next/link';
 import { ArrowLeft, Mail } from 'lucide-react';
 import { PublicLayout } from '@/components/landing/PublicLayout';
 
-const TEXT_DARK = '#16233E';
-const TEXT_MID = '#5B6478';
-
 const EFFECTIVE_DATE = 'July 29, 2026';
 
 export const metadata = {
@@ -15,13 +12,10 @@ export const metadata = {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-10">
-      <h2
-        className="text-xl font-bold mb-4 pb-3"
-        style={{ color: TEXT_DARK, borderBottom: '1px solid rgba(22,35,62,0.1)' }}
-      >
+      <h2 className="doc-h2 mt-0! mb-4! pb-3 border-b border-rule">
         {title}
       </h2>
-      <div className="space-y-4 text-[15px] leading-relaxed" style={{ color: TEXT_MID }}>
+      <div className="space-y-4">
         {children}
       </div>
     </section>
@@ -31,7 +25,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Sub({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 className="font-semibold mb-1.5" style={{ color: TEXT_DARK, fontSize: '0.95rem' }}>{title}</h3>
+      <h3 className="doc-h3 mt-0! mb-1.5!">{title}</h3>
       <div>{children}</div>
     </div>
   );
@@ -39,12 +33,9 @@ function Sub({ title, children }: { title: string; children: React.ReactNode }) 
 
 function Ul({ items }: { items: string[] }) {
   return (
-    <ul className="space-y-1.5 ml-4">
+    <ul>
       {items.map((item, i) => (
-        <li key={i} className="flex items-start gap-2.5">
-          <span className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0 bg-primary" />
-          <span>{item}</span>
-        </li>
+        <li key={i}>{item}</li>
       ))}
     </ul>
   );
@@ -55,36 +46,29 @@ export default function TermsPage() {
     <PublicLayout tagline="AI study tool for every exam & every student">
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-background">
-        <div
-          className="absolute pointer-events-none"
-          style={{ top: '-15%', right: '-6%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(138,106,18,0.06) 0%, transparent 68%)' }}
-        />
-        <div className="relative max-w-4xl mx-auto px-6 pt-12 pb-14">
-          <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full mb-4 bg-primary/8 border border-primary/18 text-primary">
+      <section className="bg-paper border-b border-rule">
+        <div className="max-w-3xl mx-auto px-6 pt-12 pb-12">
+          <span className="eyebrow mb-4 inline-flex">
             Legal
-          </div>
-          <h1
-            className="font-black tracking-tight mb-3 text-foreground"
-            style={{ fontSize: 'var(--text-display-sm)', lineHeight: 1.05, letterSpacing: '-0.01em' }}
-          >
+          </span>
+          <h1 className="doc-title mb-3">
             Terms of Service
           </h1>
-          <p className="text-muted-foreground" style={{ fontSize: '0.9rem' }}>
+          <p className="doc-note">
             Effective date: {EFFECTIVE_DATE} · Last updated: {EFFECTIVE_DATE}
           </p>
         </div>
       </section>
 
       {/* Content */}
-      <section className="bg-background">
-      <div className="max-w-4xl mx-auto px-6 py-14">
-        <div className="rounded-2xl p-8 sm:p-10 bg-white border border-border shadow-sm">
+      <section className="bg-paper">
+      <div className="max-w-3xl mx-auto px-6 py-14">
+        <div className="doc-prose">
 
-          <p className="text-[15px] leading-relaxed mb-10" style={{ color: TEXT_MID }}>
+          <p className="doc-lede mb-10! max-w-none!">
             Please read these Terms of Service (&quot;Terms&quot;) carefully before using Remindology (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;).
             By creating an account or using our Service, you agree to be bound by these Terms and our{' '}
-            <Link href="/privacy" className="font-semibold hover:underline text-primary">Privacy Policy</Link>.
+            <Link href="/privacy" className="font-semibold">Privacy Policy</Link>.
             If you do not agree, do not use the Service.
           </p>
 
@@ -121,7 +105,7 @@ export default function TermsPage() {
             <Sub title="3.2 Account Responsibility">
               <p>
                 You are responsible for all activity that occurs under your account. You must notify us immediately at{' '}
-                <a href="mailto:remindology2026@gmail.com" className="font-semibold hover:underline text-primary">
+                <a href="mailto:remindology2026@gmail.com" className="font-semibold">
                   remindology2026@gmail.com
                 </a>{' '}
                 if you believe your account has been compromised or accessed without your authorisation.
@@ -312,12 +296,12 @@ export default function TermsPage() {
             <p>
               Questions about these Terms? We&apos;re happy to help.
             </p>
-            <div className="mt-4 p-5 rounded-xl bg-primary/5 border border-primary/12">
-              <p className="font-semibold mb-1" style={{ color: TEXT_DARK }}>Remindology</p>
+            <div className="mt-4 p-5 rounded-[3px] bg-paper-deep border border-rule">
+              <p className="font-semibold mb-1 text-ink">Remindology</p>
               <p>India</p>
               <a
                 href="mailto:remindology2026@gmail.com"
-                className="inline-flex items-center gap-2 mt-2 font-semibold hover:underline text-primary"
+                className="inline-flex items-center gap-2 mt-2 font-semibold"
               >
                 <Mail className="h-4 w-4" />
                 remindology2026@gmail.com
@@ -328,17 +312,16 @@ export default function TermsPage() {
         </div>
 
         {/* Bottom nav */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-12 pt-8 border-t border-rule flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link
             href="/privacy"
-            className="text-sm font-medium hover:underline text-primary"
+            className="ks-link text-sm font-medium"
           >
             Read our Privacy Policy →
           </Link>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-foreground"
-            style={{ color: TEXT_MID }}
+            className="nav-link text-sm! inline-flex items-center gap-1.5"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Remindology

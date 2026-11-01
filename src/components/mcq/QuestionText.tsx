@@ -47,10 +47,10 @@ export function QuestionText({
       {parsed.intro && (
         <p className={introClassName ?? 'text-sm font-semibold leading-relaxed'}>{parsed.intro}</p>
       )}
-      <div className="rounded-lg border border-border/60 bg-muted/30 divide-y divide-border/40">
+      <div className="rounded-[3px] border border-border bg-muted/40 divide-y divide-border">
         {parsed.statements.map((stmt, i) => (
           <div key={i} className="flex items-start gap-3 px-4 py-2.5">
-            <span className={`text-xs font-bold text-primary shrink-0 mt-0.5 w-6 text-center ${stmtClassName ?? ''}`}>
+            <span className={`font-label text-[11px] font-medium text-muted-foreground shrink-0 mt-0.5 w-6 text-center ${stmtClassName ?? ''}`}>
               {ROMAN[i] ?? String(i + 1)}.
             </span>
             <span className="text-sm leading-relaxed">{stmt}</span>

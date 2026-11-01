@@ -42,18 +42,20 @@ export function GoogleAuthButton({ redirectTo = '/dashboard' }: GoogleAuthButton
   return (
     <div className="w-full space-y-3">
       {error && (
-        <div className="flex items-start gap-2 rounded-md bg-destructive/10 p-3 text-xs text-destructive border border-destructive/20">
+        <div className="flex items-start gap-2 rounded-[3px] bg-destructive/5 p-3 text-xs text-destructive border border-destructive/20">
           <span>{error}</span>
         </div>
       )}
 
       {isLoading ? (
-        <div className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border text-sm text-muted-foreground bg-muted/30">
+        <div className="w-full flex items-center justify-center gap-2 h-10 rounded-[3px] border border-rule-strong text-sm text-ink-muted bg-paper-raised">
           <Loader2 className="h-4 w-4 animate-spin" />
           Signing in with Google…
         </div>
       ) : (
-        <div className="flex justify-center">
+        <div className="mx-auto flex w-fit justify-center rounded-[4px] border border-transparent transition-colors duration-150 ease-ks hover:border-ink">
+          {/* Google renders its own outline button in an iframe (official multicolor "G" kept);
+              this wrapper adds an ink border on hover. */}
           <GoogleLogin
             onSuccess={handleSuccess}
             onError={() => setError('Google sign-in was cancelled or failed.')}

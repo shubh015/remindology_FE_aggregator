@@ -13,12 +13,12 @@ import type { StudyActivity, StudyPlanDay } from '@/types/features';
 
 // ── Activity config ───────────────────────────────────────────────
 
-const ACTIVITY_CONFIG: Record<StudyActivity, { icon: React.ElementType; label: string; color: string }> = {
-  flashcards:      { icon: Zap,          label: 'Flashcards',      color: 'bg-amber-500/10 text-amber-600'   },
-  mcq_practice:    { icon: BookOpen,     label: 'MCQ Practice',    color: 'bg-sky-500/10 text-sky-600'       },
-  answer_writing:  { icon: PenLine,      label: 'Answer Writing',  color: 'bg-violet-500/10 text-violet-600' },
-  current_affairs: { icon: Newspaper,    label: 'Current Affairs', color: 'bg-emerald-500/10 text-emerald-600'},
-  mock_test:       { icon: FlaskConical, label: 'Mock Test',       color: 'bg-red-500/10 text-red-600'       },
+const ACTIVITY_CONFIG: Record<StudyActivity, { icon: React.ElementType; label: string }> = {
+  flashcards:      { icon: Zap,          label: 'Flashcards' },
+  mcq_practice:    { icon: BookOpen,     label: 'MCQ Practice' },
+  answer_writing:  { icon: PenLine,      label: 'Answer Writing' },
+  current_affairs: { icon: Newspaper,    label: 'Current Affairs' },
+  mock_test:       { icon: FlaskConical, label: 'Mock Test' },
 };
 
 const TODAY_DAY = 1;
@@ -38,29 +38,28 @@ function DayCard({ day, isToday, isMockDay }: { day: StudyPlanDay; isToday: bool
 
   return (
     <div className={cn(
-      'rounded-2xl border p-4 transition-all',
-      isToday && 'border-primary/40 bg-primary/5 shadow-sm shadow-primary/10',
-      isMockDay && !isToday && 'border-red-500/30 bg-red-500/4',
-      !isToday && !isMockDay && 'border-border bg-card hover:border-primary/20 hover:shadow-sm',
+      'ks-card is-interactive !block p-4',
+      isToday && 'is-active',
+      isMockDay && !isToday && '!border-rule-strong',
     )}>
       <div className="flex items-start justify-between gap-3 mb-2.5">
         <div className="flex items-center gap-2">
-          <span className={cn('text-xs font-bold', isToday ? 'text-primary' : 'text-muted-foreground')}>
+          <span className={cn('font-label text-[11px] uppercase tracking-[0.14em] tabular-nums', isToday ? 'text-ink' : 'text-ink-muted')}>
             Day {day.day}
           </span>
-          {isToday && <Badge className="text-[9px] font-bold h-4 px-1.5">Today</Badge>}
-          {isMockDay && <Badge variant="destructive" className="text-[9px] font-bold h-4 px-1.5">Mock Test</Badge>}
+          {isToday && <span className="ks-tag ks-tag-gold">Today</span>}
+          {isMockDay && <span className="ks-tag ks-tag-ink">Mock Test</span>}
         </div>
-        <span className={cn('text-[10px] font-semibold flex items-center gap-1 px-2 py-0.5 rounded-full', act.color)}>
+        <span className="ks-tag ks-tag-outline flex items-center gap-1">
           <Icon className="h-3 w-3" />{act.label}
         </span>
       </div>
 
-      <p className="text-sm font-semibold text-foreground leading-snug mb-1">{day.primaryTopic}</p>
-      <p className="text-xs text-muted-foreground mb-2.5">Revision: {day.revisionTopic}</p>
+      <p className="text-sm font-semibold text-ink leading-snug mb-1">{day.primaryTopic}</p>
+      <p className="text-xs text-ink-muted mb-2.5">Revision: {day.revisionTopic}</p>
 
       {day.tip && (
-        <p className="text-xs text-muted-foreground italic leading-relaxed border-t border-border pt-2">
+        <p className="text-xs text-ink-muted italic leading-relaxed border-t border-rule pt-2">
           💡 {day.tip}
         </p>
       )}
@@ -73,13 +72,13 @@ function DayCard({ day, isToday, isMockDay }: { day: StudyPlanDay; isToday: bool
 function ExamDatePrompt({ onSubmit, isGenerating }: { onSubmit: (date: string) => void; isGenerating: boolean }) {
   const [date, setDate] = useState('');
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/5 p-10 text-center gap-4 mt-2">
-      <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
+    <div className="flex flex-col items-center justify-center rounded-[2px] border border-rule-strong bg-paper-raised p-10 text-center gap-4 mt-2">
+      <div className="flex h-12 w-12 items-center justify-center rounded-[3px] border border-rule bg-paper-deep text-gold-deep">
         <CalendarDays className="h-7 w-7" />
       </div>
       <div>
-        <h3 className="text-base font-bold text-foreground mb-1.5">Set your exam date to continue</h3>
-        <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
+        <h3 className="text-base font-semibold text-ink mb-1.5">Set your exam date to continue</h3>
+        <p className="text-sm text-ink-muted max-w-xs leading-relaxed">
           Your profile doesn&apos;t have an exam date yet. Add one below and we&apos;ll generate a personalised 30-day plan.
         </p>
       </div>
@@ -132,7 +131,7 @@ export default function StudyPlanPage() {
               onClick={() => handleGenerate()}
               disabled={isGenerating}
               size="sm"
-              className="cursor-pointer h-9 text-sm font-semibold gap-2 rounded-xl"
+              className="cursor-pointer h-9 text-sm font-semibold gap-2 rounded-[3px]"
             >
               {isGenerating
                 ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Generating…</>
@@ -146,18 +145,18 @@ export default function StudyPlanPage() {
 
         {isLoading ? (
           <div className="space-y-3">
-            <Skeleton className="h-20 w-full rounded-xl" />
-            {[1, 2, 3, 4, 5].map((i) => <Skeleton key={i} className="h-28 w-full rounded-2xl" />)}
+            <Skeleton className="h-20 w-full rounded-[2px]" />
+            {[1, 2, 3, 4, 5].map((i) => <Skeleton key={i} className="h-28 w-full rounded-[2px]" />)}
           </div>
 
         ) : isRealError ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-destructive/20 bg-destructive/5 p-10 gap-4 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <div className="flex flex-col items-center justify-center rounded-[2px] border border-rule bg-paper-raised p-10 gap-4 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-[3px] border border-rule bg-paper-deep text-[oklch(52%_.16_35)]">
               <AlertCircle className="h-6 w-6" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-foreground mb-1">Failed to load study plan</h3>
-              <p className="text-sm text-muted-foreground max-w-xs">{queryMsg || 'An unexpected error occurred.'}</p>
+              <h3 className="text-base font-semibold text-ink mb-1">Failed to load study plan</h3>
+              <p className="text-sm text-ink-muted max-w-xs">{queryMsg || 'An unexpected error occurred.'}</p>
             </div>
             <Button onClick={() => handleGenerate()} disabled={isGenerating} variant="outline" className="cursor-pointer gap-2">
               <Sparkles className="h-4 w-4" />Try Again
@@ -169,20 +168,20 @@ export default function StudyPlanPage() {
           isExamDateMissing ? (
             <ExamDatePrompt onSubmit={handleGenerate} isGenerating={isGenerating} />
           ) : (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border p-14 text-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <div className="flex flex-col items-center justify-center rounded-[2px] border border-dashed border-rule-strong p-14 text-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-[3px] border border-rule bg-paper-deep text-ink">
                 <CalendarDays className="h-7 w-7" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-foreground mb-1.5">No study plan yet</h3>
-                <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
+                <h3 className="text-base font-semibold text-ink mb-1.5">No study plan yet</h3>
+                <p className="text-sm text-ink-muted max-w-xs leading-relaxed">
                   Generate a personalised 30-day plan based on your exam date and weak topics.
                 </p>
               </div>
 
               {/* Non-exam-date generate errors */}
               {isGenerateError && !isExamDateMissing && (
-                <div className="flex items-start gap-2 rounded-xl bg-destructive/10 border border-destructive/20 p-3 text-xs text-destructive max-w-xs text-left">
+                <div className="flex items-start gap-2 rounded-[2px] bg-paper-raised border border-rule p-3 text-xs text-[oklch(52%_.16_35)] max-w-xs text-left">
                   <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                   <span>{genMsg || 'Failed to generate. Please try again.'}</span>
                 </div>
@@ -191,7 +190,7 @@ export default function StudyPlanPage() {
               <Button
                 onClick={() => handleGenerate()}
                 disabled={isGenerating}
-                className="cursor-pointer font-semibold gap-2 rounded-xl px-6"
+                className="cursor-pointer font-semibold gap-2 rounded-[3px] px-6"
               >
                 {isGenerating
                   ? <><Loader2 className="h-4 w-4 animate-spin" />Generating…</>
@@ -208,36 +207,36 @@ export default function StudyPlanPage() {
               <ExamDatePrompt onSubmit={handleGenerate} isGenerating={isGenerating} />
             )}
             {isGenerateError && !isExamDateMissing && (
-              <div className="flex items-center gap-2 rounded-xl bg-destructive/10 border border-destructive/20 p-3.5 text-sm text-destructive">
+              <div className="flex items-center gap-2 rounded-[2px] bg-paper-raised border border-rule p-3.5 text-sm text-[oklch(52%_.16_35)]">
                 <AlertCircle className="h-4 w-4 shrink-0" />
                 <span>{genMsg || 'Regeneration failed. Please try again.'}</span>
               </div>
             )}
 
             {/* Plan summary banner */}
-            <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between flex-wrap gap-3">
+            <div className="ks-card p-4 !flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[3px] border border-rule bg-paper-deep text-ink">
                   <CalendarDays className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-foreground">30-Day Study Plan · {plan.examType}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm font-semibold text-ink">30-Day Study Plan · {plan.examType}</p>
+                  <p className="text-xs text-ink-muted tabular-nums">
                     {plan.daysRemaining} days to exam · {plan.weakTopicsCount} weak topics addressed
                   </p>
                 </div>
               </div>
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="font-label text-[11px] tabular-nums">
                 Exam: {new Date(plan.examDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
               </Badge>
             </div>
 
             {/* Legend */}
-            <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+            <div className="flex flex-wrap gap-2 text-xs text-ink-muted">
               {Object.entries(ACTIVITY_CONFIG).map(([key, cfg]) => {
                 const Icon = cfg.icon;
                 return (
-                  <span key={key} className={cn('flex items-center gap-1 px-2 py-1 rounded-lg font-medium', cfg.color)}>
+                  <span key={key} className="ks-tag ks-tag-outline flex items-center gap-1">
                     <Icon className="h-3 w-3" />{cfg.label}
                   </span>
                 );

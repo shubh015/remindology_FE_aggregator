@@ -20,13 +20,8 @@ import { cn } from '@/lib/utils';
 
 const GS_OPTIONS = ['GS1', 'GS2', 'GS3', 'GS4', 'ESSAY'] as const;
 
-const GS_COLORS: Record<string, { color: string; bg: string; border: string }> = {
-  GS1:   { color: '#7C3AED', bg: 'rgba(124,58,237,0.1)',  border: 'rgba(124,58,237,0.3)'  },
-  GS2:   { color: '#0891B2', bg: 'rgba(8,145,178,0.1)',   border: 'rgba(8,145,178,0.3)'   },
-  GS3:   { color: '#059669', bg: 'rgba(5,150,105,0.1)',   border: 'rgba(5,150,105,0.3)'   },
-  GS4:   { color: '#DC2626', bg: 'rgba(220,38,38,0.1)',   border: 'rgba(220,38,38,0.3)'   },
-  ESSAY: { color: '#D97706', bg: 'rgba(217,119,6,0.1)',   border: 'rgba(217,119,6,0.3)'   },
-};
+// Monochrome theme: every GS paper renders identically, differing by label only.
+const isKnownGsTag = (tag: string) => (GS_OPTIONS as readonly string[]).includes(tag);
 
 type TabId = 'new' | 'drafts' | 'published';
 
@@ -47,13 +42,8 @@ function ToastList({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: num
       {toasts.map((t) => (
         <div
           key={t.id}
-          className="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-lg pointer-events-auto animate-in slide-in-from-bottom-4 duration-200"
-          style={{
-            background: t.type === 'success' ? 'rgba(5,150,105,0.95)' : 'rgba(220,38,38,0.95)',
-            color: '#FFFFFF',
-            backdropFilter: 'blur(8px)',
-            minWidth: 280,
-          }}
+          className={`flex items-center gap-3 px-4 py-3 rounded-[3px] shadow-lift-2 pointer-events-auto animate-in slide-in-from-bottom-4 duration-200 text-paper ${t.type === 'success' ? 'bg-ink' : 'bg-[oklch(52%_.16_35)]'}`}
+          style={{ minWidth: 280 }}
         >
           {t.type === 'success'
             ? <CheckCircle2 className="h-4 w-4 shrink-0" />
@@ -112,11 +102,11 @@ function TagInput({
   };
 
   return (
-    <div className="flex flex-wrap gap-1.5 min-h-9 p-2 rounded-xl border border-input bg-background focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/40">
+    <div className="flex flex-wrap gap-1.5 min-h-9 p-2 rounded-md border border-rule-strong bg-paper-raised focus-within:border-ink">
       {tags.map((tag) => (
         <span
           key={tag}
-          className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg bg-primary/10 text-primary"
+          className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-[3px] bg-paper-gray text-ink"
         >
           {tag}
           <button
@@ -134,7 +124,7 @@ function TagInput({
         onKeyDown={handleKey}
         onBlur={() => input && add(input)}
         placeholder={tags.length ? '' : placeholder}
-        className="flex-1 min-w-24 bg-transparent text-sm outline-none placeholder:text-muted-foreground/50"
+        className="flex-1 min-w-24 bg-transparent text-sm outline-none placeholder:text-ink-muted"
       />
     </div>
   );
@@ -161,32 +151,32 @@ function ConfirmDialog({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} />
-      <div className="relative bg-card border border-border rounded-2xl p-6 shadow-xl max-w-sm w-full space-y-4">
+      <div className="absolute inset-0 bg-ink/40" onClick={onCancel} />
+      <div className="relative bg-paper-raised border border-rule rounded-[3px] p-6 shadow-lift-2 max-w-sm w-full space-y-4">
         <div className="flex items-start gap-3">
           <div
-            className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
+            className="h-10 w-10 rounded-[3px] border border-rule flex items-center justify-center shrink-0"
             style={{ background: iconBg, color: iconColor }}
           >
             {icon}
           </div>
           <div>
-            <p className="font-semibold text-foreground">{heading}</p>
-            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{body}</p>
+            <p className="font-semibold text-ink">{heading}</p>
+            <p className="text-xs text-ink-muted mt-1 leading-relaxed">{body}</p>
           </div>
         </div>
         <div className="flex gap-2 justify-end">
           <button
             onClick={onCancel}
             disabled={loading}
-            className="px-4 py-2 text-sm font-semibold rounded-xl border border-border hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50"
+            className="px-4 py-2 text-sm font-semibold rounded-md border border-rule hover:bg-paper-deep transition-colors cursor-pointer disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="px-4 py-2 text-sm font-semibold rounded-xl text-white hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 text-sm font-semibold rounded-md text-paper hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 flex items-center gap-2"
             style={{ background: confirmBg }}
           >
             {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
@@ -204,12 +194,10 @@ function GsTags({ tags }: { tags: string[] }) {
   return (
     <>
       {tags.map((tag) => {
-        const cfg = GS_COLORS[tag];
-        return cfg ? (
+        return isKnownGsTag(tag) ? (
           <span
             key={tag}
-            className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-            style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}
+            className="ks-tag ks-tag-ink"
           >
             {tag}
           </span>
@@ -256,22 +244,21 @@ function DraftCard({
 
   return (
     <div
-      className="rounded-2xl border border-border bg-card p-5 space-y-4 transition-opacity"
-      style={{ opacity: busy ? 0.6 : 1, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
+      className="ks-card p-5 space-y-4 transition-opacity"
+      style={{ opacity: busy ? 0.6 : 1 }}
     >
       {/* Header row */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0 space-y-1">
-          <p className="text-sm font-bold text-foreground leading-snug">{draft.title}</p>
-          <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+          <p className="text-sm font-semibold text-ink leading-snug">{draft.title}</p>
+          <div className="flex items-center gap-2 text-[11px] text-ink-muted">
             {draft.sourceName && <span>{draft.sourceName}</span>}
             {draft.sourceName && <span>·</span>}
             <span>{dateStr}</span>
           </div>
         </div>
         <div
-          className="h-7 px-2.5 rounded-lg flex items-center text-[10px] font-bold shrink-0"
-          style={{ background: 'rgba(217,119,6,0.1)', color: '#D97706', border: '1px solid rgba(217,119,6,0.25)' }}
+          className="ks-tag shrink-0"
         >
           Draft
         </div>
@@ -281,7 +268,7 @@ function DraftCard({
       <div className="flex flex-wrap gap-1.5">
         <GsTags tags={draft.gsPaperTags} />
         {draft.topicTags.slice(0, 5).map((tag) => (
-          <span key={tag} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">
+          <span key={tag} className="ks-tag ks-tag-outline">
             {tag}
           </span>
         ))}
@@ -289,7 +276,7 @@ function DraftCard({
 
       {/* Summary preview */}
       {draft.summary && (
-        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 border-l-2 border-primary/20 pl-3">
+        <p className="text-xs text-ink-muted leading-relaxed line-clamp-3 border-l-2 border-rule-strong pl-3">
           {draft.summary}
         </p>
       )}
@@ -299,7 +286,7 @@ function DraftCard({
         <button
           onClick={() => router.push(`/admin/drafts/${draft.id}`)}
           disabled={busy}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border border-border text-foreground hover:bg-secondary transition-colors disabled:cursor-not-allowed cursor-pointer"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-rule text-ink hover:bg-paper-deep transition-colors disabled:cursor-not-allowed cursor-pointer"
         >
           <Pencil className="h-3.5 w-3.5" />
           Edit
@@ -307,8 +294,7 @@ function DraftCard({
         <button
           onClick={() => onPublish(draft.id, draft.title)}
           disabled={busy}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:opacity-90 disabled:cursor-not-allowed cursor-pointer"
-          style={{ background: 'linear-gradient(135deg, #059669, #0891B2)', boxShadow: '0 2px 8px rgba(5,150,105,0.25)' }}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold bg-ink text-paper transition-colors hover:bg-ink/90 disabled:cursor-not-allowed cursor-pointer"
         >
           {isPublishing
             ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Publishing…</>
@@ -317,7 +303,7 @@ function DraftCard({
         <button
           onClick={() => onReject(draft.id, draft.title)}
           disabled={busy}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border border-destructive/30 text-destructive hover:bg-destructive/8 transition-colors disabled:cursor-not-allowed cursor-pointer"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-[oklch(52%_.16_35)]/30 text-[oklch(52%_.16_35)] hover:bg-[oklch(52%_.16_35)]/10 transition-colors disabled:cursor-not-allowed cursor-pointer"
         >
           {isRejecting
             ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Rejecting…</>
@@ -346,19 +332,19 @@ function ArticleRow({
     : '—';
 
   return (
-    <div className="flex items-start gap-4 p-4 rounded-2xl border border-border bg-card hover:bg-secondary/30 transition-colors">
-      <div className="h-9 w-9 rounded-xl bg-primary/8 flex items-center justify-center shrink-0 mt-0.5">
-        <Newspaper className="h-4 w-4 text-primary" />
+    <div className="flex items-start gap-4 p-4 rounded-[2px] border border-rule bg-paper-raised hover:border-rule-strong transition-colors duration-150 ease-ks">
+      <div className="h-8 w-8 rounded-[3px] border border-rule bg-paper-deep flex items-center justify-center shrink-0 mt-0.5">
+        <Newspaper className="h-4 w-4 text-ink" />
       </div>
       <div className="flex-1 min-w-0 space-y-2">
         <div className="flex items-start justify-between gap-3">
-          <p className="text-sm font-semibold text-foreground leading-snug">{article.title}</p>
-          <span className="text-[11px] text-muted-foreground shrink-0">{dateStr}</span>
+          <p className="text-sm font-semibold text-ink leading-snug">{article.title}</p>
+          <span className="text-[11px] text-ink-muted shrink-0">{dateStr}</span>
         </div>
         <div className="flex flex-wrap gap-1.5">
           <GsTags tags={article.gsPaperTags} />
           {article.topicTags.slice(0, 4).map((tag) => (
-            <span key={tag} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">
+            <span key={tag} className="ks-tag ks-tag-outline">
               {tag}
             </span>
           ))}
@@ -368,10 +354,10 @@ function ArticleRow({
         onClick={() => onToggleImportant(article.id, !article.isImportant)}
         disabled={togglingImportant}
         className={cn(
-          'shrink-0 h-8 w-8 rounded-xl flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50',
+          'shrink-0 h-8 w-8 rounded-md flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50',
           article.isImportant
-            ? 'text-white bg-gradient-to-br from-[#7C3AED] to-[#C026D3]'
-            : 'text-muted-foreground hover:text-[#7C3AED] hover:bg-primary/8'
+            ? 'text-ink bg-[color-mix(in_oklch,var(--color-gold)_16%,transparent)] border border-gold/55'
+            : 'text-ink-muted hover:text-ink hover:bg-paper-gray'
         )}
         title={article.isImportant ? 'Remove landing-page card' : 'Show as landing-page card'}
       >
@@ -379,7 +365,7 @@ function ArticleRow({
       </button>
       <button
         onClick={() => onDelete(article.id, article.title)}
-        className="shrink-0 h-8 w-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/8 transition-colors cursor-pointer"
+        className="shrink-0 h-8 w-8 rounded-md flex items-center justify-center text-ink-muted hover:text-[oklch(52%_.16_35)] hover:bg-[oklch(52%_.16_35)]/10 transition-colors cursor-pointer"
         title="Delete article"
       >
         <Trash2 className="h-4 w-4" />
@@ -394,13 +380,13 @@ function SkeletonList({ count = 3 }: { count?: number }) {
   return (
     <div className="space-y-3">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="flex gap-4 p-4 rounded-2xl border border-border">
-          <Skeleton className="h-9 w-9 rounded-xl shrink-0" />
+        <div key={i} className="flex gap-4 p-4 rounded-[2px] border border-rule">
+          <Skeleton className="h-9 w-9 rounded-md shrink-0" />
           <div className="flex-1 space-y-2">
             <Skeleton className="h-4 w-3/4" />
             <div className="flex gap-2">
-              <Skeleton className="h-4 w-12 rounded-full" />
-              <Skeleton className="h-4 w-16 rounded-full" />
+              <Skeleton className="h-4 w-12 rounded-[2px]" />
+              <Skeleton className="h-4 w-16 rounded-[2px]" />
             </div>
           </div>
         </div>
@@ -581,35 +567,34 @@ export default function AdminCurrentAffairsPage() {
 
         {/* Admin badge */}
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20">
+          <div className="flex items-center gap-2 font-label text-[11px] uppercase tracking-[0.14em] px-2.5 py-1 rounded-[2px] bg-paper-deep text-ink border border-rule">
             <ShieldCheck className="h-3.5 w-3.5" />
             Admin · Current Affairs Publisher
           </div>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-ink-muted">
             Published articles are visible to all users on the public page within seconds.
           </span>
         </div>
 
         {/* ── Tab bar ── */}
-        <div className="flex gap-1 p-1 rounded-2xl bg-secondary/60 border border-border w-fit">
+        <div className="flex gap-1 p-1 rounded-[2px] bg-paper-deep border border-rule w-fit">
           {TABS.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               type="button"
               onClick={() => setActiveTab(id)}
               className={cn(
-                'relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer',
+                'relative flex items-center gap-2 px-4 py-2 rounded-[3px] text-sm font-semibold transition-colors duration-150 ease-ks cursor-pointer',
                 activeTab === id
-                  ? 'bg-card text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground',
+                  ? 'bg-paper-raised text-ink border border-rule'
+                  : 'text-ink-muted hover:text-ink',
               )}
             >
               <Icon className="h-3.5 w-3.5" />
               {label}
               {id === 'drafts' && draftCount > 0 && (
                 <span
-                  className="ml-0.5 h-4.5 min-w-4.5 px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center"
-                  style={{ background: '#D97706' }}
+                  className="ml-0.5 h-4.5 min-w-4.5 px-1 rounded-[2px] font-label text-[10px] tabular-nums bg-ink text-paper flex items-center justify-center"
                 >
                   {draftCount}
                 </span>
@@ -621,13 +606,10 @@ export default function AdminCurrentAffairsPage() {
         {/* ══ NEW ARTICLE TAB ══ */}
         {activeTab === 'new' && (
           <form onSubmit={handleSubmit}>
-            <div
-              className="rounded-2xl border border-border bg-card p-6 space-y-5"
-              style={{ boxShadow: '0 2px 12px rgba(124,58,237,0.06)' }}
-            >
+            <div className="rounded-[2px] border border-rule bg-paper-raised p-6 space-y-5">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Title <span className="text-destructive">*</span>
+                <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+                  Title <span className="text-[oklch(52%_.16_35)]">*</span>
                 </label>
                 <Input
                   value={form.title}
@@ -639,8 +621,8 @@ export default function AdminCurrentAffairsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Article Content <span className="text-destructive">*</span>
+                <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+                  Article Content <span className="text-[oklch(52%_.16_35)]">*</span>
                 </label>
                 <Textarea
                   value={form.content}
@@ -651,14 +633,14 @@ export default function AdminCurrentAffairsPage() {
                   disabled={publishMutation.isPending}
                   className="resize-y min-h-32"
                 />
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-[10px] text-ink-muted">
                   {form.content.trim().split(/\s+/).filter(Boolean).length} words
                 </p>
               </div>
 
               <div className="grid sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Published Date</label>
+                  <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">Published Date</label>
                   <Input
                     type="date"
                     value={form.publishedDate}
@@ -667,7 +649,7 @@ export default function AdminCurrentAffairsPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Source Name</label>
+                  <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">Source Name</label>
                   <Input
                     value={form.sourceName}
                     onChange={(e) => set('sourceName', e.target.value)}
@@ -676,7 +658,7 @@ export default function AdminCurrentAffairsPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Source URL</label>
+                  <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">Source URL</label>
                   <Input
                     type="url"
                     value={form.sourceUrl}
@@ -688,13 +670,12 @@ export default function AdminCurrentAffairsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted flex items-center gap-1.5">
                   <BookOpen className="h-3.5 w-3.5" />
                   GS Paper Tags
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {GS_OPTIONS.map((tag) => {
-                    const cfg      = GS_COLORS[tag];
                     const isActive = form.gsPaperTags.includes(tag);
                     return (
                       <button
@@ -703,10 +684,9 @@ export default function AdminCurrentAffairsPage() {
                         onClick={() => toggleGS(tag)}
                         disabled={publishMutation.isPending}
                         className={cn(
-                          'text-xs font-bold px-3 py-1.5 rounded-xl border transition-all cursor-pointer disabled:opacity-50',
-                          isActive ? 'text-white border-transparent' : 'text-muted-foreground border-border bg-background hover:border-primary/30',
+                          'font-label text-[11px] uppercase tracking-[0.1em] px-3 py-1.5 rounded-[3px] border transition-colors duration-150 ease-ks cursor-pointer disabled:opacity-50',
+                          isActive ? 'bg-ink text-paper border-ink' : 'text-ink-muted border-rule-strong bg-paper-raised hover:border-ink hover:text-ink',
                         )}
-                        style={isActive ? { background: cfg.color } : {}}
                       >
                         {tag}
                       </button>
@@ -716,10 +696,10 @@ export default function AdminCurrentAffairsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted flex items-center gap-1.5">
                   <Tag className="h-3.5 w-3.5" />
                   Topic Tags
-                  <span className="font-normal normal-case tracking-normal text-muted-foreground/60 ml-1">(Enter or comma to add)</span>
+                  <span className="font-normal normal-case tracking-normal text-ink-muted ml-1">(Enter or comma to add)</span>
                 </label>
                 <TagInput
                   tags={form.topicTags}
@@ -729,9 +709,9 @@ export default function AdminCurrentAffairsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
                   Mains Angle
-                  <span className="font-normal normal-case tracking-normal text-muted-foreground/60 ml-1">(optional)</span>
+                  <span className="font-normal normal-case tracking-normal text-ink-muted ml-1">(optional)</span>
                 </label>
                 <Input
                   value={form.mainsAngle}
@@ -743,8 +723,8 @@ export default function AdminCurrentAffairsPage() {
 
               <div className="pt-1 flex items-center justify-between gap-4">
                 {publishMutation.isPending && (
-                  <p className="text-xs text-muted-foreground flex items-center gap-2">
-                    <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+                  <p className="text-xs text-ink-muted flex items-center gap-2">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin text-ink" />
                     AI is processing… this takes 5–10 seconds
                   </p>
                 )}
@@ -753,7 +733,7 @@ export default function AdminCurrentAffairsPage() {
                     <button
                       type="button"
                       onClick={() => setForm({ ...EMPTY_FORM })}
-                      className="text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer"
+                      className="text-xs font-semibold text-ink-muted hover:text-ink cursor-pointer"
                     >
                       Clear form
                     </button>
@@ -761,8 +741,7 @@ export default function AdminCurrentAffairsPage() {
                   <button
                     type="submit"
                     disabled={publishMutation.isPending || !form.title.trim() || !form.content.trim()}
-                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                    style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)', boxShadow: '0 4px 16px rgba(124,58,237,0.3)' }}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-md text-sm font-semibold bg-ink text-paper transition-colors hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {publishMutation.isPending
                       ? <><Loader2 className="h-4 w-4 animate-spin" />Publishing…</>
@@ -780,10 +759,10 @@ export default function AdminCurrentAffairsPage() {
             {draftsLoading ? (
               <SkeletonList count={3} />
             ) : !drafts || drafts.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card p-12 text-center gap-3">
-                <FileText className="h-10 w-10 text-muted-foreground/25" />
-                <p className="text-sm font-semibold text-foreground">No drafts pending review</p>
-                <p className="text-xs text-muted-foreground">Drafts from the AI pipeline will appear here for approval.</p>
+              <div className="flex flex-col items-center justify-center rounded-[2px] border border-dashed border-rule bg-paper-raised p-12 text-center gap-3">
+                <FileText className="h-10 w-10 text-ink-faint" />
+                <p className="text-sm font-semibold text-ink">No drafts pending review</p>
+                <p className="text-xs text-ink-muted">Drafts from the AI pipeline will appear here for approval.</p>
               </div>
             ) : (
               <div className="space-y-8">
@@ -808,20 +787,16 @@ export default function AdminCurrentAffairsPage() {
                         {/* Date group header */}
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex items-center gap-2">
-                            <Layers className="h-3.5 w-3.5 text-muted-foreground" />
-                            <span className="text-sm font-bold text-foreground">{dateLabel}</span>
-                            <span
-                              className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                              style={{ background: 'rgba(217,119,6,0.1)', color: '#D97706', border: '1px solid rgba(217,119,6,0.25)' }}
-                            >
+                            <Layers className="h-3.5 w-3.5 text-ink-muted" />
+                            <span className="font-label text-[11px] uppercase tracking-[0.14em] text-ink">{dateLabel}</span>
+                            <span className="ks-tag">
                               {group.length} draft{group.length !== 1 ? 's' : ''}
                             </span>
                           </div>
                           <button
                             onClick={() => publishDayMutation.mutate(dateKey)}
                             disabled={isPublishingThisDay || publishDraftMutation.isPending}
-                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                            style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)', boxShadow: '0 2px 8px rgba(124,58,237,0.25)' }}
+                            className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold bg-ink text-paper transition-colors hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                           >
                             {isPublishingThisDay
                               ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Publishing all…</>
@@ -830,7 +805,7 @@ export default function AdminCurrentAffairsPage() {
                         </div>
 
                         {/* Individual drafts */}
-                        <div className="space-y-3 pl-1 border-l-2" style={{ borderColor: 'rgba(124,58,237,0.15)' }}>
+                        <div className="space-y-3 pl-3 border-l border-rule-strong">
                           {group.map((d) => (
                             <DraftCard
                               key={d.id}
@@ -858,7 +833,7 @@ export default function AdminCurrentAffairsPage() {
         {activeTab === 'published' && (
           <section>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-ink-muted">
                 {articles ? `${articles.length} most recent published articles` : ''}
               </p>
             </div>
@@ -866,10 +841,10 @@ export default function AdminCurrentAffairsPage() {
             {publishedLoading ? (
               <SkeletonList count={3} />
             ) : !articles || articles.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card p-12 text-center gap-3">
-                <Newspaper className="h-10 w-10 text-muted-foreground/25" />
-                <p className="text-sm font-semibold text-foreground">No articles yet</p>
-                <p className="text-xs text-muted-foreground">Publish your first article from the New Article tab.</p>
+              <div className="flex flex-col items-center justify-center rounded-[2px] border border-dashed border-rule bg-paper-raised p-12 text-center gap-3">
+                <Newspaper className="h-10 w-10 text-ink-faint" />
+                <p className="text-sm font-semibold text-ink">No articles yet</p>
+                <p className="text-xs text-ink-muted">Publish your first article from the New Article tab.</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -892,12 +867,12 @@ export default function AdminCurrentAffairsPage() {
       {deleteTarget && (
         <ConfirmDialog
           icon={<Trash2 className="h-5 w-5" />}
-          iconBg="rgba(220,38,38,0.1)"
-          iconColor="#DC2626"
+          iconBg="var(--color-paper-deep)"
+          iconColor="oklch(52% .16 35)"
           heading="Delete article?"
           body={`"${deleteTarget.title}" will be permanently removed from the public feed.`}
           confirmLabel="Delete"
-          confirmBg="#DC2626"
+          confirmBg="oklch(52% .16 35)"
           onConfirm={() => deleteMutation.mutate(deleteTarget.id)}
           onCancel={() => setDeleteTarget(null)}
           loading={deleteMutation.isPending}
@@ -908,12 +883,12 @@ export default function AdminCurrentAffairsPage() {
       {rejectTarget && (
         <ConfirmDialog
           icon={<XCircle className="h-5 w-5" />}
-          iconBg="rgba(220,38,38,0.1)"
-          iconColor="#DC2626"
+          iconBg="var(--color-paper-deep)"
+          iconColor="oklch(52% .16 35)"
           heading="Reject this draft?"
           body={`"${rejectTarget.title}" will be permanently deleted and won't be published.`}
           confirmLabel="Reject"
-          confirmBg="#DC2626"
+          confirmBg="oklch(52% .16 35)"
           onConfirm={() => rejectMutation.mutate(rejectTarget.id)}
           onCancel={() => setRejectTarget(null)}
           loading={rejectMutation.isPending}

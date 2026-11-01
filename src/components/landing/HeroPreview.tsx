@@ -6,8 +6,6 @@ import { useState, useEffect } from 'react';
 const SUBJECTS = [
   {
     badge: 'UPSC CSE',
-    badgeColor: '#8A6A12',
-    badgeBg: 'rgba(138,106,18,0.1)',
     title: "India's G20 Presidency",
     slug: 'indias-g20-presidency',
     input: "India's G20 Presidency focused on inclusive growth, digital public infrastructure, and climate financing. The 'One Earth, One Family, One Future' theme centred the needs of the Global South.",
@@ -21,8 +19,6 @@ const SUBJECTS = [
   },
   {
     badge: 'SSC CGL',
-    badgeColor: '#D97706',
-    badgeBg: 'rgba(217,119,6,0.1)',
     title: 'Indian Constitution',
     slug: 'indian-constitution',
     input: "The Constitution of India was adopted on 26 November 1949 and came into force on 26 January 1950. Dr. B.R. Ambedkar chaired the Drafting Committee. It is the world's longest written constitution.",
@@ -35,13 +31,6 @@ const SUBJECTS = [
     time: '1.6s',
   },
 ];
-
-// ── Light-card palette — Clean Editorial ──
-const TEXT_MID = '#5B6478';
-const TEXT_BODY = '#16233E';
-const SURFACE = '#F7F4EC';
-const BORDER_L = 'rgba(22,35,62,0.08)';
-const ACCENT = '#8A6A12';
 
 type Phase = 'typing' | 'processing' | 'revealing' | 'complete' | 'exiting';
 
@@ -109,173 +98,127 @@ export function HeroPreview() {
   const showComplete = phase === 'revealing' || phase === 'complete' || phase === 'exiting';
 
   return (
-    // Perspective wrapper — the tilt lives here so it doesn't fight the
-    // opacity-fade transition on the card itself.
-    <div className="group relative" style={{ perspective: '1400px' }}>
-      {/* Shadow lives on its own layer and only ever transitions opacity —
-          animating box-shadow directly alongside a 3D transform forces a
-          repaint every frame and is what made the hover feel janky. */}
-      <div
-        className="absolute inset-2 rounded-2xl opacity-60 transition-opacity duration-1400 ease-in-out group-hover:opacity-100"
-      />
-      <div
-        style={{ opacity: cardVisible ? 1 : 0, willChange: 'transform' }}
-        className={[
-          'relative rounded-2xl overflow-hidden bg-white',
-          // Flat on mobile (no hover to trigger it anyway) — tilt is a
-          // desktop-only touch, starting at the md breakpoint.
-          'transform-none md:transform-[perspective(1400px)_rotateY(-7deg)_rotateX(2.5deg)]',
-          'transition-transform duration-1400 ease-in-out',
-          'backface-hidden',
-          'md:group-hover:transform-[perspective(1400px)_rotateY(0deg)_rotateX(0deg)_scale(1.025)]',
-        ].join(' ')}
-      >
-        {/* Browser bar — stays dark regardless of card theme, matching ProductDemo's mockup chrome */}
-        <div
-          className="flex items-center gap-2 px-4 py-3"
-          style={{ background: '#16233E', borderBottom: '1px solid rgba(247,244,236,0.1)' }}
-        >
-          <div className="flex gap-1.5">
-            {['#EF4444', '#F59E0B', '#10B981'].map((c, ci) => (
-              <div key={ci} style={{ width: 9, height: 9, borderRadius: '50%', background: c, opacity: 0.7 }} />
-            ))}
-          </div>
-          <span
-            className="text-[10px] ml-3"
-            style={{ color: 'rgba(255,255,255,0.32)', fontFamily: 'monospace' }}
-          >
-            remindology.app/contents/{subject.slug}
-          </span>
+    <div
+      style={{ opacity: cardVisible ? 1 : 0 }}
+      className="relative rounded-lg overflow-hidden bg-paper-raised border border-rule shadow-lift-2 transition-opacity duration-200 ease-out"
+    >
+      {/* Browser bar */}
+      <div className="flex items-center gap-2 px-4 py-3 bg-paper-deep border-b border-rule">
+        <div className="flex gap-1.5">
+          {[0, 1, 2].map(ci => (
+            <div key={ci} className="h-2.25 w-2.25 rounded-full bg-paper-gray border border-rule-strong" />
+          ))}
         </div>
+        <span className="font-label text-[10px] ml-3 truncate text-ink-faint">
+          remindology.app/contents/{subject.slug}
+        </span>
+      </div>
 
-        {/* Two-panel content — fixed height so the reveal animation never shifts layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 text-left h-115 sm:h-75">
+      {/* Two-panel content — fixed height so the reveal animation never shifts layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 text-left h-115 sm:h-75">
 
-          {/* ── Left: material being typed ─────────────────────── */}
-          <div className="p-5 border-b sm:border-b-0 sm:border-r overflow-hidden" style={{ borderColor: BORDER_L }}>
-            <div className="flex items-center gap-2 mb-3">
-              <span
-                className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
-                style={{
-                  background: subject.badgeBg,
-                  color: subject.badgeColor,
-                  transition: 'background 0.4s, color 0.4s',
-                }}
-              >
-                {subject.badge}
-              </span>
-              <span className="text-[10px] truncate" style={{ color: TEXT_MID }}>
-                {subject.title}
-              </span>
-            </div>
-
-            <div
-              className="text-[10px] leading-relaxed rounded-xl p-3"
-              style={{
-                background: SURFACE,
-                border: `1px solid ${BORDER_L}`,
-                color: TEXT_BODY,
-                minHeight: 74,
-              }}
-            >
-              {displayText}
-              {showCursor && (
-                <span
-                  style={{
-                    display: 'inline-block',
-                    width: 2,
-                    height: '0.85em',
-                    background: ACCENT,
-                    verticalAlign: 'middle',
-                    marginLeft: 2,
-                    borderRadius: 1,
-                    animationName: 'blinkCursor',
-                    animationDuration: '0.8s',
-                    animationTimingFunction: 'ease-in-out',
-                    animationIterationCount: 'infinite',
-                  }}
-                />
-              )}
-            </div>
-
-            {/* "Complete" status */}
-            <div
-              className="flex items-center gap-1.5 mt-3"
-              style={{
-                fontSize: '0.6rem',
-                color: '#059669',
-                opacity: showComplete ? 1 : 0,
-                transition: 'opacity 0.5s ease',
-              }}
-            >
-              <div className="h-1.5 w-1.5 rounded-full" style={{ background: '#34D399' }} />
-              AI analysis complete · {subject.time}
-            </div>
+        {/* ── Left: material being typed ─────────────────────── */}
+        <div className="p-5 border-b sm:border-b-0 sm:border-r border-rule overflow-hidden">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="font-label text-[9px] font-medium uppercase tracking-[0.12em] px-2 py-0.5 rounded-full border border-rule-strong bg-paper-raised text-ink">
+              {subject.badge}
+            </span>
+            <span className="text-[10px] truncate text-ink-muted">
+              {subject.title}
+            </span>
           </div>
 
-          {/* ── Right: AI outputs ──────────────────────────────── */}
-          <div className="p-5 flex flex-col overflow-hidden">
-            <p
-              className="text-[9px] font-bold uppercase tracking-widest mb-3"
-              style={{ color: TEXT_MID }}
-            >
-              Study Kit Generated
-            </p>
-
-            {showProcessing ? (
-              // Bouncing "analysing" dots
-              <div className="flex-1 flex flex-col items-center justify-center gap-2.5 py-2">
-                <div className="flex gap-2">
-                  {[0, 1, 2].map(i => (
-                    <div
-                      key={i}
-                      style={{
-                        width: 7,
-                        height: 7,
-                        borderRadius: '50%',
-                        background: ACCENT,
-                        animationName: 'loadingBounce',
-                        animationDuration: '0.9s',
-                        animationDelay: `${i * 0.18}s`,
-                        animationIterationCount: 'infinite',
-                        animationTimingFunction: 'ease-in-out',
-                      }}
-                    />
-                  ))}
-                </div>
-                <p style={{ fontSize: '0.62rem', color: TEXT_MID }}>
-                  {processingLabel}
-                </p>
-              </div>
-            ) : (
-              // Items revealed one by one
-              <div className="space-y-2">
-                {subject.outputs.map((item, i) =>
-                  i < revealedItems ? (
-                    <div
-                      key={`${subjectIdx}-${i}`}
-                      className="flex items-center justify-between px-3 py-1.5 rounded-lg"
-                      style={{
-                        background: SURFACE,
-                        border: `1px solid ${BORDER_L}`,
-                        animationName: 'slideReveal',
-                        animationDuration: '0.35s',
-                        animationTimingFunction: 'ease-out',
-                        animationFillMode: 'both',
-                      }}
-                    >
-                      <span className="text-[10px]" style={{ color: TEXT_BODY }}>
-                        {item.icon} {item.label}
-                      </span>
-                      <span className="text-[9px] font-bold" style={{ color: '#059669' }}>
-                        ✓ Done
-                      </span>
-                    </div>
-                  ) : null
-                )}
-              </div>
+          <div
+            className="text-[10px] leading-relaxed rounded-md p-3 bg-paper border border-rule text-ink"
+            style={{ minHeight: 74 }}
+          >
+            {displayText}
+            {showCursor && (
+              <span
+                className="bg-ink"
+                style={{
+                  display: 'inline-block',
+                  width: 2,
+                  height: '0.85em',
+                  verticalAlign: 'middle',
+                  marginLeft: 2,
+                  borderRadius: 1,
+                  animationName: 'blinkCursor',
+                  animationDuration: '0.8s',
+                  animationTimingFunction: 'ease-in-out',
+                  animationIterationCount: 'infinite',
+                }}
+              />
             )}
           </div>
+
+          {/* "Complete" status */}
+          <div
+            className="flex items-center gap-1.5 mt-3 text-ink-muted transition-opacity duration-200 ease-out"
+            style={{ fontSize: '0.6rem', opacity: showComplete ? 1 : 0 }}
+          >
+            <div className="h-1.5 w-1.5 rounded-full bg-gold" />
+            AI analysis complete · {subject.time}
+          </div>
+        </div>
+
+        {/* ── Right: AI outputs ──────────────────────────────── */}
+        <div className="p-5 flex flex-col overflow-hidden">
+          <p className="font-label text-[9px] font-medium uppercase tracking-[0.12em] mb-3 text-ink-muted">
+            Study Kit Generated
+          </p>
+
+          {showProcessing ? (
+            // "Analysing" dots — a functional generating indicator
+            <div className="flex-1 flex flex-col items-center justify-center gap-2.5 py-2">
+              <div className="flex gap-2">
+                {[0, 1, 2].map(i => (
+                  <div
+                    key={i}
+                    className="bg-ink"
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: '50%',
+                      animationName: 'loadingBounce',
+                      animationDuration: '0.9s',
+                      animationDelay: `${i * 0.18}s`,
+                      animationIterationCount: 'infinite',
+                      animationTimingFunction: 'ease-in-out',
+                    }}
+                  />
+                ))}
+              </div>
+              <p className="text-ink-muted" style={{ fontSize: '0.62rem' }}>
+                {processingLabel}
+              </p>
+            </div>
+          ) : (
+            // Items revealed one by one
+            <div className="space-y-2">
+              {subject.outputs.map((item, i) =>
+                i < revealedItems ? (
+                  <div
+                    key={`${subjectIdx}-${i}`}
+                    className="flex items-center justify-between px-3 py-1.5 rounded-md bg-paper border border-rule"
+                    style={{
+                      animationName: 'slideReveal',
+                      animationDuration: '0.2s',
+                      animationTimingFunction: 'ease-out',
+                      animationFillMode: 'both',
+                    }}
+                  >
+                    <span className="text-[10px] text-ink">
+                      {item.icon} {item.label}
+                    </span>
+                    <span className="text-[9px] font-semibold text-ink-muted">
+                      ✓ Done
+                    </span>
+                  </div>
+                ) : null
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,24 +1,28 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins, Source_Serif_4 } from "next/font/google";
+import { Albert_Sans, Alumni_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+// Site typography (impeccable.style): Albert Sans for UI/body, Alumni Sans
+// for display headlines, JetBrains Mono for labels. See globals.css.
+const albertSans = Albert_Sans({
+  variable: "--font-albert",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  display: "block",   // prevent FOUT — block until loaded, no font swap flash
-  preload: true,
+  display: "swap",
 });
 
-const sourceSerif = Source_Serif_4({
-  variable: "--font-serif-display",
+const alumniSans = Alumni_Sans({
+  variable: "--font-alumni",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  display: "block",
-  preload: true,
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 const SITE_URL = "https://www.remindology.com";
@@ -26,7 +30,7 @@ const SITE_DESCRIPTION =
   "Accelerate your UPSC preparation with AI-powered summaries, topics, revision notes, and MCQs generated from your study materials.";
 
 export const viewport: Viewport = {
-  themeColor: "#8A6A12",
+  themeColor: "#F7F7F7",
 };
 
 export const metadata: Metadata = {
@@ -67,7 +71,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${sourceSerif.variable} h-full antialiased`}
+      className={`${albertSans.variable} ${alumniSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         {/* app-shell: single fade-in on first paint, masks all hydration flash */}

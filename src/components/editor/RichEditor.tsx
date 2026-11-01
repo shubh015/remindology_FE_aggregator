@@ -31,10 +31,10 @@ function ToolbarBtn({
       title={title}
       onMouseDown={(e) => { e.preventDefault(); onClick(); }}
       className={cn(
-        'p-1.5 rounded-lg transition-colors cursor-pointer',
+        'p-1.5 rounded-[3px] transition-colors duration-150 ease-ks cursor-pointer',
         active
-          ? 'bg-primary/15 text-primary'
-          : 'text-muted-foreground hover:text-foreground hover:bg-secondary',
+          ? 'bg-paper-gray text-ink'
+          : 'text-ink-muted hover:text-ink hover:bg-paper-deep',
       )}
     >
       {children}
@@ -64,7 +64,7 @@ export function RichEditor({
     },
     editorProps: {
       attributes: {
-        class: 'rich-editor-content outline-none text-sm text-foreground leading-relaxed',
+        class: 'rich-editor-content outline-none text-sm text-ink-soft leading-relaxed',
       },
     },
     immediatelyRender: false,
@@ -88,11 +88,11 @@ export function RichEditor({
 
   return (
     <div className={cn(
-      'rounded-xl border border-input bg-background focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/40 transition-colors',
+      'rounded-[3px] border border-rule-strong bg-paper-raised focus-within:border-ink transition-colors duration-150 ease-ks',
       className,
     )}>
       {/* Toolbar */}
-      <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-input">
+      <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-rule">
         <ToolbarBtn
           onClick={() => editor.chain().focus().toggleBold().run()}
           active={editor.isActive('bold')}
@@ -115,7 +115,7 @@ export function RichEditor({
           <Highlighter className="h-3.5 w-3.5" />
         </ToolbarBtn>
 
-        <div className="w-px h-4 bg-border mx-1 shrink-0" />
+        <div className="w-px h-4 bg-rule-strong mx-1 shrink-0" />
 
         <ToolbarBtn
           onClick={() => editor.chain().focus().toggleBulletList().run()}

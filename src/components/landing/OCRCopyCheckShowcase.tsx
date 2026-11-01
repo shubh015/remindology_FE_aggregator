@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type CSSProperties, type ReactNode } from 'react';
 import Link from 'next/link';
-import { ShieldCheck, Camera, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Camera, ArrowRight, Check } from 'lucide-react';
 
 type Phase = 'scanning' | 'analyzing' | 'result';
 
@@ -28,13 +28,42 @@ const LINE_DELAY = 0.42; // seconds between each OCR line appearing
 
 // ── Sub-components ─────────────────────────────────────────────────
 
+const INK = 'var(--color-ink)';
+const MUTED = 'var(--color-ink-muted)';
+const FAINT = 'var(--color-ink-faint)';
+const RULE = 'var(--color-rule)';
+const RULE_STRONG = 'var(--color-rule-strong)';
+const LABEL_FONT = 'var(--font-label)';
+const VERMILION = 'oklch(52% .16 35)';
+
+const panelStyle: CSSProperties = {
+  background: 'var(--color-paper)',
+  border: `1px solid ${RULE}`,
+  borderRadius: 8,
+};
+
+const labelStyle: CSSProperties = {
+  fontFamily: LABEL_FONT,
+  fontSize: 10,
+  fontWeight: 500,
+  color: MUTED,
+  letterSpacing: '0.12em',
+  textTransform: 'uppercase',
+};
+
+function StepCaption({ children }: { children: ReactNode }) {
+  return (
+    <p style={{ ...labelStyle, textAlign: 'center', marginTop: 10, color: FAINT }}>
+      {children}
+    </p>
+  );
+}
+
 function ScanMockup() {
   return (
     <div style={{ width: '100%', maxWidth: 320 }}>
       <div style={{
-        background: '#F7F6F2',
-        border: '1px solid rgba(22,35,62,0.08)',
-        borderRadius: 14,
+        ...panelStyle,
         padding: '14px 14px',
         position: 'relative',
         overflow: 'hidden',
@@ -43,27 +72,24 @@ function ScanMockup() {
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           marginBottom: 11, paddingBottom: 9,
-          borderBottom: '1px solid rgba(22,35,62,0.06)',
+          borderBottom: `1px solid ${RULE}`,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Camera style={{ width: 12, height: 12, color: '#8A6A12' }} />
-            <span style={{
-              fontSize: 10, fontWeight: 700, color: '#5B6478',
-              letterSpacing: '0.1em', textTransform: 'uppercase' as const,
-            }}>
+            <Camera style={{ width: 12, height: 12, color: INK }} />
+            <span style={labelStyle}>
               Mains Answer Sheet
             </span>
           </div>
-          <span style={{ fontSize: 9, color: '#5B6478' }}>GS II · Q.4</span>
+          <span style={{ fontFamily: LABEL_FONT, fontSize: 9, color: FAINT }}>GS II · Q.4</span>
         </div>
 
         {/* Sweeping scan line */}
         <div style={{
           position: 'absolute',
           left: 0, right: 0,
-          height: 2,
-          background: 'linear-gradient(90deg, transparent, rgba(138,106,18,0.35) 20%, #8A6A12 45%, #8A6A12 55%, rgba(138,106,18,0.35) 80%, transparent)',
-          boxShadow: '0 0 10px 2px rgba(138,106,18,0.45)',
+          height: 1,
+          background: INK,
+          opacity: 0.6,
           animation: 'rmOcrSweep 3.4s ease-in-out forwards',
           top: 0,
           zIndex: 10,
@@ -81,20 +107,20 @@ function ScanMockup() {
               <div style={{
                 position: 'absolute', inset: 0,
                 borderRadius: 3,
-                background: 'rgba(22,35,62,0.06)',
+                background: 'var(--color-paper-gray)',
                 animation: 'rmHandwritingFade 0.4s ease forwards',
                 animationDelay: `${0.3 + i * LINE_DELAY}s`,
               }} />
               {/* OCR text appears */}
               <span style={{
                 fontSize: 10,
-                fontFamily: "'Courier New', monospace",
-                color: '#16233E',
-                letterSpacing: '0.02em',
+                fontFamily: LABEL_FONT,
+                color: INK,
+                letterSpacing: '0.01em',
                 lineHeight: 1,
                 position: 'relative',
                 zIndex: 2,
-                animation: 'rmLineReveal 0.5s ease forwards',
+                animation: 'rmLineReveal 0.2s ease-out forwards',
                 animationDelay: `${0.3 + i * LINE_DELAY}s`,
                 opacity: 0,
                 whiteSpace: 'nowrap' as const,
@@ -109,26 +135,19 @@ function ScanMockup() {
         </div>
 
         {/* OCR active indicator */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 12 }}>
           <div style={{
             width: 6, height: 6, borderRadius: '50%',
-            background: '#8A6A12',
+            background: 'var(--color-gold)',
             animation: 'rmPulse 1s ease-in-out infinite',
           }} />
-          <span style={{
-            fontSize: 9, fontWeight: 700,
-            color: 'rgba(138,106,18,0.7)',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase' as const,
-          }}>
+          <span style={{ ...labelStyle, fontSize: 9 }}>
             Scanning · OCR Active
           </span>
         </div>
       </div>
 
-      <p style={{ textAlign: 'center' as const, marginTop: 8, fontSize: 11, color: '#5B6478' }}>
-        Step 1 · Photograph &amp; Extract
-      </p>
+      <StepCaption>Step 1 · Photograph &amp; Extract</StepCaption>
     </div>
   );
 }
@@ -137,42 +156,40 @@ function AnalyzeMockup() {
   return (
     <div style={{ width: '100%', maxWidth: 320, textAlign: 'center' as const }}>
       <div style={{
-        background: '#F7F6F2',
-        border: '1px solid rgba(138,106,18,0.18)',
-        borderRadius: 14,
+        ...panelStyle,
         padding: '28px 20px',
       }}>
         {/* Animated dots */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, marginBottom: 18 }}>
           {[0, 1, 2].map(i => (
             <div key={i} style={{
-              width: 9, height: 9, borderRadius: '50%',
-              background: '#8A6A12',
+              width: 7, height: 7, borderRadius: '50%',
+              background: INK,
               animation: 'rmDotBlink 1.3s ease-in-out infinite',
               animationDelay: `${i * 0.22}s`,
             }} />
           ))}
         </div>
 
-        <p style={{ fontSize: 13, fontWeight: 700, color: '#16233E', marginBottom: 5 }}>
+        <p style={{ fontSize: 14, fontWeight: 600, color: INK, marginBottom: 5 }}>
           Analyzing your answer…
         </p>
-        <p style={{ fontSize: 11, color: '#5B6478', marginBottom: 18, lineHeight: 1.5 }}>
+        <p style={{ fontSize: 12, color: MUTED, marginBottom: 18, lineHeight: 1.5 }}>
           Cross-referencing 2M+ academic sources
         </p>
 
         {/* Progress bar */}
-        <div style={{ background: 'rgba(138,106,18,0.08)', borderRadius: 999, height: 5, overflow: 'hidden', marginBottom: 6 }}>
+        <div style={{ background: 'var(--color-paper-gray)', borderRadius: 999, height: 4, overflow: 'hidden', marginBottom: 6 }}>
           <div style={{
             height: '100%',
-            background: '#8A6A12',
+            background: INK,
             borderRadius: 999,
             animation: 'rmProgressFill 2.2s ease-out forwards',
           }} />
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 9, color: '#5B6478' }}>0 sources</span>
-          <span style={{ fontSize: 9, color: '#5B6478' }}>2,147,483 sources</span>
+          <span style={{ fontFamily: LABEL_FONT, fontSize: 9, color: FAINT }}>0 sources</span>
+          <span style={{ fontFamily: LABEL_FONT, fontSize: 9, color: FAINT }}>2,147,483 sources</span>
         </div>
 
         {/* Checking items */}
@@ -185,14 +202,14 @@ function AnalyzeMockup() {
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
               <div style={{
                 width: 14, height: 14, borderRadius: '50%', flexShrink: 0,
-                background: item.done ? 'rgba(52,211,153,0.15)' : 'rgba(138,106,18,0.08)',
-                border: `1px solid ${item.done ? 'rgba(52,211,153,0.35)' : 'rgba(138,106,18,0.18)'}`,
+                background: item.done ? INK : 'var(--color-paper-raised)',
+                border: `1px solid ${item.done ? INK : RULE_STRONG}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                {item.done && <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#34D399' }} />}
-                {!item.done && <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#8A6A12', animation: 'rmPulse 0.8s ease-in-out infinite' }} />}
+                {item.done && <Check style={{ width: 9, height: 9, color: 'var(--color-paper)' }} strokeWidth={3} />}
+                {!item.done && <div style={{ width: 5, height: 5, borderRadius: '50%', background: INK, animation: 'rmPulse 0.8s ease-in-out infinite' }} />}
               </div>
-              <span style={{ fontSize: 10, color: item.done ? '#16233E' : '#5B6478' }}>
+              <span style={{ fontSize: 11, color: item.done ? INK : MUTED }}>
                 {item.label}
               </span>
             </div>
@@ -200,9 +217,7 @@ function AnalyzeMockup() {
         </div>
       </div>
 
-      <p style={{ textAlign: 'center' as const, marginTop: 8, fontSize: 11, color: '#5B6478' }}>
-        Step 2 · Cross-reference
-      </p>
+      <StepCaption>Step 2 · Cross-reference</StepCaption>
     </div>
   );
 }
@@ -216,11 +231,9 @@ function ResultMockup() {
   return (
     <div style={{ width: '100%', maxWidth: 320 }}>
       <div style={{
-        background: 'rgba(16,185,129,0.04)',
-        border: '1px solid rgba(16,185,129,0.25)',
-        borderRadius: 14,
+        ...panelStyle,
+        background: 'var(--color-paper-raised)',
         padding: '18px 16px',
-        animation: 'rmPulseGreen 2.5s ease-in-out infinite',
       }}>
         {/* Score row */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
@@ -231,21 +244,21 @@ function ResultMockup() {
               <circle
                 cx={48} cy={48} r={radius}
                 fill="none"
-                stroke="rgba(16,185,129,0.1)"
-                strokeWidth={8}
+                stroke="var(--color-paper-gray)"
+                strokeWidth={6}
               />
               {/* Score arc */}
               <circle
                 cx={48} cy={48} r={radius}
                 fill="none"
-                stroke="#34D399"
-                strokeWidth={8}
+                stroke="var(--color-gold)"
+                strokeWidth={6}
                 strokeLinecap="round"
                 strokeDasharray={circumference}
                 strokeDashoffset={offset}
                 transform="rotate(-90 48 48)"
                 style={{
-                  animation: `rmScoreArc 1.6s ease-out forwards`,
+                  animation: `rmScoreArc 1.2s ease-out forwards`,
                   // from: circumference (empty) to: offset (82% filled)
                 }}
               />
@@ -254,13 +267,13 @@ function ResultMockup() {
             <div style={{
               position: 'absolute', inset: 0,
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              gap: 1,
+              gap: 2,
             }}>
               <ShieldCheck style={{
-                width: 18, height: 18, color: '#34D399',
-                animation: 'rmShieldIn 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards',
+                width: 16, height: 16, color: INK,
+                animation: 'rmShieldIn 0.2s ease-out forwards',
               }} />
-              <span style={{ fontSize: 16, fontWeight: 800, color: '#34D399', lineHeight: 1 }}>
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 300, color: INK, lineHeight: 1 }}>
                 {score}%
               </span>
             </div>
@@ -268,10 +281,10 @@ function ResultMockup() {
 
           {/* Verdict text */}
           <div>
-            <p style={{ fontSize: 13, fontWeight: 800, color: '#16233E', marginBottom: 4 }}>
+            <p style={{ fontSize: 14, fontWeight: 600, color: INK, marginBottom: 4 }}>
               Mostly Original ✓
             </p>
-            <p style={{ fontSize: 11, color: '#5B6478', lineHeight: 1.55 }}>
+            <p style={{ fontSize: 12, color: MUTED, lineHeight: 1.55 }}>
               2 paragraphs need<br />more original analysis.
             </p>
           </div>
@@ -280,22 +293,22 @@ function ResultMockup() {
         {/* Paragraph breakdown */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {[
-            { label: 'Introduction', pct: 95, color: '#34D399' },
-            { label: 'Core argument', pct: 32, color: '#F59E0B' },
-            { label: 'Conclusion', pct: 91, color: '#34D399' },
+            { label: 'Introduction', pct: 95 },
+            { label: 'Core argument', pct: 32 },
+            { label: 'Conclusion', pct: 91 },
           ].map((row, i) => (
             <div key={i}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                <span style={{ fontSize: 10, color: '#5B6478' }}>{row.label}</span>
-                <span style={{ fontSize: 10, fontWeight: 700, color: row.color }}>{row.pct}% original</span>
+                <span style={{ fontSize: 11, color: MUTED }}>{row.label}</span>
+                <span style={{ fontFamily: LABEL_FONT, fontSize: 10, fontWeight: 500, color: row.pct > 60 ? INK : VERMILION }}>{row.pct}% original</span>
               </div>
-              <div style={{ background: 'rgba(22,35,62,0.06)', borderRadius: 999, height: 4, overflow: 'hidden' }}>
+              <div style={{ background: 'var(--color-paper-gray)', borderRadius: 999, height: 3, overflow: 'hidden' }}>
                 <div style={{
                   height: '100%', borderRadius: 999,
-                  background: row.pct > 60 ? '#34D399' : '#F59E0B',
+                  background: row.pct > 60 ? INK : VERMILION,
                   width: `${row.pct}%`,
                   transformOrigin: 'left center',
-                  animation: 'rmBarGrow 1s ease forwards',
+                  animation: 'rmBarGrow 0.6s ease-out forwards',
                   animationDelay: `${i * 0.15}s`,
                 }} />
               </div>
@@ -304,9 +317,7 @@ function ResultMockup() {
         </div>
       </div>
 
-      <p style={{ textAlign: 'center' as const, marginTop: 8, fontSize: 11, color: '#5B6478' }}>
-        Step 3 · Originality Report
-      </p>
+      <StepCaption>Step 3 · Originality Report</StepCaption>
     </div>
   );
 }
@@ -339,14 +350,14 @@ export function OCRCopyCheckShowcase() {
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes rmOcrSweep {
           0%   { top: 0px;           opacity: 1; }
-          92%  { top: calc(100% - 2px); opacity: 1; }
-          100% { top: calc(100% - 2px); opacity: 0; }
+          92%  { top: calc(100% - 1px); opacity: 1; }
+          100% { top: calc(100% - 1px); opacity: 0; }
         }
         @keyframes rmHandwritingFade {
           to { opacity: 0; }
         }
         @keyframes rmLineReveal {
-          from { opacity: 0; transform: translateY(4px); }
+          from { opacity: 0; transform: translateY(2px); }
           to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes rmProgressFill {
@@ -358,54 +369,30 @@ export function OCRCopyCheckShowcase() {
           to   { stroke-dashoffset: 45; }
         }
         @keyframes rmShieldIn {
-          0%   { transform: scale(0.4) rotate(-12deg); opacity: 0; }
-          65%  { transform: scale(1.12) rotate(3deg);  opacity: 1; }
-          100% { transform: scale(1) rotate(0);        opacity: 1; }
-        }
-        @keyframes rmPulseGreen {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
-          50%       { box-shadow: 0 0 0 8px rgba(16,185,129,0.08); }
+          from { opacity: 0; }
+          to   { opacity: 1; }
         }
         @keyframes rmDotBlink {
-          0%, 80%, 100% { opacity: 0.18; transform: scale(0.75); }
-          40%            { opacity: 1;   transform: scale(1.2); }
+          0%, 80%, 100% { opacity: 0.2; }
+          40%            { opacity: 1; }
         }
         @keyframes rmBarGrow {
           from { transform: scaleX(0); }
           to   { transform: scaleX(1); }
         }
         @keyframes rmPulse {
-          0%, 100% { opacity: 0.5; transform: scale(0.9); }
-          50%       { opacity: 1;   transform: scale(1.15); }
+          0%, 100% { opacity: 0.35; }
+          50%       { opacity: 1; }
         }
       `}} />
 
-      <div
-        className="rounded-3xl overflow-hidden"
-        style={{
-          background: '#FFFFFF',
-          border: '1px solid rgba(22,35,62,0.08)',
-          position: 'relative',
-        }}
-      >
-        {/* Background glow */}
-        <div style={{
-          position: 'absolute', top: '50%', left: '35%',
-          transform: 'translate(-50%, -50%)',
-          width: 560, height: 360, borderRadius: '50%',
-          background: 'rgba(138,106,18,0.05)',
-          pointerEvents: 'none',
-        }} />
-
+      <div className="card-quiet overflow-hidden relative">
         <div className="grid md:grid-cols-2 gap-0">
 
           {/* Left: animated mockup */}
           <div
-            className="flex items-center justify-center p-8"
-            style={{
-              borderRight: '1px solid rgba(22,35,62,0.08)',
-              minHeight: 380,
-            }}
+            className="flex items-center justify-center p-8 bg-paper-deep border-b border-rule md:border-b-0 md:border-r"
+            style={{ minHeight: 380 }}
           >
             {phase === 'scanning'  && <ScanMockup key={`scan-${cycleKey}`} />}
             {phase === 'analyzing' && <AnalyzeMockup key={`analyze-${cycleKey}`} />}
@@ -416,63 +403,34 @@ export function OCRCopyCheckShowcase() {
           <div className="p-8 flex flex-col justify-center">
 
             {/* Badge */}
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              fontSize: 11, fontWeight: 700,
-              padding: '5px 12px', borderRadius: 999,
-              marginBottom: 16, alignSelf: 'flex-start' as const,
-              background: 'rgba(138,106,18,0.08)',
-              border: '1px solid rgba(138,106,18,0.18)',
-              color: '#8A6A12',
-            }}>
-              <ShieldCheck style={{ width: 13, height: 13 }} />
+            <span className="chip mb-5 self-start gap-1.5 font-label text-[11px] uppercase tracking-[0.12em] text-ink-muted">
+              <ShieldCheck className="h-3.5 w-3.5 text-ink" />
               New · OCR Answer Check
-            </div>
+            </span>
 
-            <h3 style={{
-              fontSize: 'clamp(1.25rem, 2.4vw, 1.7rem)',
-              fontWeight: 800,
-              lineHeight: 1.2,
-              color: '#16233E',
-              marginBottom: 12,
-            }}>
+            <h3 className="font-display font-light text-ink mb-3 leading-[1.05] text-[clamp(1.9rem,3.4vw,2.6rem)]">
               Write it by hand.{' '}
-              <span style={{
-                color: '#8A6A12',
-              }}>
+              <span className="text-ink-muted">
                 Know it&apos;s yours.
               </span>
             </h3>
 
-            <p style={{
-              color: '#5B6478',
-              fontSize: '0.88rem',
-              lineHeight: 1.8,
-              marginBottom: 22,
-              maxWidth: 340,
-            }}>
+            <p className="text-ink-muted text-[15px] leading-[1.7] mb-6 max-w-[360px]">
               Photograph your handwritten answer. Our OCR engine reads every line,
               cross-checks it against 2M+ sources, and tells you exactly which
               paragraphs need more original thinking — before the examiner does.
             </p>
 
             {/* Feature bullets */}
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 26, listStyle: 'none', padding: 0 }}>
+            <ul className="flex flex-col gap-2.5 mb-7 list-none p-0">
               {[
                 'Instant OCR — reads your handwriting in seconds',
                 'Paragraph-level originality scoring',
                 'Specific rewrite suggestions from AI',
               ].map((item, i) => (
-                <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}>
-                  <div style={{
-                    width: 16, height: 16, borderRadius: '50%', flexShrink: 0, marginTop: 1,
-                    background: 'rgba(138,106,18,0.08)',
-                    border: '1px solid rgba(138,106,18,0.18)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#8A6A12' }} />
-                  </div>
-                  <span style={{ fontSize: 13, color: '#16233E', lineHeight: 1.5 }}>
+                <li key={i} className="flex items-start gap-2.5">
+                  <Check className="h-4 w-4 mt-0.5 shrink-0 text-ink" strokeWidth={2} />
+                  <span className="text-sm text-ink-soft leading-normal">
                     {item}
                   </span>
                 </li>
@@ -480,18 +438,18 @@ export function OCRCopyCheckShowcase() {
             </ul>
 
             {/* Phase indicator */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 22 }}>
               {PHASE_ORDER.map(p => (
-                <div key={p} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <div key={p} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <div style={{
                     width: p === phase ? 20 : 6,
-                    height: 6,
+                    height: 4,
                     borderRadius: 999,
-                    background: p === phase ? '#8A6A12' : 'rgba(22,35,62,0.1)',
-                    transition: 'width 0.3s ease, background 0.3s ease',
+                    background: p === phase ? 'var(--color-gold)' : RULE_STRONG,
+                    transition: 'width 0.2s ease-out, background 0.2s ease-out',
                   }} />
                   {p === phase && (
-                    <span style={{ fontSize: 10, color: '#8A6A12', fontWeight: 600 }}>
+                    <span style={{ ...labelStyle, color: INK }}>
                       {phaseLabel[p]}
                     </span>
                   )}
@@ -499,22 +457,9 @@ export function OCRCopyCheckShowcase() {
               ))}
             </div>
 
-            <Link
-              href="/signup"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 7,
-                fontSize: 13, fontWeight: 700,
-                padding: '11px 20px', borderRadius: 12,
-                alignSelf: 'flex-start' as const,
-                background: '#8A6A12',
-                color: '#FFFFFF',
-                textDecoration: 'none',
-                boxShadow: '0 4px 20px rgba(138,106,18,0.28)',
-                transition: 'opacity 0.15s ease',
-              }}
-            >
+            <Link href="/signup" className="btn-ink self-start">
               Try Answer Check Free
-              <ArrowRight style={{ width: 14, height: 14 }} />
+              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>

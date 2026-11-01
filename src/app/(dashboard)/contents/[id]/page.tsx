@@ -33,9 +33,9 @@ export default function ContentDetailPage({ params }: PageProps) {
       <div className="flex-1 flex flex-col">
         <Header />
         <div className="flex-1 p-8 space-y-6 max-w-5xl w-full mx-auto animate-pulse">
-          <div className="h-6 w-32 bg-muted-foreground/10 rounded" />
-          <div className="h-10 w-2/3 bg-muted-foreground/10 rounded" />
-          <div className="h-10 w-full bg-muted-foreground/10 rounded" />
+          <div className="h-6 w-32 bg-paper-gray rounded-[2px]" />
+          <div className="h-10 w-2/3 bg-paper-gray rounded-[2px]" />
+          <div className="h-10 w-full bg-paper-gray rounded-[2px]" />
         </div>
       </div>
     );
@@ -46,7 +46,7 @@ export default function ContentDetailPage({ params }: PageProps) {
       <div className="flex-1 flex flex-col">
         <Header />
         <div className="flex-1 p-8 max-w-5xl w-full mx-auto flex flex-col items-center justify-center">
-          <div className="flex items-center gap-2 rounded-md bg-destructive/10 p-4 text-xs text-destructive border border-destructive/20 max-w-md">
+          <div className="flex items-center gap-2 rounded-[2px] bg-paper-raised p-4 text-xs text-[oklch(52%_.16_35)] border border-rule max-w-md">
             <AlertCircle className="h-5 w-5 shrink-0" />
             <span>Failed to load study content: {error?.message || 'Item not found.'}</span>
           </div>
@@ -80,12 +80,12 @@ export default function ContentDetailPage({ params }: PageProps) {
             >
               {content.status}
             </Badge>
-            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-semibold">
+            <div className="flex items-center gap-1.5 font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
               <Calendar className="h-3.5 w-3.5" />
               <span>Added {new Date(content.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
             </div>
           </div>
-          <h2 className="text-lg font-bold text-foreground leading-tight">{content.title}</h2>
+          <h2 className="text-2xl font-semibold tracking-tight text-ink leading-tight">{content.title}</h2>
         </div>
 
         <div className="flex justify-end">
@@ -94,7 +94,7 @@ export default function ContentDetailPage({ params }: PageProps) {
 
         {/* 5-tab learning suite */}
         <Tabs defaultValue="summary" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 max-w-xl border border-border bg-muted/65 p-1 rounded-lg">
+          <TabsList className="grid w-full grid-cols-5 max-w-xl border border-rule bg-paper-deep p-1 rounded-[3px]">
             <TabsTrigger value="summary"  className="cursor-pointer text-[11px] font-semibold">Summary</TabsTrigger>
             <TabsTrigger value="topics"   className="cursor-pointer text-[11px] font-semibold">Topics</TabsTrigger>
             <TabsTrigger value="mcqs"     className="cursor-pointer text-[11px] font-semibold">MCQs</TabsTrigger>

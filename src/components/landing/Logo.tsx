@@ -1,36 +1,35 @@
 /**
- * Brand mark — a navy medallion with a brass ring and a serif monogram,
- * styled like an official seal rather than a flat colored square. One
- * shared component so every header/footer instance stays in sync.
+ * Brand mark: a small ink square with an Alumni Sans "R" next to the tracked
+ * uppercase wordmark. One shared component so every header/footer stays in
+ * sync. (`variant` is accepted for backwards compatibility; only the
+ * monochrome mark exists now.)
  */
-export function Logo({ size = 32, wordmark = true }: { size?: number; wordmark?: boolean }) {
+export function Logo({
+  size = 32,
+  wordmark = true,
+}: {
+  size?: number;
+  wordmark?: boolean;
+  /** @deprecated only the monochrome mark exists now */
+  variant?: 'default' | 'mono';
+}) {
   return (
     <div className="flex items-center gap-2.5 shrink-0">
       <div
-        className="flex items-center justify-center shrink-0"
-        style={{
-          width: size,
-          height: size,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle at 32% 28%, #2C4269, #16233E 72%)',
-          border: '1.5px solid #8A6A12',
-          boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.1), 0 1px 3px rgba(22,35,62,0.35)',
-        }}
+        className="flex items-center justify-center shrink-0 bg-ink text-paper rounded-[3px]"
+        style={{ width: size * 0.8, height: size * 0.8 }}
       >
-        <span
-          style={{
-            fontFamily: 'var(--font-serif-display), Georgia, serif',
-            fontWeight: 600,
-            fontSize: size * 0.48,
-            color: '#D4AF37',
-            lineHeight: 1,
-          }}
-        >
+        <span style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: size * 0.56, lineHeight: 1 }}>
           R
         </span>
       </div>
       {wordmark && (
-        <span className="font-bold text-[17px] text-primary">Remindology</span>
+        <span
+          className="text-ink uppercase"
+          style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: '1.25rem', letterSpacing: '0.18em', lineHeight: 1 }}
+        >
+          Remindology
+        </span>
       )}
     </div>
   );

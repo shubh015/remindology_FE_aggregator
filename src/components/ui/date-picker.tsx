@@ -53,22 +53,22 @@ export function DatePicker({ value, onChange, min, max, placeholder = 'Select a 
         onClick={() => setOpen(o => !o)}
         className={cn(
           'flex h-9 w-full items-center gap-2 rounded-md border bg-transparent px-3 text-sm transition-colors',
-          'hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-ring/40 cursor-pointer',
+          'hover:border-ink focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer',
           invalid ? 'border-destructive' : 'border-input',
           className,
         )}
         aria-haspopup="dialog"
         aria-expanded={open}
       >
-        <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" />
-        <span className={cn('flex-1 text-left', label ? 'text-foreground' : 'text-muted-foreground')}>
+        <CalendarDays className="h-4 w-4 shrink-0 text-ink-muted" />
+        <span className={cn('flex-1 text-left', label ? 'text-ink' : 'text-ink-muted')}>
           {label ?? placeholder}
         </span>
       </button>
 
       {open && (
         <div
-          className="absolute z-50 mt-2 rounded-2xl border border-border bg-popover p-3 shadow-xl shadow-primary/10"
+          className="absolute z-50 mt-2 rounded-[4px] border border-rule bg-paper-raised p-3 shadow-lift-2"
           role="dialog"
         >
           <Calendar

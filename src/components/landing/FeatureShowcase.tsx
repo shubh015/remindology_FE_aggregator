@@ -13,25 +13,10 @@ import {
 } from 'lucide-react';
 import { MobileFeatureCarousel } from './MobileFeatureCarousel';
 
-// ── Light-card palette — Clean Editorial ──
-const INK = '#16233E';
-const MUTED = '#5B6478';
-const ACCENT = '#8A6A12';
-const ACCENT_SOFT = 'rgba(138,106,18,0.08)';
-const ACCENT_BORDER = 'rgba(138,106,18,0.18)';
-const SURFACE = '#F7F4EC';
-const BORDER = 'rgba(22,35,62,0.08)';
-const BORDER_MED = 'rgba(22,35,62,0.1)';
-// Muted taxonomy hues for the Key Topics category legend — kept distinct
-// from ACCENT (deep green) and from the semantic success/pending greens
-// and ambers used elsewhere in these mockups, so categories stay readable
-// without competing with the one brand accent.
-const TAXONOMY_TEAL = '#3D7A8C';
-const TAXONOMY_TEAL_BG = 'rgba(61,122,140,0.1)';
-const TAXONOMY_BROWN = '#8A6D56';
-const TAXONOMY_BROWN_BG = 'rgba(138,109,86,0.1)';
-const TAXONOMY_AMBER = '#B45309';
-const TAXONOMY_AMBER_BG = 'rgba(180,83,9,0.1)';
+// ── Shared mono class strings ──
+const LABEL = 'font-label text-[11px] uppercase tracking-[0.12em] text-ink-muted';
+const INSET = 'rounded-md border border-rule bg-paper';
+const TAG = 'font-label text-[10px] uppercase tracking-[0.08em] px-2 py-0.5 rounded-full border border-rule bg-paper-gray text-ink-muted';
 
 // ── Feature metadata ─────────────────────────────────────────────
 const FEATURES = [
@@ -77,82 +62,62 @@ type FeatureId = typeof FEATURES[number]['id'];
 
 // ── Individual mockup panels ─────────────────────────────────────
 
+function PanelHeader({ icon: Icon, title, tag }: { icon: React.ElementType; title: string; tag?: string }) {
+  return (
+    <div className="flex items-center gap-2 mb-4">
+      <Icon className="h-3.5 w-3.5 text-ink" strokeWidth={1.75} />
+      <span className="text-xs font-semibold text-ink">{title}</span>
+      {tag && <span className={`ml-auto ${TAG}`}>{tag}</span>}
+    </div>
+  );
+}
+
 function UploadMockup() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3 mb-5">
-        <div
-          className="h-9 w-9 rounded-xl flex items-center justify-center"
-          style={{ background: ACCENT_SOFT }}
-        >
-          <Sparkles className="h-4 w-4" style={{ color: ACCENT }} />
+        <div className="h-8 w-8 rounded-md border border-rule bg-paper-deep flex items-center justify-center">
+          <Sparkles className="h-4 w-4 text-ink" strokeWidth={1.75} />
         </div>
         <div>
-          <p className="text-sm font-semibold" style={{ color: INK }}>
+          <p className="text-sm font-semibold text-ink">
             Upload Study Material
           </p>
-          <p className="text-[11px]" style={{ color: MUTED }}>
+          <p className="text-[11px] text-ink-muted">
             Paste any article, chapter, or notes
           </p>
         </div>
       </div>
 
       <div>
-        <label
-          className="text-[10px] font-bold uppercase tracking-widest mb-1.5 block"
-          style={{ color: MUTED }}
-        >
+        <label className={`${LABEL} mb-1.5 block`}>
           Document Title
         </label>
-        <div
-          className="rounded-xl px-3.5 py-2.5 text-xs"
-          style={{
-            background: SURFACE,
-            border: `1px solid ${BORDER_MED}`,
-            color: MUTED,
-          }}
-        >
+        <div className={`${INSET} px-3.5 py-2.5 text-xs text-ink-muted`}>
           e.g., GS Paper 2 — Indo-Pacific Relations
         </div>
       </div>
 
       <div>
-        <label
-          className="text-[10px] font-bold uppercase tracking-widest mb-1.5 block"
-          style={{ color: MUTED }}
-        >
+        <label className={`${LABEL} mb-1.5 block`}>
           Content
         </label>
-        <div
-          className="rounded-xl p-3.5 text-xs"
-          style={{
-            background: SURFACE,
-            border: `1px solid ${BORDER_MED}`,
-            minHeight: 80,
-            color: MUTED,
-          }}
-        >
+        <div className={`${INSET} p-3.5 text-xs text-ink-muted`} style={{ minHeight: 80 }}>
           Paste your article, editorial, or study notes here…
         </div>
-        <div
-          className="flex items-center justify-between mt-1.5 text-[10px]"
-          style={{ color: MUTED }}
-        >
+        <div className="flex items-center justify-between mt-1.5 text-[10px] text-ink-muted">
           <span>0 words · 0 chars</span>
           <span>Plain text</span>
         </div>
       </div>
 
-      <div
-        className="flex items-center gap-3 pt-3"
-        style={{ borderTop: `1px solid ${BORDER}` }}
-      >
-        <p className="flex-1 min-w-0 text-[10px]" style={{ color: MUTED }}>
+      <div className="flex items-center gap-3 pt-3 border-t border-rule">
+        <p className="flex-1 min-w-0 text-[10px] text-ink-muted">
           AI will generate summary, notes, MCQs &amp; topics
         </p>
         <div
-          className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-xl text-white shrink-0"
-          style={{ background: ACCENT, cursor: 'default' }}
+          className="flex items-center gap-1.5 text-xs font-medium px-4 py-2 rounded-md bg-ink text-paper shrink-0"
+          style={{ cursor: 'default' }}
         >
           <ArrowUp className="h-3.5 w-3.5" />
           Analyse
@@ -166,53 +131,38 @@ function SummaryMockup() {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-4">
-        <span
-          className="text-[10px] font-bold px-2.5 py-1 rounded-full"
-          style={{ background: ACCENT_SOFT, color: ACCENT }}
-        >
-          UPSC CSE
-        </span>
-        <span className="text-xs" style={{ color: MUTED }}>
+        <span className={TAG}>UPSC CSE</span>
+        <span className="text-xs text-ink-muted">
           India&apos;s G20 Presidency
         </span>
       </div>
 
-      <div
-        className="rounded-xl p-4"
-        style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
-      >
+      <div className={`${INSET} p-4`}>
         <div className="flex items-center gap-2 mb-2">
-          <Brain className="h-3.5 w-3.5" style={{ color: ACCENT }} />
-          <span className="text-[11px] font-bold" style={{ color: ACCENT }}>
-            AI Summary
-          </span>
+          <Brain className="h-3.5 w-3.5 text-ink" strokeWidth={1.75} />
+          <span className="text-[11px] font-semibold text-ink">AI Summary</span>
         </div>
-        <p className="text-xs leading-relaxed" style={{ color: MUTED }}>
+        <p className="text-xs leading-relaxed text-ink-muted">
           India&apos;s G20 Presidency centred on 3 priorities: inclusive growth, DPI
           (Digital Public Infrastructure), and climate finance — under the theme
           &apos;One Earth, One Family, One Future&apos;, spotlighting the Global South.
         </p>
       </div>
 
-      <div
-        className="rounded-xl p-4"
-        style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
-      >
+      <div className={`${INSET} p-4`}>
         <div className="flex items-center gap-2 mb-2">
-          <Brain className="h-3.5 w-3.5" style={{ color: ACCENT }} />
-          <span className="text-[11px] font-bold" style={{ color: ACCENT }}>
-            AI Summary
-          </span>
+          <Brain className="h-3.5 w-3.5 text-ink" strokeWidth={1.75} />
+          <span className="text-[11px] font-semibold text-ink">AI Summary</span>
         </div>
-        <p className="text-xs leading-relaxed" style={{ color: MUTED }}>
+        <p className="text-xs leading-relaxed text-ink-muted">
           Indian Constitution adopted 26 Nov 1949; enforced 26 Jan 1950.
           Dr. B.R. Ambedkar (Drafting Committee Chair) is its chief architect.
           World&apos;s longest written constitution.
         </p>
       </div>
 
-      <div className="flex items-center gap-1.5 text-[11px]" style={{ color: MUTED }}>
-        <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+      <div className="flex items-center gap-1.5 text-[11px] text-ink-muted">
+        <div className="h-1.5 w-1.5 rounded-full bg-ink" />
         2 summaries generated · avg 1.9 s each
       </div>
     </div>
@@ -228,34 +178,13 @@ function NotesMockup() {
   ];
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2 mb-4">
-        <BookOpen className="h-3.5 w-3.5" style={{ color: ACCENT }} />
-        <span className="text-xs font-bold" style={{ color: ACCENT }}>
-          Revision Notes
-        </span>
-        <span
-          className="text-[10px] ml-auto px-2 py-0.5 rounded-full"
-          style={{ background: ACCENT_SOFT, color: ACCENT }}
-        >
-          4 points
-        </span>
-      </div>
+      <PanelHeader icon={BookOpen} title="Revision Notes" tag="4 points" />
       {items.map((note, i) => (
-        <div
-          key={i}
-          className="flex items-start gap-3 rounded-xl px-3.5 py-3"
-          style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
-        >
-          <div
-            className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5"
-            style={{
-              background: ACCENT,
-              color: '#FFFFFF',
-            }}
-          >
+        <div key={i} className={`flex items-start gap-3 ${INSET} px-3.5 py-3`}>
+          <div className="w-5 h-5 rounded-full border border-rule-strong bg-paper-raised flex items-center justify-center font-label text-[10px] text-ink shrink-0 mt-0.5">
             {i + 1}
           </div>
-          <span className="text-xs leading-relaxed" style={{ color: MUTED }}>
+          <span className="text-xs leading-relaxed text-ink-soft">
             {note}
           </span>
         </div>
@@ -273,43 +202,27 @@ function MCQMockup() {
   ];
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2 mb-4">
-        <Target className="h-3.5 w-3.5" style={{ color: ACCENT }} />
-        <span className="text-xs font-bold" style={{ color: ACCENT }}>
-          Practice MCQ
-        </span>
-        <span
-          className="text-[10px] ml-auto px-2 py-0.5 rounded-full"
-          style={{ background: ACCENT_SOFT, color: ACCENT }}
-        >
-          Q 1 of 5
-        </span>
-      </div>
-      <p className="text-xs font-semibold mb-4" style={{ color: INK }}>
+      <PanelHeader icon={Target} title="Practice MCQ" tag="Q 1 of 5" />
+      <p className="text-xs font-semibold mb-4 text-ink">
         India&apos;s G20 Presidency primarily focused on which three pillars?
       </p>
       {options.map((opt, i) => (
         <div
           key={i}
-          className="flex items-center gap-2.5 text-xs px-3 py-2.5 rounded-xl"
-          style={{
-            background: opt.correct ? 'rgba(5,150,105,0.08)' : SURFACE,
-            border: `1px solid ${opt.correct ? 'rgba(5,150,105,0.25)' : BORDER}`,
-            color: opt.correct ? '#059669' : MUTED,
-          }}
+          className={`flex items-center gap-2.5 text-xs px-3 py-2.5 rounded-md border ${
+            opt.correct ? 'border-ink bg-paper-raised text-ink font-medium' : 'border-rule bg-paper text-ink-muted'
+          }`}
         >
           <span
-            className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
-            style={{
-              background: opt.correct ? '#059669' : ACCENT_SOFT,
-              color: opt.correct ? '#FFFFFF' : ACCENT,
-            }}
+            className={`w-5 h-5 rounded-full flex items-center justify-center font-label text-[10px] shrink-0 ${
+              opt.correct ? 'bg-ink text-paper' : 'border border-rule bg-paper-gray text-ink-muted'
+            }`}
           >
             {String.fromCharCode(65 + i)}
           </span>
           <span className="flex-1">{opt.text}</span>
           {opt.correct && (
-            <span className="text-[10px] font-bold" style={{ color: '#059669' }}>✓</span>
+            <span className="text-[10px] font-semibold text-ink">✓</span>
           )}
         </div>
       ))}
@@ -319,61 +232,44 @@ function MCQMockup() {
 
 function TopicsMockup() {
   const topics = [
-    { t: 'G20 Presidency', cat: 'Main Topic',  c: ACCENT, bg: ACCENT_SOFT },
-    { t: 'Digital Public Infrastructure', cat: 'Key Concept', c: TAXONOMY_TEAL, bg: TAXONOMY_TEAL_BG },
-    { t: 'Climate Finance', cat: 'Key Concept', c: TAXONOMY_TEAL, bg: TAXONOMY_TEAL_BG },
-    { t: 'Global South',   cat: 'Term',         c: TAXONOMY_BROWN, bg: TAXONOMY_BROWN_BG },
-    { t: 'Inclusive Growth', cat: 'Term',        c: TAXONOMY_BROWN, bg: TAXONOMY_BROWN_BG },
-    { t: 'One Earth Philosophy', cat: 'Theme',   c: TAXONOMY_AMBER, bg: TAXONOMY_AMBER_BG },
+    { t: 'G20 Presidency', cat: 'Main Topic' },
+    { t: 'Digital Public Infrastructure', cat: 'Key Concept' },
+    { t: 'Climate Finance', cat: 'Key Concept' },
+    { t: 'Global South',   cat: 'Term' },
+    { t: 'Inclusive Growth', cat: 'Term' },
+    { t: 'One Earth Philosophy', cat: 'Theme' },
   ];
+  // Categories are distinguished by weight/border instead of hue.
+  const catClass: Record<string, string> = {
+    'Main Topic':  'border-ink text-ink font-semibold bg-paper-raised',
+    'Key Concept': 'border-rule-strong text-ink bg-paper-raised',
+    'Term':        'border-rule text-ink-soft bg-paper-gray',
+    'Theme':       'border-dashed border-rule-strong text-ink-muted bg-paper',
+  };
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-4">
-        <FileText className="h-3.5 w-3.5" style={{ color: ACCENT }} />
-        <span className="text-xs font-bold" style={{ color: ACCENT }}>
-          Key Topics
-        </span>
-        <span
-          className="text-[10px] ml-auto px-2 py-0.5 rounded-full"
-          style={{ background: ACCENT_SOFT, color: ACCENT }}
-        >
-          6 extracted
-        </span>
-      </div>
+      <PanelHeader icon={FileText} title="Key Topics" tag="6 extracted" />
       <div className="flex flex-wrap gap-2">
         {topics.map(tp => (
           <div
             key={tp.t}
-            className="text-xs font-medium px-3 py-1.5 rounded-full"
-            style={{ background: tp.bg, color: tp.c, border: `1px solid ${tp.c}33` }}
+            className={`text-xs font-medium px-3 py-1.5 rounded-full border ${catClass[tp.cat]}`}
           >
             {tp.t}
           </div>
         ))}
       </div>
-      <div
-        className="pt-4"
-        style={{ borderTop: `1px solid ${BORDER}` }}
-      >
-        <p
-          className="text-[10px] font-semibold mb-2"
-          style={{ color: MUTED }}
-        >
+      <div className="pt-4 border-t border-rule">
+        <p className={`${LABEL} mb-2`}>
           Category legend
         </p>
         <div className="flex flex-wrap gap-1.5">
-          {[
-            { l: 'Main Topic', c: ACCENT, bg: ACCENT_SOFT },
-            { l: 'Key Concept', c: TAXONOMY_TEAL, bg: TAXONOMY_TEAL_BG },
-            { l: 'Term', c: TAXONOMY_BROWN, bg: TAXONOMY_BROWN_BG },
-            { l: 'Theme', c: TAXONOMY_AMBER, bg: TAXONOMY_AMBER_BG },
-          ].map(item => (
+          {['Main Topic', 'Key Concept', 'Term', 'Theme'].map(l => (
             <span
-              key={item.l}
-              className="text-[10px] px-2 py-1 rounded-full"
-              style={{ background: item.bg, color: item.c }}
+              key={l}
+              className={`text-[10px] px-2 py-1 rounded-full border ${catClass[l]}`}
             >
-              {item.l}
+              {l}
             </span>
           ))}
         </div>
@@ -384,9 +280,9 @@ function TopicsMockup() {
 
 function ProgressMockup() {
   const stats = [
-    { label: 'Total Uploads', value: '24', color: ACCENT, bg: ACCENT_SOFT },
-    { label: 'AI Completed',  value: '21', color: '#059669', bg: 'rgba(5,150,105,0.1)' },
-    { label: 'Processing',    value: '3',  color: '#D97706', bg: 'rgba(217,119,6,0.1)' },
+    { label: 'Total Uploads', value: '24' },
+    { label: 'AI Completed',  value: '21' },
+    { label: 'Processing',    value: '3' },
   ];
   const items = [
     { title: "India's G20 Presidency",    status: 'COMPLETED', date: 'Jun 24' },
@@ -395,29 +291,17 @@ function ProgressMockup() {
   ];
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-4">
-        <BarChart3 className="h-3.5 w-3.5" style={{ color: ACCENT }} />
-        <span className="text-xs font-bold" style={{ color: ACCENT }}>
-          Progress Library
-        </span>
-      </div>
+      <PanelHeader icon={BarChart3} title="Progress Library" />
       <div className="grid grid-cols-3 gap-2">
         {stats.map(s => (
           <div
             key={s.label}
-            className="rounded-xl p-2.5 text-center min-w-0 overflow-hidden"
-            style={{ background: s.bg, border: `1px solid ${s.color}22` }}
+            className={`${INSET} p-2.5 text-center min-w-0 overflow-hidden`}
           >
-            <div
-              className="text-xl font-extrabold"
-              style={{ color: s.color }}
-            >
+            <div className="font-display font-light text-3xl leading-none text-ink">
               {s.value}
             </div>
-            <div
-              className="text-[9px] font-medium mt-0.5 leading-tight wrap-break-word"
-              style={{ color: `${s.color}99` }}
-            >
+            <div className="font-label text-[9px] uppercase tracking-[0.08em] mt-1 leading-tight wrap-break-word text-ink-muted">
               {s.label}
             </div>
           </div>
@@ -427,38 +311,27 @@ function ProgressMockup() {
         {items.map(item => (
           <div
             key={item.title}
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5"
-            style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+            className={`flex items-center gap-3 ${INSET} px-3 py-2.5`}
           >
-            <div
-              className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-              style={{ background: ACCENT_SOFT }}
-            >
-              <FileText className="h-3.5 w-3.5" style={{ color: ACCENT }} />
+            <div className="w-7 h-7 rounded-md border border-rule bg-paper-deep flex items-center justify-center shrink-0">
+              <FileText className="h-3.5 w-3.5 text-ink" strokeWidth={1.75} />
             </div>
             <div className="flex-1 min-w-0">
-              <p
-                className="text-xs font-semibold truncate"
-                style={{ color: INK }}
-              >
+              <p className="text-xs font-semibold truncate text-ink">
                 {item.title}
               </p>
-              <p className="text-[10px]" style={{ color: MUTED }}>
+              <p className="text-[10px] text-ink-muted">
                 {item.date}
               </p>
             </div>
             <span
-              className="text-[9px] font-bold px-2 py-1 rounded-full shrink-0"
-              style={{
-                background:
-                  item.status === 'COMPLETED'
-                    ? 'rgba(5,150,105,0.12)'
-                    : 'rgba(217,119,6,0.12)',
-                color:
-                  item.status === 'COMPLETED' ? '#059669' : '#D97706',
-              }}
+              className={`font-label text-[9px] tracking-[0.06em] px-2 py-1 rounded-full shrink-0 border ${
+                item.status === 'COMPLETED'
+                  ? 'border-rule-strong bg-paper-raised text-ink'
+                  : 'border-rule bg-paper-gray text-ink-muted'
+              }`}
             >
-              {item.status}
+              {item.status === 'COMPLETED' ? '✓ ' : ''}{item.status}
             </span>
           </div>
         ))}
@@ -528,25 +401,14 @@ export function FeatureShowcase() {
   return (
     <>
       {/* ── Mobile — flicker-free manual carousel, no auto-rotate/IntersectionObserver ── */}
-      <div
-        className="md:hidden rounded-3xl p-4 overflow-hidden"
-        style={{
-          border: `1px solid ${BORDER_MED}`,
-          boxShadow: '0 20px 60px rgba(22,35,62,0.06)',
-          background: '#FFFFFF',
-        }}
-      >
+      <div className="md:hidden card-quiet p-4 overflow-hidden">
         <MobileFeatureCarousel items={FEATURES} renderMockup={(id) => <Mockup id={id as FeatureId} />} />
       </div>
 
       {/* ── Desktop — auto-rotating tabs with progress bar ── */}
       <div
         ref={containerRef}
-        className="hidden md:block rounded-3xl overflow-hidden"
-        style={{
-          border: `1px solid ${BORDER_MED}`,
-          boxShadow: '0 20px 60px rgba(22,35,62,0.06)',
-        }}
+        className="hidden md:block card-quiet overflow-hidden"
       >
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes rmProgressSweepFS {
@@ -554,19 +416,10 @@ export function FeatureShowcase() {
           to   { transform: scaleX(1); }
         }
       `}} />
-      <div
-        className="grid md:grid-cols-[220px_1fr] min-h-80 md:min-h-105 min-w-0"
-        style={{ background: '#FFFFFF' }}
-      >
+      <div className="grid md:grid-cols-[220px_1fr] min-h-80 md:min-h-105 min-w-0 bg-paper-raised">
         {/* ── Sidebar nav — icon-only scroll on mobile, vertical list on desktop ── */}
-        <div
-          className="p-3 md:p-4 flex flex-row overflow-x-auto md:flex-col border-b md:border-b-0 md:border-r min-w-0"
-          style={{ background: SURFACE, borderColor: BORDER }}
-        >
-          <p
-            className="hidden md:block text-[10px] font-bold uppercase tracking-widest mb-3 px-2 shrink-0"
-            style={{ color: MUTED }}
-          >
+        <div className="p-3 md:p-4 flex flex-row overflow-x-auto md:flex-col border-b md:border-b-0 md:border-r border-rule bg-paper min-w-0">
+          <p className="hidden md:block eyebrow mb-3 px-3 shrink-0">
             Dashboard Features
           </p>
           {FEATURES.map((f, i) => {
@@ -576,36 +429,25 @@ export function FeatureShowcase() {
               <button
                 key={f.id}
                 onClick={() => handleSelect(i)}
-                className="shrink-0 md:w-full flex items-center gap-0 md:gap-3 p-2 md:px-3 md:py-2.5 rounded-xl mb-0 md:mb-1 mr-1.5 md:mr-0 text-left transition-all duration-150"
-                style={{
-                  background: isActive ? ACCENT_SOFT : 'transparent',
-                  border: `1px solid ${isActive ? ACCENT_BORDER : 'transparent'}`,
-                  cursor: 'pointer',
-                }}
+                aria-current={isActive ? 'true' : undefined}
+                className={`relative shrink-0 md:w-full flex items-center gap-0 md:gap-3 p-2 md:px-3 md:py-2.5 rounded-sm mb-0 md:mb-0.5 mr-1.5 md:mr-0 text-left cursor-pointer transition-colors duration-150 ease-out ${
+                  isActive ? 'text-ink' : 'text-ink-muted hover:text-ink'
+                }`}
               >
-                <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-150"
-                  style={{
-                    background: isActive ? ACCENT : ACCENT_SOFT,
-                  }}
-                >
-                  <Icon
-                    className="h-4 w-4"
-                    style={{ color: isActive ? '#FFFFFF' : ACCENT }}
-                  />
-                </div>
+                {/* Active indicator — 2px ink bar (left on desktop, bottom on narrow) */}
+                <span
+                  aria-hidden
+                  className={`absolute bg-ink transition-opacity duration-150 ease-out left-2 right-2 bottom-0 h-0.5 md:left-0 md:right-auto md:top-2 md:bottom-2 md:h-auto md:w-0.5 ${
+                    isActive ? 'opacity-100' : 'opacity-0'
+                  }`}
+                />
+                <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
                 {/* Text label — hidden on mobile to keep sidebar compact */}
-                <div className="hidden md:block min-w-0 ml-3">
-                  <p
-                    className="text-xs font-semibold leading-tight truncate"
-                    style={{ color: isActive ? INK : MUTED }}
-                  >
+                <div className="hidden md:block min-w-0">
+                  <p className={`text-xs leading-tight truncate ${isActive ? 'font-semibold' : 'font-medium'}`}>
                     {f.label}
                   </p>
-                  <p
-                    className="text-[10px] leading-tight mt-0.5 truncate"
-                    style={{ color: MUTED }}
-                  >
+                  <p className="text-[10px] leading-tight mt-0.5 truncate text-ink-muted">
                     {f.tagline}
                   </p>
                 </div>
@@ -617,16 +459,12 @@ export function FeatureShowcase() {
         {/* ── Main panel ──────────────────────── */}
         <div className="p-4 md:p-7 flex flex-col min-w-0 overflow-hidden">
           {/* CSS-animated progress bar — no JS ticking, GPU-composited */}
-          <div
-            className="h-0.5 rounded-full mb-6 overflow-hidden"
-            style={{ background: BORDER_MED }}
-          >
+          <div className="h-0.5 rounded-full mb-6 overflow-hidden bg-paper-gray">
             <div
               key={animKey}
-              className="h-full w-full rounded-full"
+              className="h-full w-full rounded-full bg-gold"
               style={{
                 transformOrigin: 'left center',
-                background: ACCENT,
                 animation: `rmProgressSweepFS ${AUTO_ROTATE_MS}ms linear forwards`,
                 animationPlayState: isVisible ? 'running' : 'paused',
                 willChange: 'transform',
@@ -636,23 +474,20 @@ export function FeatureShowcase() {
           </div>
 
           {/* Feature heading */}
-          <div className="flex items-center gap-2 mb-5">
+          <div className="flex items-center gap-3 mb-5">
             {(() => {
               const Icon = feature.icon;
               return (
-                <div
-                  className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: ACCENT_SOFT }}
-                >
-                  <Icon className="h-4 w-4" style={{ color: ACCENT }} />
+                <div className="h-8 w-8 rounded-md border border-rule bg-paper-deep flex items-center justify-center shrink-0">
+                  <Icon className="h-4 w-4 text-ink" strokeWidth={1.75} />
                 </div>
               );
             })()}
             <div>
-              <p className="text-sm font-bold" style={{ color: INK }}>
+              <p className="card-title">
                 {feature.label}
               </p>
-              <p className="text-[11px]" style={{ color: MUTED }}>
+              <p className="text-[12px] text-ink-muted">
                 {feature.tagline}
               </p>
             </div>
@@ -663,7 +498,7 @@ export function FeatureShowcase() {
             className="flex-1 min-w-0"
             style={{
               opacity: panelVisible ? 1 : 0,
-              transition: 'opacity 0.18s ease',
+              transition: 'opacity 0.18s ease-out',
               minHeight: 260,
               willChange: 'opacity',
             }}

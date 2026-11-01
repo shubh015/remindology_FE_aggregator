@@ -29,11 +29,8 @@ function ToastList({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: num
       {toasts.map((t) => (
         <div
           key={t.id}
-          className="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-lg pointer-events-auto animate-in slide-in-from-bottom-4 duration-200"
-          style={{
-            background: t.type === 'success' ? 'rgba(5,150,105,0.95)' : 'rgba(220,38,38,0.95)',
-            color: '#FFFFFF', backdropFilter: 'blur(8px)', minWidth: 280,
-          }}
+          className={`flex items-center gap-3 px-4 py-3 rounded-[3px] shadow-lift-2 pointer-events-auto animate-in slide-in-from-bottom-4 duration-200 text-paper ${t.type === 'success' ? 'bg-ink' : 'bg-[oklch(52%_.16_35)]'}`}
+          style={{ minWidth: 280 }}
         >
           {t.type === 'success' ? <CheckCircle2 className="h-4 w-4 shrink-0" /> : <AlertCircle className="h-4 w-4 shrink-0" />}
           <span className="text-sm font-semibold flex-1">{t.message}</span>
@@ -68,24 +65,24 @@ function ConfirmDialog({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} />
-      <div className="relative bg-card border border-border rounded-2xl p-6 shadow-xl max-w-sm w-full space-y-4">
+      <div className="absolute inset-0 bg-ink/40" onClick={onCancel} />
+      <div className="relative bg-paper-raised border border-rule rounded-[3px] p-6 shadow-lift-2 max-w-sm w-full space-y-4">
         <div>
-          <p className="font-semibold text-foreground">{heading}</p>
-          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{body}</p>
+          <p className="font-semibold text-ink">{heading}</p>
+          <p className="text-xs text-ink-muted mt-1 leading-relaxed">{body}</p>
         </div>
         <div className="flex gap-2 justify-end">
           <button
             onClick={onCancel}
             disabled={loading}
-            className="px-4 py-2 text-sm font-semibold rounded-xl border border-border hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50"
+            className="px-4 py-2 text-sm font-semibold rounded-md border border-rule hover:bg-paper-deep transition-colors cursor-pointer disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="px-4 py-2 text-sm font-semibold rounded-xl text-white hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 text-sm font-semibold rounded-md text-paper hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 flex items-center gap-2"
             style={{ background: confirmBg }}
           >
             {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
@@ -98,10 +95,10 @@ function ConfirmDialog({
 }
 
 const selectCls =
-  'flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
+  'flex h-9 w-full rounded-md border border-rule-strong bg-paper-raised px-3 py-1 text-sm text-ink transition-colors focus-visible:outline-none focus-visible:border-ink disabled:cursor-not-allowed disabled:opacity-50';
 
 const numInputCls =
-  'flex h-8 w-24 rounded-md border border-input bg-background px-2 text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
+  'flex h-8 w-24 rounded-md border border-rule-strong bg-paper-raised px-2 font-label text-xs text-ink transition-colors focus-visible:outline-none focus-visible:border-ink';
 
 const EMPTY_FORM = { name: '', context: '', category: 'other' as PlaceCategory, newsDate: toISO(new Date()) };
 
@@ -181,15 +178,14 @@ function PlaceRow({
 
   if (editing) {
     return (
-      <div className="rounded-xl border border-primary/30 bg-card p-4 space-y-3">
+      <div className="rounded-[2px] border border-ink bg-paper-raised p-4 space-y-3">
         <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-bold text-foreground">{place.name}</p>
+          <p className="text-sm font-semibold text-ink">{place.name}</p>
           <div className="flex items-center gap-1.5">
             <button
               onClick={save}
               disabled={updateMutation.isPending}
-              className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold text-white cursor-pointer disabled:opacity-50"
-              style={{ background: '#059669' }}
+              className="flex items-center gap-1.5 h-8 px-3 rounded-[3px] text-xs font-semibold bg-ink text-paper cursor-pointer disabled:opacity-50"
             >
               {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
               Save
@@ -197,7 +193,7 @@ function PlaceRow({
             <button
               onClick={() => setEditing(false)}
               disabled={updateMutation.isPending}
-              className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-secondary cursor-pointer"
+              className="h-8 w-8 rounded-[3px] flex items-center justify-center text-ink-muted hover:bg-paper-deep cursor-pointer"
             >
               <X className="h-4 w-4" />
             </button>
@@ -212,15 +208,15 @@ function PlaceRow({
           </select>
 
           <div className="flex items-center gap-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Lat</label>
+            <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">Lat</label>
             <input type="number" step="any" value={lat} onChange={(e) => setLat(e.target.value)} className={numInputCls} placeholder="—" />
           </div>
           <div className="flex items-center gap-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Lng</label>
+            <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">Lng</label>
             <input type="number" step="any" value={lng} onChange={(e) => setLng(e.target.value)} className={numInputCls} placeholder="—" />
           </div>
           {!resolved && (
-            <span className="text-[11px] text-amber-600 font-semibold">Type in coordinates to resolve this pin.</span>
+            <span className="text-[11px] text-ink font-semibold">Type in coordinates to resolve this pin.</span>
           )}
         </div>
       </div>
@@ -228,41 +224,38 @@ function PlaceRow({
   }
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4 flex items-start justify-between gap-3">
+    <div className="rounded-[2px] border border-rule bg-paper-raised p-4 flex items-start justify-between gap-3 hover:border-rule-strong transition-colors duration-150 ease-ks">
       <div className="flex-1 min-w-0 space-y-1.5">
         <div className="flex items-center gap-2 flex-wrap">
-          <p className="text-sm font-bold text-foreground">{place.name}</p>
-          <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-            style={{ background: `${cfg.color}14`, color: cfg.color, border: `1px solid ${cfg.color}33` }}
-          >
+          <p className="text-sm font-semibold text-ink">{place.name}</p>
+          <span className="ks-tag">
             {cfg.label}
           </span>
           {resolved ? (
-            <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
+            <span className="flex items-center gap-1 font-label text-[11px] text-ink">
               <MapPin className="h-3 w-3" />
               {place.lat!.toFixed(4)}, {place.lng!.toFixed(4)}
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-[11px] font-semibold text-amber-600">
+            <span className="ks-tag ks-tag-gold gap-1">
               <MapPinOff className="h-3 w-3" />
               Unresolved
             </span>
           )}
         </div>
-        <p className="text-xs text-muted-foreground leading-relaxed">{place.context}</p>
+        <p className="text-xs text-ink-muted leading-relaxed">{place.context}</p>
       </div>
       <div className="flex items-center gap-1.5 shrink-0">
         <button
           onClick={startEdit}
-          className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-secondary transition-colors cursor-pointer"
+          className="h-8 w-8 rounded-[3px] flex items-center justify-center text-ink-muted hover:bg-paper-deep transition-colors cursor-pointer"
           title="Edit"
         >
           <Pencil className="h-3.5 w-3.5" />
         </button>
         <button
           onClick={onDeleteRequest}
-          className="h-8 w-8 rounded-lg flex items-center justify-center text-destructive hover:bg-destructive/8 transition-colors cursor-pointer"
+          className="h-8 w-8 rounded-[3px] flex items-center justify-center text-[oklch(52%_.16_35)] hover:bg-[oklch(52%_.16_35)]/10 transition-colors cursor-pointer"
           title="Delete"
         >
           <Trash2 className="h-3.5 w-3.5" />
@@ -369,23 +362,23 @@ export default function AdminPlacesInNewsPage() {
 
         {/* Admin badge */}
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20">
+          <div className="flex items-center gap-2 font-label text-[11px] uppercase tracking-[0.14em] px-2.5 py-1 rounded-[2px] bg-paper-deep text-ink border border-rule">
             <ShieldCheck className="h-3.5 w-3.5" />
             Admin · Places in News
           </div>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-ink-muted">
             Coordinates are geocoded automatically from the place name — check the result below each entry.
           </span>
         </div>
 
         {/* ── Create form ── */}
         <form onSubmit={handleSubmit}>
-          <div className="rounded-2xl border border-border bg-card p-6 space-y-5" style={{ boxShadow: '0 2px 12px rgba(124,58,237,0.06)' }}>
+          <div className="rounded-[2px] border border-rule bg-paper-raised p-6 space-y-5">
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Name <span className="text-destructive">*</span>
+                <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+                  Name <span className="text-[oklch(52%_.16_35)]">*</span>
                 </label>
                 <Input
                   value={form.name}
@@ -396,8 +389,8 @@ export default function AdminPlacesInNewsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Category <span className="text-destructive">*</span>
+                <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+                  Category <span className="text-[oklch(52%_.16_35)]">*</span>
                 </label>
                 <select
                   value={form.category}
@@ -411,8 +404,8 @@ export default function AdminPlacesInNewsPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                Context <span className="text-destructive">*</span>
+              <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+                Context <span className="text-[oklch(52%_.16_35)]">*</span>
               </label>
               <Textarea
                 value={form.context}
@@ -425,8 +418,8 @@ export default function AdminPlacesInNewsPage() {
             </div>
 
             <div className="space-y-1.5 max-w-[240px]">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                Date <span className="text-destructive">*</span>
+              <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+                Date <span className="text-[oklch(52%_.16_35)]">*</span>
               </label>
               <DatePicker
                 value={form.newsDate}
@@ -437,16 +430,15 @@ export default function AdminPlacesInNewsPage() {
 
             <div className="pt-1 flex items-center justify-between gap-4">
               {createMutation.isPending && (
-                <p className="text-xs text-muted-foreground flex items-center gap-2">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+                <p className="text-xs text-ink-muted flex items-center gap-2">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-ink" />
                   Resolving coordinates…
                 </p>
               )}
               <button
                 type="submit"
                 disabled={!canSubmit || createMutation.isPending}
-                className="ml-auto flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)', boxShadow: '0 4px 16px rgba(124,58,237,0.3)' }}
+                className="ml-auto flex items-center gap-2 px-6 py-2.5 rounded-md text-sm font-semibold bg-ink text-paper transition-colors hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {createMutation.isPending
                   ? <><Loader2 className="h-4 w-4 animate-spin" />Adding…</>
@@ -459,23 +451,19 @@ export default function AdminPlacesInNewsPage() {
         {/* ── Last-result banner — persists until dismissed since the admin may need to act on it ── */}
         {lastResult && (
           <div
-            className="flex items-center justify-between gap-3 rounded-2xl p-4"
-            style={{
-              background: lastResult.lat != null ? 'rgba(5,150,105,0.06)' : 'rgba(217,119,6,0.06)',
-              border: `1px solid ${lastResult.lat != null ? 'rgba(5,150,105,0.25)' : 'rgba(217,119,6,0.25)'}`,
-            }}
+            className={`flex items-center justify-between gap-3 rounded-[2px] p-4 border ${lastResult.lat != null ? 'bg-paper-raised border-rule-strong' : 'bg-paper-deep border-gold/55 border-l-2 border-l-gold'}`}
           >
             <div className="flex items-center gap-2.5">
               {lastResult.lat != null
-                ? <MapPin className="h-4 w-4 shrink-0" style={{ color: '#059669' }} />
-                : <MapPinOff className="h-4 w-4 shrink-0" style={{ color: '#D97706' }} />}
-              <p className="text-sm font-semibold" style={{ color: lastResult.lat != null ? '#059669' : '#D97706' }}>
+                ? <MapPin className="h-4 w-4 shrink-0 text-ink" />
+                : <MapPinOff className="h-4 w-4 shrink-0 text-ink" />}
+              <p className="text-sm font-semibold text-ink">
                 {lastResult.name}: {lastResult.lat != null && lastResult.lng != null
                   ? `Resolved to ${lastResult.lat.toFixed(4)}, ${lastResult.lng.toFixed(4)}`
                   : 'Could not resolve coordinates — it will show in the list only, not on the map, until you add coordinates by hand below.'}
               </p>
             </div>
-            <button onClick={() => setLastResult(null)} className="shrink-0 text-muted-foreground hover:text-foreground cursor-pointer">
+            <button onClick={() => setLastResult(null)} className="shrink-0 text-ink-muted hover:text-ink cursor-pointer">
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -484,12 +472,11 @@ export default function AdminPlacesInNewsPage() {
         {/* ── List, grouped by date ── */}
         <section className="space-y-4">
           <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-            <h2 className="text-sm font-bold text-foreground">Places (last 90 days)</h2>
+            <MapPin className="h-4 w-4 text-ink-muted" />
+            <h2 className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">Places (last 90 days)</h2>
             {totalCount > 0 && (
               <span
-                className="h-4.5 min-w-4.5 px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center"
-                style={{ background: '#7C3AED' }}
+                className="h-4.5 min-w-4.5 px-1 rounded-[2px] font-label text-[10px] tabular-nums bg-ink text-paper flex items-center justify-center"
               >
                 {totalCount}
               </span>
@@ -498,19 +485,19 @@ export default function AdminPlacesInNewsPage() {
 
           {listLoading ? (
             <div className="space-y-3">
-              {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 rounded-xl" />)}
+              {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 rounded-[2px]" />)}
             </div>
           ) : groups.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card p-10 text-center gap-2">
-              <MapPin className="h-8 w-8 text-muted-foreground/25" />
-              <p className="text-sm font-semibold text-foreground">No places yet</p>
-              <p className="text-xs text-muted-foreground">Add one above to get started.</p>
+            <div className="flex flex-col items-center justify-center rounded-[2px] border border-dashed border-rule bg-paper-raised p-10 text-center gap-2">
+              <MapPin className="h-8 w-8 text-ink-faint" />
+              <p className="text-sm font-semibold text-ink">No places yet</p>
+              <p className="text-xs text-ink-muted">Add one above to get started.</p>
             </div>
           ) : (
             <div className="space-y-6">
               {groups.map((group) => (
                 <div key={group.dateKey} className="space-y-2.5">
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  <p className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
                     {group.displayDate}
                   </p>
                   <div className="space-y-2.5">
@@ -536,7 +523,7 @@ export default function AdminPlacesInNewsPage() {
           heading="Delete place?"
           body={`"${deleteTarget.name}" will be permanently deleted.`}
           confirmLabel="Delete"
-          confirmBg="#DC2626"
+          confirmBg="oklch(52% .16 35)"
           onConfirm={() => deleteMutation.mutate(deleteTarget.id)}
           onCancel={() => setDeleteTarget(null)}
           loading={deleteMutation.isPending}

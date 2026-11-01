@@ -8,6 +8,7 @@ export interface MobileCarouselItem {
   icon: LucideIcon;
   label: string;
   tagline: string;
+  /** Ignored by the mono theme — kept for API compatibility. */
   color?: string;
 }
 
@@ -17,10 +18,11 @@ export interface MobileCarouselItem {
 // bar can on mobile viewports (address-bar resize / touch-scroll causing the
 // observer to cross its threshold repeatedly).
 export function MobileFeatureCarousel({
-  items, renderMockup, accent = '#8A6A12',
+  items, renderMockup,
 }: {
   items: readonly MobileCarouselItem[];
   renderMockup: (id: string) => React.ReactNode;
+  /** Ignored by the mono theme — kept for API compatibility. */
   accent?: string;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -50,7 +52,6 @@ export function MobileFeatureCarousel({
   };
 
   const active = items[activeIndex];
-  const activeAccent = active.color ?? accent;
 
   return (
     <div>
@@ -58,38 +59,36 @@ export function MobileFeatureCarousel({
       <div
         ref={scrollerRef}
         onScroll={handleScroll}
-        className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4"
+        className="flex gap-1 overflow-x-auto -mx-4 px-4 border-b border-rule"
         style={{ scrollSnapType: 'x mandatory' }}
       >
         {items.map((item, i) => {
           const Icon = item.icon;
           const isActive = i === activeIndex;
-          const itemAccent = item.color ?? accent;
           return (
             <button
               key={item.id}
               ref={(el) => { cardRefs.current[i] = el; }}
               onClick={() => scrollToIndex(i)}
-              className="shrink-0 flex flex-col items-center gap-1.5 px-3 py-2.5 rounded-2xl transition-colors cursor-pointer"
-              style={{
-                scrollSnapAlign: 'center',
-                background: isActive ? `${itemAccent}14` : 'transparent',
-                border: `1.5px solid ${isActive ? `${itemAccent}40` : 'rgba(22,35,62,0.08)'}`,
-                minWidth: 78,
-              }}
+              aria-current={isActive ? 'true' : undefined}
+              className={`relative shrink-0 flex flex-col items-center gap-1.5 px-3 pt-2 pb-3 cursor-pointer transition-colors duration-150 ease-out ${
+                isActive ? 'text-ink' : 'text-ink-muted'
+              }`}
+              style={{ scrollSnapAlign: 'center', minWidth: 78 }}
             >
-              <div
-                className="h-9 w-9 rounded-xl flex items-center justify-center transition-colors"
-                style={{ background: isActive ? itemAccent : `${itemAccent}18` }}
-              >
-                <Icon className="h-4 w-4" style={{ color: isActive ? '#FFFFFF' : itemAccent }} />
-              </div>
+              <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
               <span
-                className="text-[10px] font-semibold text-center leading-tight max-w-16"
-                style={{ color: isActive ? '#16233E' : '#5B6478' }}
+                className={`text-[11px] text-center leading-tight max-w-16 ${isActive ? 'font-semibold' : 'font-medium'}`}
               >
                 {item.label}
               </span>
+              {/* 2px ink indicator */}
+              <span
+                aria-hidden
+                className={`absolute left-2 right-2 -bottom-px h-0.5 bg-ink transition-opacity duration-150 ease-out ${
+                  isActive ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
             </button>
           );
         })}
@@ -102,30 +101,28 @@ export function MobileFeatureCarousel({
             key={item.id}
             aria-label={`Go to ${item.label}`}
             onClick={() => scrollToIndex(i)}
-            className="rounded-full transition-all cursor-pointer"
+            className={`rounded-full cursor-pointer transition-all duration-150 ease-out ${
+              i === activeIndex ? 'bg-gold' : 'bg-rule-strong'
+            }`}
             style={{
               width: i === activeIndex ? 16 : 6,
               height: 6,
-              background: i === activeIndex ? activeAccent : 'rgba(22,35,62,0.15)',
             }}
           />
         ))}
       </div>
 
       {/* Active feature heading */}
-      <div className="flex items-center gap-2 mb-3">
-        <div
-          className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: `${activeAccent}18` }}
-        >
+      <div className="flex items-center gap-3 mb-3">
+        <div className="h-8 w-8 rounded-md border border-rule bg-paper-deep flex items-center justify-center shrink-0">
           {(() => {
             const Icon = active.icon;
-            return <Icon className="h-4 w-4" style={{ color: activeAccent }} />;
+            return <Icon className="h-4 w-4 text-ink" strokeWidth={1.75} />;
           })()}
         </div>
         <div>
-          <p className="text-sm font-bold" style={{ color: '#16233E' }}>{active.label}</p>
-          <p className="text-[11px]" style={{ color: '#5B6478' }}>{active.tagline}</p>
+          <p className="card-title">{active.label}</p>
+          <p className="text-[12px] text-ink-muted">{active.tagline}</p>
         </div>
       </div>
 

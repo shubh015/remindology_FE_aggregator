@@ -22,59 +22,52 @@ export function GSCategoryClient() {
     <div>
 
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden bg-background">
-        <div
-          className="absolute pointer-events-none"
-          style={{ top: 0, right: '-8%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(138,106,18,0.06) 0%, transparent 68%)' }}
-        />
-        <div className="relative max-w-4xl mx-auto px-6 pt-10 pb-14">
+      <section className="bg-paper border-b border-rule">
+        <div className="ks-container pt-10 pb-12">
 
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-xs mb-6 flex-wrap text-muted-foreground">
-            <Link href="/general-studies" className="hover:text-foreground transition-colors flex items-center gap-1">
+          <div className="flex items-center gap-2 text-sm mb-6 flex-wrap text-ink-muted">
+            <Link href="/general-studies" className="nav-link text-sm! flex items-center gap-1">
               <ArrowLeft className="h-3.5 w-3.5" />
               General Studies
             </Link>
             <span>/</span>
-            <Link href={`/general-studies/${subjectSlug}`} className="hover:text-foreground transition-colors">
+            <Link href={`/general-studies/${subjectSlug}`} className="nav-link text-sm!">
               {subject?.name ?? subjectSlug}
             </Link>
           </div>
 
-          <h1
-            className="font-black tracking-tight mb-3 text-foreground"
-            style={{ fontSize: 'var(--text-display-sm)', lineHeight: 1.05, letterSpacing: '-0.01em' }}
-          >
+          <h1 className="doc-title mb-3">
             {category?.name ?? categorySlug}
           </h1>
-          <p className="text-sm max-w-xl text-muted-foreground">
+          <p className="doc-lede max-w-xl text-ink-muted">
             Major topics, events &amp; developments in {category?.name ?? categorySlug} for UPSC preparation.
           </p>
         </div>
       </section>
 
       {/* ── Articles ── */}
-      <section className="bg-white">
-        <div className="max-w-5xl mx-auto px-6 py-14">
+      <section className="bg-paper">
+        <div className="ks-container py-14">
           {isLoading ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {[1, 2, 3].map((i) => <Skeleton key={i} className="rounded-2xl" style={{ height: 300 }} />)}
+            <div className="grid gap-3">
+              {[1, 2, 3].map((i) => <Skeleton key={i} className="h-24 rounded-[3px]" />)}
             </div>
           ) : isError ? (
-            <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-600">
+            <div className="flex items-center gap-2 rounded-[3px] bg-paper-raised border border-rule p-4 text-sm text-[oklch(52%_.16_35)]">
               <AlertCircle className="h-4 w-4 shrink-0" />
               Could not load articles. Please try again later.
             </div>
           ) : articles && articles.length > 0 ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="border-b border-rule">
               {articles.map((article) => (
                 <ArticleListItem key={article.id} article={article} />
               ))}
             </div>
           ) : (
             <div className="flex flex-col items-center gap-3 py-16 text-center">
-              <FileText className="h-8 w-8 text-muted-foreground/40" />
-              <p className="text-sm text-muted-foreground">
+              <FileText className="h-8 w-8 text-ink-muted" />
+              <p className="text-sm text-ink-muted">
                 No articles published yet in this category.
               </p>
             </div>

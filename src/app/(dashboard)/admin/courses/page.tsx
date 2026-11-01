@@ -24,11 +24,8 @@ function ToastList({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: num
       {toasts.map((t) => (
         <div
           key={t.id}
-          className="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-lg pointer-events-auto animate-in slide-in-from-bottom-4 duration-200"
-          style={{
-            background: t.type === 'success' ? 'rgba(5,150,105,0.95)' : 'rgba(220,38,38,0.95)',
-            color: '#FFFFFF', backdropFilter: 'blur(8px)', minWidth: 280,
-          }}
+          className={`flex items-center gap-3 px-4 py-3 rounded-[3px] shadow-lift-2 pointer-events-auto animate-in slide-in-from-bottom-4 duration-200 text-paper ${t.type === 'success' ? 'bg-ink' : 'bg-[oklch(52%_.16_35)]'}`}
+          style={{ minWidth: 280 }}
         >
           {t.type === 'success' ? <CheckCircle2 className="h-4 w-4 shrink-0" /> : <AlertCircle className="h-4 w-4 shrink-0" />}
           <span className="text-sm font-semibold flex-1">{t.message}</span>
@@ -63,24 +60,24 @@ function ConfirmDialog({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} />
-      <div className="relative bg-card border border-border rounded-2xl p-6 shadow-xl max-w-sm w-full space-y-4">
+      <div className="absolute inset-0 bg-ink/40" onClick={onCancel} />
+      <div className="relative bg-paper-raised border border-rule rounded-[3px] p-6 shadow-lift-2 max-w-sm w-full space-y-4">
         <div>
-          <p className="font-semibold text-foreground">{heading}</p>
-          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{body}</p>
+          <p className="font-semibold text-ink">{heading}</p>
+          <p className="text-xs text-ink-muted mt-1 leading-relaxed">{body}</p>
         </div>
         <div className="flex gap-2 justify-end">
           <button
             onClick={onCancel}
             disabled={loading}
-            className="px-4 py-2 text-sm font-semibold rounded-xl border border-border hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50"
+            className="px-4 py-2 text-sm font-semibold rounded-md border border-rule hover:bg-paper-deep transition-colors cursor-pointer disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="px-4 py-2 text-sm font-semibold rounded-xl text-white hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 text-sm font-semibold rounded-md text-paper hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 flex items-center gap-2"
             style={{ background: confirmBg }}
           >
             {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
@@ -185,23 +182,23 @@ export default function AdminCoursesPage() {
       <div className="flex-1 p-5 lg:p-6 max-w-4xl w-full mx-auto space-y-6">
 
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20">
+          <div className="flex items-center gap-2 font-label text-[11px] uppercase tracking-[0.14em] px-2.5 py-1 rounded-[2px] bg-paper-deep text-ink border border-rule">
             <ShieldCheck className="h-3.5 w-3.5" />
             Admin · Courses Publisher
           </div>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-ink-muted">
             Content here is written by you, not AI — accuracy matters for exam facts.
           </span>
         </div>
 
         {/* ── Create form ── */}
         <form onSubmit={handleSubmit}>
-          <div className="rounded-2xl border border-border bg-card p-6 space-y-5" style={{ boxShadow: '0 2px 12px rgba(124,58,237,0.06)' }}>
-            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">New Course</p>
+          <div className="rounded-[2px] border border-rule bg-paper-raised p-6 space-y-5">
+            <p className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">New Course</p>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                Name <span className="text-destructive">*</span>
+              <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+                Name <span className="text-[oklch(52%_.16_35)]">*</span>
               </label>
               <Input
                 value={form.name}
@@ -212,8 +209,8 @@ export default function AdminCoursesPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                Short Description <span className="text-muted-foreground/60">(one sentence — shown on the course card only)</span>
+              <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+                Short Description <span className="text-ink-muted">(one sentence — shown on the course card only)</span>
               </label>
               <Input
                 value={form.shortDescription}
@@ -222,15 +219,15 @@ export default function AdminCoursesPage() {
                 maxLength={140}
                 disabled={createMutation.isPending}
               />
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-[10px] text-ink-muted">
                 {form.shortDescription.length}/140 — the full syllabus, pattern & booklist go on the next screen, not here.
               </p>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Icon <span className="text-muted-foreground/60">(lucide-react name, optional)</span>
+                <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+                  Icon <span className="text-ink-muted">(lucide-react name, optional)</span>
                 </label>
                 <Input
                   value={form.icon}
@@ -240,7 +237,7 @@ export default function AdminCoursesPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
                   Accent Color
                 </label>
                 <div className="flex items-center gap-2">
@@ -249,7 +246,7 @@ export default function AdminCoursesPage() {
                     value={form.color}
                     onChange={(e) => set('color', e.target.value)}
                     disabled={createMutation.isPending}
-                    className="h-9 w-11 rounded-md border border-input cursor-pointer disabled:cursor-not-allowed"
+                    className="h-9 w-11 rounded-[3px] border border-rule-strong cursor-pointer disabled:cursor-not-allowed"
                   />
                   <Input
                     value={form.color}
@@ -264,8 +261,7 @@ export default function AdminCoursesPage() {
               <button
                 type="submit"
                 disabled={!form.name.trim() || createMutation.isPending}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)', boxShadow: '0 4px 16px rgba(124,58,237,0.3)' }}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-md text-sm font-semibold bg-ink text-paper transition-colors hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {createMutation.isPending
                   ? <><Loader2 className="h-4 w-4 animate-spin" />Creating…</>
@@ -278,24 +274,24 @@ export default function AdminCoursesPage() {
         {/* ── Courses list ── */}
         <section className="space-y-3">
           <div className="flex items-center gap-2">
-            <GraduationCap className="h-4 w-4 text-muted-foreground" />
-            <h2 className="text-sm font-bold text-foreground">All Courses</h2>
+            <GraduationCap className="h-4 w-4 text-ink-muted" />
+            <h2 className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">All Courses</h2>
           </div>
 
           {isLoading ? (
             <div className="space-y-3">
-              {[1, 2].map((i) => <Skeleton key={i} className="h-24 rounded-2xl" />)}
+              {[1, 2].map((i) => <Skeleton key={i} className="h-24 rounded-[2px]" />)}
             </div>
           ) : isError ? (
-            <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-600">
+            <div className="flex items-center gap-2 rounded-md bg-paper-raised border border-[oklch(52%_.16_35)]/30 p-4 text-sm text-[oklch(52%_.16_35)]">
               <AlertCircle className="h-4 w-4 shrink-0" />
               Could not load courses.
             </div>
           ) : !courses || courses.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card p-10 text-center gap-2">
-              <GraduationCap className="h-8 w-8 text-muted-foreground/25" />
-              <p className="text-sm font-semibold text-foreground">No courses yet</p>
-              <p className="text-xs text-muted-foreground">Create one above to get started.</p>
+            <div className="flex flex-col items-center justify-center rounded-[2px] border border-dashed border-rule bg-paper-raised p-10 text-center gap-2">
+              <GraduationCap className="h-8 w-8 text-ink-faint" />
+              <p className="text-sm font-semibold text-ink">No courses yet</p>
+              <p className="text-xs text-ink-muted">Create one above to get started.</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -304,21 +300,18 @@ export default function AdminCoursesPage() {
                 return (
                   <div
                     key={course.id}
-                    className="rounded-2xl border border-border bg-card p-5 space-y-3 transition-opacity"
-                    style={{ opacity: busy ? 0.6 : 1, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
+                    className="ks-card p-5 space-y-3 transition-opacity"
+                    style={{ opacity: busy ? 0.6 : 1 }}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0 space-y-1">
-                        <p className="text-sm font-bold text-foreground leading-snug">{course.name}</p>
+                        <p className="text-sm font-semibold text-ink leading-snug">{course.name}</p>
                         {course.shortDescription && (
-                          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{course.shortDescription}</p>
+                          <p className="text-xs text-ink-muted leading-relaxed line-clamp-2">{course.shortDescription}</p>
                         )}
                       </div>
                       <div
-                        className="h-7 px-2.5 rounded-lg flex items-center text-[10px] font-bold shrink-0"
-                        style={course.status === 'published'
-                          ? { background: 'rgba(5,150,105,0.1)', color: '#059669', border: '1px solid rgba(5,150,105,0.25)' }
-                          : { background: 'rgba(217,119,6,0.1)', color: '#D97706', border: '1px solid rgba(217,119,6,0.25)' }}
+                        className={`ks-tag shrink-0 ${course.status === 'published' ? 'ks-tag-ink' : ''}`}
                       >
                         {course.status === 'published' ? 'Published' : 'Draft'}
                       </div>
@@ -328,7 +321,7 @@ export default function AdminCoursesPage() {
                       <button
                         onClick={() => router.push(`/admin/courses/${course.id}`)}
                         disabled={busy}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border border-border text-foreground hover:bg-secondary transition-colors disabled:cursor-not-allowed cursor-pointer"
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-rule text-ink hover:bg-paper-deep transition-colors disabled:cursor-not-allowed cursor-pointer"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                         Edit
@@ -337,7 +330,7 @@ export default function AdminCoursesPage() {
                         <button
                           onClick={() => unpublishMutation.mutate(course.id)}
                           disabled={busy}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border border-amber-500/30 text-amber-600 hover:bg-amber-500/8 transition-colors disabled:cursor-not-allowed cursor-pointer"
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-rule-strong text-ink hover:bg-paper-deep transition-colors disabled:cursor-not-allowed cursor-pointer"
                         >
                           <Undo2 className="h-3.5 w-3.5" />
                           Unpublish
@@ -346,8 +339,7 @@ export default function AdminCoursesPage() {
                         <button
                           onClick={() => publishMutation.mutate(course.id)}
                           disabled={busy}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:opacity-90 disabled:cursor-not-allowed cursor-pointer"
-                          style={{ background: 'linear-gradient(135deg, #059669, #0891B2)', boxShadow: '0 2px 8px rgba(5,150,105,0.25)' }}
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold bg-ink text-paper transition-colors hover:bg-ink/90 disabled:cursor-not-allowed cursor-pointer"
                         >
                           {publishMutation.isPending && busyId === course.id
                             ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Publishing…</>
@@ -357,7 +349,7 @@ export default function AdminCoursesPage() {
                       <button
                         onClick={() => setDeleteTarget({ id: course.id, name: course.name })}
                         disabled={busy}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border border-destructive/30 text-destructive hover:bg-destructive/8 transition-colors disabled:cursor-not-allowed cursor-pointer"
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-[oklch(52%_.16_35)]/30 text-[oklch(52%_.16_35)] hover:bg-[oklch(52%_.16_35)]/10 transition-colors disabled:cursor-not-allowed cursor-pointer"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                         Delete
@@ -376,7 +368,7 @@ export default function AdminCoursesPage() {
           heading="Delete course?"
           body={`"${deleteTarget.name}" and all its notifications will be permanently deleted.`}
           confirmLabel="Delete"
-          confirmBg="#DC2626"
+          confirmBg="oklch(52% .16 35)"
           onConfirm={() => deleteMutation.mutate(deleteTarget.id)}
           onCancel={() => setDeleteTarget(null)}
           loading={deleteMutation.isPending}
