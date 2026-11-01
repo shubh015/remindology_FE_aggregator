@@ -52,35 +52,35 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <Card className="border-border bg-card shadow-sm">
+    <Card className="rounded-[3px] border-rule bg-paper-raised shadow-none">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-lg font-bold">Forgot Password</CardTitle>
-        <CardDescription className="text-xs">
+        <CardTitle className="doc-h2 mb-0!">Forgot Password</CardTitle>
+        <CardDescription className="text-sm text-ink-muted">
           Enter your email address and we will generate a password reset link
         </CardDescription>
       </CardHeader>
       <CardContent>
         {resetData ? (
           <div className="flex flex-col items-center justify-center py-4 text-center space-y-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
+            <div className="flex h-12 w-12 items-center justify-center rounded-[3px] border border-rule bg-paper-deep text-ink">
               <CheckCircle2 className="h-6 w-6" />
             </div>
-            <h3 className="text-sm font-bold text-foreground">{resetData.message}</h3>
-            <p className="text-xs text-muted-foreground max-w-[280px]">
+            <h3 className="doc-h3 mb-0!">{resetData.message}</h3>
+            <p className="text-xs text-ink-muted max-w-[280px]">
               For testing convenience, you can copy the generated reset link or click below to navigate directly:
             </p>
             
-            <div className="w-full p-3 rounded-lg border border-border/80 bg-secondary/30 text-left space-y-2">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Reset URL</span>
+            <div className="w-full p-3 rounded-[3px] border border-rule bg-paper-deep text-left space-y-2">
+              <span className="font-label text-[11px] text-ink-muted uppercase tracking-[0.14em] block">Reset URL</span>
               <a 
                 href={resetData.resetLink}
-                className="text-xs text-primary font-medium hover:underline break-all block"
+                className="ks-link text-xs font-medium break-all block"
               >
                 {resetData.resetLink}
               </a>
             </div>
 
-            <Button asChild className="w-full font-semibold mt-2">
+            <Button asChild className="w-full font-medium mt-2">
               <a href={resetData.resetLink}>
                 Go to Reset Password
               </a>
@@ -89,14 +89,14 @@ export default function ForgotPasswordPage() {
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {error && (
-              <div className="flex items-start gap-2.5 rounded-xl bg-destructive/10 p-3.5 text-xs text-destructive border border-destructive/20 animate-fade-in">
+              <div className="flex items-start gap-2.5 rounded-[3px] bg-destructive/5 p-3.5 text-xs text-destructive border border-destructive/20">
                 <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                 <span>{error}</span>
               </div>
             )}
 
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider" htmlFor="email">
+              <label className="font-label text-[11px] font-medium text-ink-muted uppercase tracking-[0.14em]" htmlFor="email">
                 Email Address
               </label>
               <div className="relative">
@@ -108,14 +108,14 @@ export default function ForgotPasswordPage() {
                   className={errors.email ? 'border-destructive focus-visible:ring-destructive pl-9' : 'pl-9'}
                   {...register('email')}
                 />
-                <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground/60" />
+                <Mail className="absolute left-3 top-2.5 h-4 w-4 text-ink-muted" />
               </div>
               {errors.email && (
-                <p className="text-[10px] text-destructive font-semibold mt-0.5">{errors.email.message}</p>
+                <p className="text-[11px] text-destructive font-medium mt-0.5">{errors.email.message}</p>
               )}
             </div>
 
-            <Button type="submit" className="w-full font-semibold cursor-pointer mt-2" disabled={isLoading}>
+            <Button type="submit" className="w-full font-medium cursor-pointer mt-2" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -128,8 +128,8 @@ export default function ForgotPasswordPage() {
           </form>
         )}
       </CardContent>
-      <CardFooter className="flex flex-col items-center border-t border-border pt-4">
-        <Link href="/login" className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
+      <CardFooter className="flex flex-col items-center border-t border-rule pt-4">
+        <Link href="/login" className="nav-link text-xs! inline-flex items-center gap-1.5">
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to Login
         </Link>

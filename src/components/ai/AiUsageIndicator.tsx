@@ -7,17 +7,16 @@ export function AiUsageIndicator() {
   const remaining = useAiLimitStore((s) => s.remaining);
   const limit     = useAiLimitStore((s) => s.limit);
 
-  const styles =
+  const variant =
     remaining === 0
-      ? 'bg-red-500/10 text-red-600 border-red-500/20'
+      ? 'ks-tag-alert'
       : remaining <= 3
-      ? 'bg-amber-500/10 text-amber-600 border-amber-500/20'
-      : 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20';
+      ? 'ks-tag-gold'
+      : 'ks-tag-outline';
 
   return (
-    <span className={`flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full border ${styles}`}>
+    <span className={`ks-tag ${variant}`}>
       <Sparkles className="h-3 w-3" />
       {remaining === 0 ? 'No AI calls left' : `${remaining}/${limit} AI`}
     </span>
-  );
-}
+  );}

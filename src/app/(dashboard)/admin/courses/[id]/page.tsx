@@ -25,11 +25,8 @@ function ToastList({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: num
       {toasts.map((t) => (
         <div
           key={t.id}
-          className="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-lg pointer-events-auto"
-          style={{
-            background: t.type === 'success' ? 'rgba(5,150,105,0.95)' : 'rgba(220,38,38,0.95)',
-            color: '#FFFFFF', backdropFilter: 'blur(8px)', minWidth: 280,
-          }}
+          className={`flex items-center gap-3 px-4 py-3 rounded-[3px] shadow-lift-2 pointer-events-auto text-paper ${t.type === 'success' ? 'bg-ink' : 'bg-[oklch(52%_.16_35)]'}`}
+          style={{ minWidth: 280 }}
         >
           {t.type === 'success' ? <CheckCircle2 className="h-4 w-4 shrink-0" /> : <AlertCircle className="h-4 w-4 shrink-0" />}
           <span className="text-sm font-semibold flex-1">{t.message}</span>
@@ -58,10 +55,10 @@ function useToast() {
 
 function SectionCard({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
+    <div className="rounded-[2px] border border-rule bg-paper-raised p-6 space-y-4">
       <div>
-        <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{title}</p>
-        {hint && <p className="text-[11px] text-muted-foreground/70 mt-0.5">{hint}</p>}
+        <p className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">{title}</p>
+        {hint && <p className="text-[11px] text-ink-muted mt-0.5">{hint}</p>}
       </div>
       {children}
     </div>
@@ -73,7 +70,7 @@ function AddRowButton({ onClick, label }: { onClick: () => void; label: string }
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-1.5 text-xs font-bold text-primary hover:opacity-75 transition-opacity cursor-pointer"
+      className="flex items-center gap-1.5 text-xs font-semibold text-ink hover:opacity-75 transition-opacity cursor-pointer"
     >
       <Plus className="h-3.5 w-3.5" />
       {label}
@@ -92,14 +89,14 @@ function RemoveButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="shrink-0 h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/8 transition-colors cursor-pointer"
+      className="shrink-0 h-8 w-8 rounded-[3px] flex items-center justify-center text-ink-muted hover:text-[oklch(52%_.16_35)] hover:bg-[oklch(52%_.16_35)]/10 transition-colors cursor-pointer"
     >
       <Trash2 className="h-3.5 w-3.5" />
     </button>
   );
 }
 
-const inputCls = 'flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
+const inputCls = 'flex h-9 w-full rounded-md border border-rule-strong bg-paper-raised px-3 py-1 text-sm text-ink transition-colors focus-visible:outline-none focus-visible:border-ink';
 
 // ── Exam Pattern editor: [{ stage, description }] ───────────────────
 
@@ -112,13 +109,13 @@ function ExamPatternEditor({ value, onChange }: { value: CourseExamPatternStage[
   return (
     <div className="space-y-3">
       {value.map((row, i) => (
-        <div key={i} className="flex gap-2 items-start rounded-xl border border-border/60 p-3">
+        <div key={i} className="flex gap-2 items-start rounded-[2px] border border-rule p-3">
           <div className="flex-1 space-y-2">
             <input
               value={row.stage}
               onChange={(e) => update(i, 'stage', e.target.value)}
               placeholder="Stage — e.g. Prelims"
-              className={`${inputCls} font-bold`}
+              className={`${inputCls} font-semibold`}
             />
             <Textarea
               value={row.description}
@@ -187,17 +184,17 @@ function BooklistEditor({ value, onChange }: { value: CourseBooklistEntry[]; onC
   return (
     <div className="space-y-4">
       {value.map((group, gi) => (
-        <div key={gi} className="rounded-xl border border-border/60 p-3.5 space-y-3">
+        <div key={gi} className="rounded-[2px] border border-rule p-3.5 space-y-3">
           <div className="flex gap-2 items-center">
             <input
               value={group.subject}
               onChange={(e) => updateSubject(gi, e.target.value)}
               placeholder="Subject — e.g. Polity"
-              className={`${inputCls} font-bold flex-1`}
+              className={`${inputCls} font-semibold flex-1`}
             />
             <RemoveButton onClick={() => removeGroup(gi)} />
           </div>
-          <div className="space-y-2 pl-3 border-l-2 border-primary/15">
+          <div className="space-y-2 pl-3 border-l-2 border-ink">
             {group.books.map((book, bi) => (
               <div key={bi} className="grid sm:grid-cols-[1fr_1fr_1fr_auto] gap-2 items-center">
                 <input
@@ -257,14 +254,14 @@ function YearWiseBreakdownEditor({ value, onChange }: { value: CourseYearWiseBre
   return (
     <div className="space-y-4">
       {value.map((y, yi) => (
-        <div key={yi} className="rounded-xl border border-border/60 p-3.5 space-y-3">
+        <div key={yi} className="rounded-[2px] border border-rule p-3.5 space-y-3">
           <div className="flex gap-2 items-center">
             <input
               type="number"
               value={y.year}
               onChange={(e) => updateYear(yi, 'year', e.target.value)}
               placeholder="Year"
-              className={`${inputCls} w-28 font-bold`}
+              className={`${inputCls} w-28 font-semibold`}
             />
             <input
               value={y.notes ?? ''}
@@ -274,7 +271,7 @@ function YearWiseBreakdownEditor({ value, onChange }: { value: CourseYearWiseBre
             />
             <RemoveButton onClick={() => removeYear(yi)} />
           </div>
-          <div className="space-y-2 pl-3 border-l-2 border-primary/15">
+          <div className="space-y-2 pl-3 border-l-2 border-ink">
             {y.breakdown.map((row, ri) => (
               <div key={ri} className="grid sm:grid-cols-[1fr_120px_120px_auto] gap-2 items-center">
                 <input
@@ -418,7 +415,7 @@ export default function AdminCourseEditPage() {
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <Loader2 className="h-6 w-6 animate-spin text-ink" />
       </div>
     );
   }
@@ -426,11 +423,11 @@ export default function AdminCourseEditPage() {
   if (isError || !course) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center p-6">
-        <AlertCircle className="h-10 w-10 text-destructive/60" />
+        <AlertCircle className="h-10 w-10 text-[oklch(52%_.16_35)]/60" />
         <p className="text-sm font-semibold">Could not load this course.</p>
         <button
           onClick={() => router.push('/admin/courses')}
-          className="text-xs font-semibold text-primary underline cursor-pointer"
+          className="text-xs font-semibold text-ink underline cursor-pointer"
         >
           Back to Courses Admin
         </button>
@@ -440,23 +437,20 @@ export default function AdminCourseEditPage() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <div className="sticky top-0 z-20 flex items-center gap-3 px-5 py-3 border-b border-border bg-card/80 backdrop-blur-md">
+      <div className="sticky top-0 z-20 flex items-center gap-3 px-5 py-3 border-b border-rule bg-paper-raised">
         <button
           onClick={() => router.push('/admin/courses')}
-          className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+          className="flex items-center gap-1.5 text-xs font-semibold text-ink-muted hover:text-ink transition-colors cursor-pointer shrink-0"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back
         </button>
         <div className="flex-1 min-w-0 flex items-center gap-2">
-          <p className="text-xs text-muted-foreground truncate">
-            <span className="font-semibold text-foreground">Editing:</span> {course.name}
+          <p className="text-xs text-ink-muted truncate">
+            <span className="font-semibold text-ink">Editing:</span> {course.name}
           </p>
           <span
-            className="shrink-0 h-5 px-2 rounded-full flex items-center text-[10px] font-bold"
-            style={course.status === 'published'
-              ? { background: 'rgba(5,150,105,0.1)', color: '#059669', border: '1px solid rgba(5,150,105,0.25)' }
-              : { background: 'rgba(217,119,6,0.1)', color: '#D97706', border: '1px solid rgba(217,119,6,0.25)' }}
+            className={`ks-tag shrink-0 ${course.status === 'published' ? 'ks-tag-ink' : ''}`}
           >
             {course.status === 'published' ? 'Published' : 'Draft'}
           </span>
@@ -464,7 +458,7 @@ export default function AdminCourseEditPage() {
         <button
           onClick={() => saveMutation.mutate()}
           disabled={saveMutation.isPending}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border border-border text-foreground hover:bg-secondary transition-colors disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer shrink-0"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-rule text-ink hover:bg-paper-deep transition-colors disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer shrink-0"
         >
           {saveMutation.isPending
             ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Saving…</>
@@ -474,7 +468,7 @@ export default function AdminCourseEditPage() {
           <button
             onClick={() => unpublishMutation.mutate()}
             disabled={unpublishMutation.isPending}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border border-amber-500/30 text-amber-600 hover:bg-amber-500/8 transition-colors disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer shrink-0"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-rule-strong text-ink hover:bg-paper-deep transition-colors disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer shrink-0"
           >
             {unpublishMutation.isPending
               ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />…</>
@@ -484,8 +478,7 @@ export default function AdminCourseEditPage() {
           <button
             onClick={() => publishMutation.mutate()}
             disabled={publishMutation.isPending}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer shrink-0 hover:opacity-90 transition-opacity"
-            style={{ background: 'linear-gradient(135deg, #059669, #0891B2)' }}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold bg-ink text-paper disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer shrink-0 hover:bg-ink/90 transition-colors"
           >
             {publishMutation.isPending
               ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Publishing…</>
@@ -496,12 +489,12 @@ export default function AdminCourseEditPage() {
 
       <div className="flex-1 p-5 lg:p-6 max-w-3xl w-full mx-auto space-y-6">
 
-        <div className="flex items-start gap-2.5 rounded-xl bg-amber-500/8 border border-amber-500/20 px-4 py-3">
-          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-amber-600" />
-          <p className="text-xs text-amber-700 leading-relaxed">
-            Each section below (except Overview) starts empty — click the <span className="font-bold">+ Add</span> button
-            to create a row, then type into it. <span className="font-bold">Save</span> stores your changes;
-            it does not publish. Use <span className="font-bold">Publish</span> above once you&apos;re happy with how it looks.
+        <div className="flex items-start gap-2.5 rounded-[2px] bg-paper-deep border border-rule px-4 py-3">
+          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-ink" />
+          <p className="text-xs text-ink-soft leading-relaxed">
+            Each section below (except Overview) starts empty — click the <span className="font-semibold">+ Add</span> button
+            to create a row, then type into it. <span className="font-semibold">Save</span> stores your changes;
+            it does not publish. Use <span className="font-semibold">Publish</span> above once you&apos;re happy with how it looks.
           </p>
         </div>
 
@@ -535,29 +528,26 @@ export default function AdminCourseEditPage() {
             {(course.notifications ?? []).length > 0 && (
               <div className="space-y-2">
                 {course.notifications!.map((n) => (
-                  <div key={n.id} className="flex items-center gap-2 rounded-xl border border-border/60 p-3">
-                    <Link2 className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                  <div key={n.id} className="flex items-center gap-2 rounded-[2px] border border-rule p-3">
+                    <Link2 className="h-3.5 w-3.5 shrink-0 text-ink-muted" />
                     <div className="flex-1 min-w-0">
                       <a
                         href={n.linkUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-sm font-semibold text-foreground hover:text-primary transition-colors inline-flex items-center gap-1 truncate"
+                        className="text-sm font-semibold text-ink hover:underline underline-offset-4 transition-colors inline-flex items-center gap-1 truncate"
                       >
                         {n.title}
                         <ExternalLink className="h-3 w-3 shrink-0" />
                       </a>
                       {n.notificationDate && (
-                        <p className="text-[11px] text-muted-foreground">{formatDate(n.notificationDate)}</p>
+                        <p className="text-[11px] text-ink-muted">{formatDate(n.notificationDate)}</p>
                       )}
                     </div>
                     <button
                       type="button"
                       onClick={() => toggleNotificationMutation.mutate({ notifId: n.id, isActive: !n.isActive })}
-                      className="shrink-0 text-[10px] font-bold px-2.5 py-1 rounded-full cursor-pointer transition-colors"
-                      style={n.isActive
-                        ? { background: 'rgba(5,150,105,0.1)', color: '#059669', border: '1px solid rgba(5,150,105,0.25)' }
-                        : { background: 'rgba(107,114,128,0.1)', color: '#6B7280', border: '1px solid rgba(107,114,128,0.25)' }}
+                      className={`ks-tag shrink-0 cursor-pointer transition-colors ${n.isActive ? 'ks-tag-ink' : 'ks-tag-outline'}`}
                     >
                       {n.isActive ? 'Active' : 'Hidden'}
                     </button>
@@ -567,7 +557,7 @@ export default function AdminCourseEditPage() {
               </div>
             )}
 
-            <div className="rounded-xl border border-dashed border-border p-3.5 space-y-2.5">
+            <div className="rounded-[2px] border border-dashed border-rule-strong p-3.5 space-y-2.5">
               <input
                 value={notifTitle}
                 onChange={(e) => setNotifTitle(e.target.value)}
@@ -592,8 +582,7 @@ export default function AdminCourseEditPage() {
                 type="button"
                 onClick={() => addNotificationMutation.mutate()}
                 disabled={!notifTitle.trim() || !notifLink.trim() || addNotificationMutation.isPending}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)' }}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold bg-ink text-paper transition-colors hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {addNotificationMutation.isPending
                   ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Publishing…</>

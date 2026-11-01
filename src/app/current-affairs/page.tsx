@@ -18,12 +18,14 @@ import type { CurrentAffairsArticle } from '@/types/features';
 
 // ── Constants ─────────────────────────────────────────────────────
 
-const GS_CONFIG: Record<string, { color: string; bg: string; border: string; label: string }> = {
-  GS1: { color: '#7C3AED', bg: 'rgba(124,58,237,0.1)',  border: 'rgba(124,58,237,0.25)', label: 'GS1 · Indian Heritage & Society' },
-  GS2: { color: '#0891B2', bg: 'rgba(8,145,178,0.1)',   border: 'rgba(8,145,178,0.25)',  label: 'GS2 · Polity & International' },
-  GS3: { color: '#059669', bg: 'rgba(5,150,105,0.1)',   border: 'rgba(5,150,105,0.25)',  label: 'GS3 · Economy & Environment' },
-  GS4: { color: '#DC2626', bg: 'rgba(220,38,38,0.1)',   border: 'rgba(220,38,38,0.25)',  label: 'GS4 · Ethics & Integrity' },
+// Monochrome: GS papers differ by label only.
+const GS_CONFIG: Record<string, { label: string }> = {
+  GS1: { label: 'GS1 · Indian Heritage & Society' },
+  GS2: { label: 'GS2 · Polity & International' },
+  GS3: { label: 'GS3 · Economy & Environment' },
+  GS4: { label: 'GS4 · Ethics & Integrity' },
 };
+
 
 type ViewMode = 'recent' | 'archive';
 
@@ -98,27 +100,21 @@ function getMonthOptions() {
 
 function CardSkeleton() {
   return (
-    <div className="rounded-2xl bg-white overflow-hidden animate-pulse" style={{ border: '1px solid rgba(138,106,18,0.1)' }}>
-      <div className="h-0.75 bg-muted" />
-      <div className="p-5 space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="h-7 w-32 rounded bg-muted" />
-          <div className="h-5 w-20 rounded-full bg-muted" />
+    <div className="ks-card animate-pulse" aria-hidden="true">
+      <div className="ks-card-visual h-24" />
+      <div className="ks-card-body">
+        <div className="ks-card-head">
+          <div className="h-5 w-10 rounded-[2px] bg-paper-gray" />
+          <div className="h-5 w-10 rounded-[2px] bg-paper-gray" />
+          <div className="h-5 w-10 rounded-[2px] bg-paper-gray" />
         </div>
-        <div className="flex gap-1.5 pt-1">
-          <div className="h-5 w-10 rounded-full bg-muted/70" />
-          <div className="h-5 w-10 rounded-full bg-muted/70" />
-          <div className="h-5 w-10 rounded-full bg-muted/70" />
+        <div className="h-4 w-2/3 rounded-[2px] bg-paper-gray" />
+        <div className="space-y-1.5">
+          <div className="h-3 w-full rounded-[2px] bg-paper-deep" />
+          <div className="h-3 w-4/5 rounded-[2px] bg-paper-deep" />
+          <div className="h-3 w-3/4 rounded-[2px] bg-paper-deep" />
         </div>
-        <div className="space-y-1.5 pt-1">
-          <div className="h-3.5 w-full rounded bg-muted/60" />
-          <div className="h-3.5 w-4/5 rounded bg-muted/50" />
-          <div className="h-3.5 w-3/4 rounded bg-muted/40" />
-        </div>
-        <div className="flex items-center justify-between pt-2 border-t border-muted/40">
-          <div className="h-4 w-24 rounded bg-muted/60" />
-          <div className="h-6 w-20 rounded-lg bg-muted/60" />
-        </div>
+        <div className="h-3 w-24 rounded-[2px] bg-paper-deep" />
       </div>
     </div>
   );
@@ -128,13 +124,6 @@ function CardSkeleton() {
 // One card per calendar date — shows all articles for that day as a digest tile
 
 function DateCard({ group }: { group: DateGroup }) {
-  // Pick the dominant GS colour (first GS found)
-  const primaryGS   = group.gsPapers[0];
-  const gsCfg       = primaryGS ? GS_CONFIG[primaryGS] : null;
-  const accentColor = gsCfg?.color  ?? '#8A6A12';
-  const accentBg    = gsCfg?.bg     ?? 'rgba(138,106,18,0.08)';
-  const accentBorder = gsCfg?.border ?? 'rgba(138,106,18,0.2)';
-
   // Top 6 unique topic tags across all articles
   const allTopics = Array.from(
     new Set(group.articles.flatMap((a) => a.topicTags)),
@@ -143,117 +132,84 @@ function DateCard({ group }: { group: DateGroup }) {
   // First 3 article titles as a preview list
   const titlePreview = group.articles.slice(0, 3);
 
+  // Big date numerals for the visual strip
+  const d = new Date(`${group.dateKey}T00:00:00`);
+  const valid = !isNaN(d.getTime());
+  const dayNum = valid ? d.toLocaleDateString('en-IN', { day: '2-digit' }) : '';
+  const monthShort = valid ? d.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : group.dateKey;
+
   return (
-    <Link
-      href={`/current-affairs/date/${group.dateKey}`}
-      className="group block rounded-2xl bg-white overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(138,106,18,0.14)]"
-      style={{ border: `1px solid ${accentBorder}` }}
-    >
-      {/* Colored top bar */}
-      <div className="h-0.75" style={{ background: accentColor }} />
+    <Link href={`/current-affairs/date/${group.dateKey}`} className="ks-card">
+      <div className="ks-card-visual h-24 justify-start gap-3 px-[18px]">
+        <span className="font-display font-light text-[3.75rem] leading-none text-ink tabular-nums">
+          {dayNum}
+        </span>
+        <span className="flex flex-col">
+          <span className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">{group.dayOfWeek}</span>
+          <span className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">{monthShort}</span>
+        </span>
+      </div>
 
-      <div className="p-5 flex flex-col gap-3">
-
-        {/* Row 1: date block + article count badge */}
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <p className="text-[10px] font-extrabold uppercase tracking-widest mb-0.5" style={{ color: accentColor, opacity: 0.7 }}>
-              {group.dayOfWeek}
-            </p>
-            <p className="text-lg font-extrabold leading-none" style={{ color: '#111827' }}>
-              {group.displayDate}
-            </p>
+      <div className="ks-card-body">
+        {/* GS paper tags */}
+        {group.gsPapers.some((tag) => GS_CONFIG[tag]) && (
+          <div className="ks-card-head">
+            {group.gsPapers.map((tag) =>
+              GS_CONFIG[tag] ? <span key={tag} className="ks-tag">{tag}</span> : null,
+            )}
           </div>
-          <div
-            className="flex items-center gap-1.5 text-[11px] font-extrabold px-2.5 py-1 rounded-full shrink-0"
-            style={{ background: `${accentColor}12`, color: accentColor, border: `1px solid ${accentBorder}` }}
-          >
-            <Layers className="h-3 w-3" />
-            {group.articles.length} {group.articles.length === 1 ? 'story' : 'stories'}
-          </div>
-        </div>
+        )}
 
-        {/* Row 2: GS paper chips */}
-        <div className="flex flex-wrap gap-1.5">
-          {group.gsPapers.map((tag) => {
-            const cfg = GS_CONFIG[tag];
-            return cfg ? (
-              <span
-                key={tag}
-                className="text-[10px] font-extrabold px-2 py-0.5 rounded-full"
-                style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}
-              >
-                {tag}
-              </span>
-            ) : null;
-          })}
-        </div>
+        <h3 className="ks-card-title">{group.displayDate}</h3>
 
-        {/* Row 3: article title preview */}
-        <ul className="space-y-1.5" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+        <span className="ks-card-meta inline-flex items-center gap-1.5">
+          <Layers className="h-3 w-3" />
+          {group.articles.length} {group.articles.length === 1 ? 'story' : 'stories'}
+        </span>
+
+        {/* Article title preview */}
+        <ul className="ks-card-desc space-y-1" style={{ listStyle: 'none', padding: 0 }}>
           {titlePreview.map((a) => (
             <li key={a.id} className="flex items-start gap-2">
-              <span
-                className="rounded-full shrink-0 mt-1.25"
-                style={{ width: 5, height: 5, background: accentColor, opacity: 0.5, flexShrink: 0 }}
-              />
-              <span
-                className="text-[12px] leading-snug line-clamp-1"
-                style={{ color: '#374151' }}
-              >
-                {a.title}
-              </span>
+              <span aria-hidden="true" className="shrink-0 text-ink-faint">–</span>
+              <span className="line-clamp-1">{a.title}</span>
             </li>
           ))}
           {group.articles.length > 3 && (
-            <li className="text-[11px] font-semibold pl-4" style={{ color: accentColor, opacity: 0.7 }}>
+            <li className="pl-4 text-ink-muted">
               +{group.articles.length - 3} more stories
             </li>
           )}
         </ul>
 
-        {/* Row 4: topic chips */}
+        {/* Topic tags */}
         {allTopics.length > 0 && (
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1.5">
             {allTopics.map((tag) => (
-              <span
-                key={tag}
-                className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-                style={{ background: accentBg, color: '#4B5563', border: `1px solid ${accentBorder}` }}
-              >
-                {tag}
-              </span>
+              <span key={tag} className="ks-tag ks-tag-outline">{tag}</span>
             ))}
           </div>
         )}
 
-        {/* Row 5: footer stats + CTA */}
-        <div
-          className="flex items-center justify-between pt-2.5 mt-auto"
-          style={{ borderTop: `1px solid ${accentBorder}` }}
-        >
-          <div className="flex items-center gap-3">
+        {/* Stats */}
+        {(group.totalFacts > 0 || group.hasMCQ) && (
+          <span className="ks-card-meta flex items-center gap-3">
             {group.totalFacts > 0 && (
-              <span className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: '#6B7280' }}>
-                <BookOpen className="h-3 w-3" style={{ color: accentColor }} />
+              <span className="inline-flex items-center gap-1">
+                <BookOpen className="h-3 w-3" />
                 {group.totalFacts} facts
               </span>
             )}
             {group.hasMCQ && (
-              <span className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: '#6B7280' }}>
-                <Zap className="h-3 w-3" style={{ color: accentColor }} />
+              <span className="inline-flex items-center gap-1">
+                <Zap className="h-3 w-3" />
                 MCQ
               </span>
             )}
-          </div>
-          <span
-            className="inline-flex items-center gap-1.5 text-[11px] font-extrabold px-3 py-1.5 rounded-lg transition-all group-hover:opacity-90"
-            style={{ background: accentColor, color: '#FFFFFF' }}
-          >
-            Study
-            <ArrowRight className="h-3 w-3" />
           </span>
-        </div>
+        )}
+
+        <span className="ks-card-link">Study</span>
       </div>
     </Link>
   );
@@ -263,13 +219,13 @@ function DateCard({ group }: { group: DateGroup }) {
 
 function EmptyState({ filtered }: { filtered?: boolean }) {
   return (
-    <div className="col-span-full flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card p-16 text-center gap-4">
-      <Newspaper className="h-12 w-12 text-muted-foreground/25" />
+    <div className="col-span-full flex flex-col items-center justify-center rounded-[2px] border border-dashed border-rule-strong bg-paper-raised p-16 text-center gap-4">
+      <Newspaper className="h-10 w-10 text-ink-faint" />
       <div>
-        <p className="text-sm font-semibold text-foreground">
+        <p className="text-sm font-semibold text-ink">
           {filtered ? 'No articles match your filters' : 'No articles yet'}
         </p>
-        <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">
+        <p className="text-xs text-ink-muted mt-1 max-w-xs mx-auto">
           {filtered
             ? 'Try clearing a filter to see more articles.'
             : 'Our AI pipeline processes new articles every morning at 6 AM IST.'}
@@ -282,85 +238,38 @@ function EmptyState({ filtered }: { filtered?: boolean }) {
 // ── Individual article card (search results) ──────────────────────
 
 function ArticleCard({ article }: { article: CurrentAffairsArticle }) {
-  const primaryGS    = article.gsPaperTags[0];
-  const gsCfg        = primaryGS ? GS_CONFIG[primaryGS] : null;
-  const accentColor  = gsCfg?.color  ?? '#8A6A12';
-  const accentBg     = gsCfg?.bg     ?? 'rgba(138,106,18,0.08)';
-  const accentBorder = gsCfg?.border ?? 'rgba(138,106,18,0.2)';
-
   const dateLabel = article.publishedDate
     ? new Date(`${toISTDateKey(article.publishedDate)}T00:00:00`).toLocaleDateString('en-IN', {
         day: 'numeric', month: 'short', year: 'numeric',
       })
     : '';
 
+  const gsTags = article.gsPaperTags.slice(0, 2).filter((tag) => GS_CONFIG[tag]);
+  const topicTags = article.topicTags.slice(0, 4);
+
   return (
-    <Link
-      href={`/current-affairs/${article.id}`}
-      className="group block rounded-2xl bg-white overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(138,106,18,0.14)]"
-      style={{ border: `1px solid ${accentBorder}` }}
-    >
-      <div className="h-0.75" style={{ background: accentColor }} />
-      <div className="p-5 flex flex-col gap-3">
-
-        {/* Date + GS tags */}
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-[10px] font-semibold text-muted-foreground">{dateLabel}</span>
-          <div className="flex gap-1">
-            {article.gsPaperTags.slice(0, 2).map((tag) => {
-              const cfg = GS_CONFIG[tag];
-              return cfg ? (
-                <span
-                  key={tag}
-                  className="text-[10px] font-extrabold px-2 py-0.5 rounded-full"
-                  style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}
-                >
-                  {tag}
-                </span>
-              ) : null;
-            })}
-          </div>
-        </div>
-
-        {/* Title */}
-        <p className="text-[13px] font-bold leading-snug group-hover:text-primary transition-colors line-clamp-2" style={{ color: '#111827' }}>
-          {article.title}
-        </p>
-
-        {/* Summary */}
-        {article.summary && (
-          <p className="text-[12px] leading-relaxed line-clamp-2" style={{ color: '#6B7280' }}>
-            {article.summary}
-          </p>
-        )}
-
-        {/* Topic chips */}
-        {article.topicTags.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {article.topicTags.slice(0, 4).map((tag) => (
-              <span
-                key={tag}
-                className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-                style={{ background: accentBg, color: '#4B5563', border: `1px solid ${accentBorder}` }}
-              >
-                {tag}
-              </span>
+    <Link href={`/current-affairs/${article.id}`} className="ks-card">
+      <div className="ks-card-body">
+        {(gsTags.length > 0 || topicTags.length > 0) && (
+          <div className="ks-card-head">
+            {gsTags.map((tag) => (
+              <span key={tag} className="ks-tag">{tag}</span>
+            ))}
+            {topicTags.map((tag) => (
+              <span key={tag} className="ks-tag ks-tag-outline">{tag}</span>
             ))}
           </div>
         )}
 
-        {/* CTA */}
-        <div
-          className="flex items-center justify-end pt-2 mt-auto"
-          style={{ borderTop: `1px solid ${accentBorder}` }}
-        >
-          <span
-            className="inline-flex items-center gap-1.5 text-[11px] font-extrabold px-3 py-1.5 rounded-lg transition-all group-hover:opacity-90"
-            style={{ background: accentColor, color: '#FFFFFF' }}
-          >
-            Read <ArrowRight className="h-3 w-3" />
-          </span>
-        </div>
+        <h3 className="ks-card-title line-clamp-2">{article.title}</h3>
+
+        {article.summary && (
+          <p className="ks-card-desc line-clamp-3">{article.summary}</p>
+        )}
+
+        {dateLabel && <span className="ks-card-meta">{dateLabel}</span>}
+
+        <span className="ks-card-link">Read</span>
       </div>
     </Link>
   );
@@ -370,13 +279,13 @@ function ArticleCard({ article }: { article: CurrentAffairsArticle }) {
 
 function SearchEmptyState({ query }: { query: string }) {
   return (
-    <div className="col-span-full flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card p-16 text-center gap-4">
-      <Search className="h-12 w-12 text-muted-foreground/25" />
+    <div className="col-span-full flex flex-col items-center justify-center rounded-[2px] border border-dashed border-rule-strong bg-paper-raised p-16 text-center gap-4">
+      <Search className="h-10 w-10 text-ink-faint" />
       <div>
-        <p className="text-sm font-semibold text-foreground">
+        <p className="text-sm font-semibold text-ink">
           No articles found for &quot;{query}&quot;
         </p>
-        <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">
+        <p className="text-xs text-ink-muted mt-1 max-w-xs mx-auto">
           Try a different search term, or browse by date below.
         </p>
       </div>
@@ -434,56 +343,43 @@ export default function CurrentAffairsPublicPage() {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   });
 
+
+  const chipCls = (active: boolean) => cn(
+    'chip cursor-pointer transition-colors duration-150 ease-ks',
+    active
+      ? 'bg-ink text-paper border-ink'
+      : 'hover:border-ink hover:text-ink',
+  );
+
   return (
-    <div className="text-foreground">
+    <div className="text-ink-soft">
 
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden bg-background">
-        {/* Quiet accent wash, flat editorial — matches the homepage hero treatment */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            top: '-15%', right: '-6%',
-            width: 580, height: 580,
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(138,106,18,0.06) 0%, transparent 68%)',
-          }}
-        />
-
-        <div className="relative max-w-7xl mx-auto px-6 pt-14 pb-16">
+      <section className="bg-background border-b border-rule">
+        <div className="ks-container pt-14 pb-14">
           <div className="max-w-2xl">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-5 bg-primary/8 border border-primary/18 text-primary">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-primary" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-              </span>
+            <p className="eyebrow mb-5">
+              <span className="eyebrow-dot" />
               Updated Daily · Free for Everyone
-            </div>
+            </p>
 
-            <h1 className="tracking-tight mb-3">
-              <span className="block font-semibold text-muted-foreground mb-1" style={{ fontSize: 'clamp(0.9rem, 1.8vw, 1.05rem)' }}>
-                Updated every morning
-              </span>
-              <span className="block font-black text-foreground" style={{ fontSize: 'var(--text-display-md)', lineHeight: 1.05, letterSpacing: '-0.01em' }}>
-                Current Affairs <span className="text-primary">Digest</span>
-              </span>
-            </h1>
-            <p className="text-muted-foreground" style={{ fontSize: '0.95rem', lineHeight: 1.8, maxWidth: 520 }}>
+            <h1 className="doc-title mb-4">Current Affairs Digest</h1>
+            <p className="doc-lede">
               AI-curated news for UPSC, SSC &amp; State PSC aspirants — tagged by GS paper,
               with key facts and mains angles. Published every morning.
             </p>
 
             {/* Stats strip */}
-            <div className="flex items-center gap-6 mt-6">
+            <div className="flex items-center gap-8 mt-7">
               {[
                 { v: 'Daily', l: 'New articles' },
                 { v: 'GS1–4', l: 'Paper tagged' },
                 { v: 'Free', l: 'No sign-up needed' },
               ].map((s) => (
                 <div key={s.l}>
-                  <div className="font-extrabold text-base text-foreground">{s.v}</div>
-                  <div className="text-[10px] mt-0.5 text-muted-foreground">{s.l}</div>
+                  <div className="font-semibold text-base text-ink">{s.v}</div>
+                  <div className="font-label text-[11px] uppercase tracking-[0.14em] mt-0.5 text-ink-muted">{s.l}</div>
                 </div>
               ))}
             </div>
@@ -491,80 +387,67 @@ export default function CurrentAffairsPublicPage() {
             {/* Places in News CTA */}
             <Link
               href="/current-affairs/places-in-news"
-              className="group inline-flex items-center gap-2.5 text-sm font-bold pl-2.5 pr-5 py-2.5 rounded-xl mt-6 text-white bg-primary transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(138,106,18,0.4)]"
-              style={{ boxShadow: '0 6px 20px rgba(138,106,18,0.3)' }}
+              className="btn-ink btn-sm mt-7 group"
             >
-              <span className="text-[10px] font-extrabold px-2 py-1 rounded-lg shrink-0 bg-white/20 text-white">
-                NEW
-              </span>
               <MapPin className="h-4 w-4 shrink-0" />
               Explore Places in the News on a map
-              <ArrowRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="h-4 w-4 shrink-0 transition-transform duration-150 ease-ks group-hover:translate-x-0.5" />
             </Link>
           </div>
         </div>
       </section>
 
       {/* ── Content area ── */}
-      <section style={{ background: '#FFFFFF', minHeight: '60vh' }}>
-        <div className="max-w-7xl mx-auto px-6 py-10">
+      <section className="bg-paper" style={{ minHeight: '60vh' }}>
+        <div className="ks-container py-10">
 
           {/* ── Places in News promo banner ── */}
           <Link
             href="/current-affairs/places-in-news"
-            className="group relative overflow-hidden rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-5 p-6 sm:p-7 mb-8 transition-transform hover:-translate-y-0.5"
-            style={{ background: 'linear-gradient(135deg, #5C4509 0%, #8A6A12 45%, #C79A2E 100%)', boxShadow: '0 12px 32px rgba(138,106,18,0.3)' }}
+            className="ks-card group flex! flex-col sm:flex-row sm:items-center justify-between gap-5 p-6 sm:p-7 mb-8"
           >
-            <div
-              className="absolute pointer-events-none"
-              style={{ top: 0, right: 0, width: 260, height: 260, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', transform: 'translate(30%, -30%)' }}
-            />
-
-            <div className="relative flex items-start gap-4">
-              <div className="shrink-0 h-11 w-11 rounded-xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.15)' }}>
-                <MapPin className="h-5 w-5 text-white" />
+            <div className="flex items-start gap-4">
+              <div className="shrink-0 h-9 w-9 rounded-[3px] border border-rule bg-paper-deep flex items-center justify-center">
+                <MapPin className="h-4 w-4 text-ink" />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-white/20 text-white">
-                    NEW
-                  </span>
-                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                  <span className="ks-tag ks-tag-gold">NEW</span>
+                  <span className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
                     Places in the News
                   </span>
                 </div>
-                <p className="font-extrabold text-white" style={{ fontSize: '1.05rem', lineHeight: 1.3 }}>
+                <p className="font-semibold text-ink" style={{ fontSize: '1.05rem', lineHeight: 1.3 }}>
                   Every border dispute, summit &amp; disaster — mapped.
                 </p>
-                <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.75)', maxWidth: 440 }}>
+                <p className="text-sm mt-1 text-ink-muted" style={{ maxWidth: 440 }}>
                   See where the news is actually happening, grouped by day, with a live map view.
                 </p>
               </div>
             </div>
 
-            <span className="relative shrink-0 inline-flex items-center gap-2 text-sm font-bold px-5 py-2.5 rounded-xl bg-white text-primary">
+            <span className="ks-card-link shrink-0 mt-0!">
               Explore the map
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </span>
           </Link>
 
           {/* ── Filter card ── */}
-          <div className="rounded-2xl border border-border bg-white shadow-sm p-5 mb-8 space-y-5">
+          <div className="rounded-[2px] border border-rule bg-paper-raised p-5 mb-8 space-y-5">
 
             {/* Search bar */}
             <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-muted pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search articles… e.g. 'budget', 'ISRO mission'"
-                className="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl border border-border bg-background focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all"
+                className="w-full pl-10 pr-10 py-2.5 text-sm text-ink rounded-[3px] border border-rule-strong bg-paper placeholder:text-ink-muted focus:outline-none focus:border-ink transition-colors duration-150 ease-ks"
               />
               {searchQuery && (
                 <button
                   onClick={() => { setSearchQuery(''); setDebouncedSearch(''); }}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink cursor-pointer transition-colors"
                   aria-label="Clear search"
                 >
                   <X className="h-4 w-4" />
@@ -577,7 +460,7 @@ export default function CurrentAffairsPublicPage() {
               <>
                 {/* Row 1: view tabs + date + article count */}
                 <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-1 bg-secondary/70 rounded-xl p-1">
+                  <div className="flex items-center gap-1.5">
                     {(
                       [
                         { id: 'recent',  label: 'Latest',  Icon: Newspaper    },
@@ -587,12 +470,7 @@ export default function CurrentAffairsPublicPage() {
                       <button
                         key={id}
                         onClick={() => handleViewChange(id)}
-                        className={cn(
-                          'flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer',
-                          view === id
-                            ? 'bg-background text-foreground shadow-sm'
-                            : 'text-muted-foreground hover:text-foreground',
-                        )}
+                        className={cn(chipCls(view === id), 'h-8 px-3.5')}
                       >
                         <Icon className="h-3.5 w-3.5" />
                         {label}
@@ -600,9 +478,9 @@ export default function CurrentAffairsPublicPage() {
                     ))}
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-muted-foreground hidden sm:block">{todayFull}</span>
+                    <span className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted hidden sm:block">{todayFull}</span>
                     {!isLoading && dateGroups.length > 0 && (
-                      <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-primary/8 text-primary border border-primary/15">
+                      <span className="ks-tag">
                         {hasMore
                           ? `${visibleCount} of ${dateGroups.length} days`
                           : `${dateGroups.length} day${dateGroups.length !== 1 ? 's' : ''}`}
@@ -614,17 +492,12 @@ export default function CurrentAffairsPublicPage() {
                 {/* Month picker (archive mode) */}
                 {view === 'archive' && (
                   <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground shrink-0">Month:</span>
+                    <span className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted shrink-0">Month:</span>
                     {monthOptions.map((opt) => (
                       <button
                         key={opt.key}
                         onClick={() => setArchiveMonth(opt)}
-                        className={cn(
-                          'shrink-0 text-xs font-semibold px-3 py-1.5 rounded-xl border transition-all cursor-pointer whitespace-nowrap',
-                          archiveMonth.key === opt.key
-                            ? 'bg-primary text-primary-foreground border-primary'
-                            : 'border-border text-muted-foreground hover:border-primary/40 hover:text-foreground',
-                        )}
+                        className={cn(chipCls(archiveMonth.key === opt.key), 'shrink-0')}
                       >
                         {opt.label}
                       </button>
@@ -632,11 +505,11 @@ export default function CurrentAffairsPublicPage() {
                   </div>
                 )}
 
-                <div className="border-t border-border" />
+                <div className="border-t border-rule" />
 
                 {/* Row 2: GS chips + topic filter */}
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">GS Paper:</span>
+                  <span className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">GS Paper:</span>
                   <div className="flex gap-1.5 flex-wrap">
                     {(['All', 'GS1', 'GS2', 'GS3', 'GS4'] as const).map((p) => {
                       const cfg      = p !== 'All' ? GS_CONFIG[p] : null;
@@ -645,13 +518,7 @@ export default function CurrentAffairsPublicPage() {
                         <button
                           key={p}
                           onClick={() => handleFilterChange(p === 'All' ? '' : paperFilter === p ? '' : p, subjectSearch)}
-                          className={cn(
-                            'text-[11px] font-bold px-3 py-1.5 rounded-xl border transition-all cursor-pointer',
-                            isActive
-                              ? 'text-white border-transparent'
-                              : 'text-muted-foreground border-border bg-background hover:border-primary/30 hover:text-foreground',
-                          )}
-                          style={isActive ? { background: cfg ? cfg.color : '#8A6A12' } : {}}
+                          className={chipCls(isActive)}
                           title={cfg?.label}
                         >
                           {p}
@@ -659,17 +526,17 @@ export default function CurrentAffairsPublicPage() {
                       );
                     })}
                   </div>
-                  <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-1.5 min-w-45 ml-auto">
-                    <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                  <div className="flex items-center gap-2 rounded-[3px] border border-rule-strong bg-paper px-3 py-1.5 min-w-45 ml-auto focus-within:border-ink transition-colors duration-150 ease-ks">
+                    <Search className="h-3.5 w-3.5 text-ink-muted shrink-0" />
                     <input
                       type="text"
                       value={subjectSearch}
                       onChange={(e) => handleFilterChange(paperFilter, e.target.value)}
                       placeholder="Filter by topic…"
-                      className="text-xs bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none flex-1 min-w-0"
+                      className="text-xs bg-transparent text-ink placeholder:text-ink-muted focus:outline-none flex-1 min-w-0"
                     />
                     {subjectSearch && (
-                      <button onClick={() => handleFilterChange(paperFilter, '')} className="text-muted-foreground hover:text-foreground cursor-pointer">
+                      <button onClick={() => handleFilterChange(paperFilter, '')} className="text-ink-muted hover:text-ink cursor-pointer">
                         <X className="h-3 w-3" />
                       </button>
                     )}
@@ -677,7 +544,7 @@ export default function CurrentAffairsPublicPage() {
                   {hasFilter && (
                     <button
                       onClick={() => handleFilterChange('', '')}
-                      className="flex items-center gap-1 text-[11px] font-semibold text-destructive hover:underline cursor-pointer"
+                      className="flex items-center gap-1 font-label text-[11px] uppercase tracking-[0.1em] text-ink-muted hover:text-ink underline underline-offset-4 decoration-rule-strong cursor-pointer"
                     >
                       <X className="h-3 w-3" />Clear
                     </button>
@@ -690,27 +557,27 @@ export default function CurrentAffairsPublicPage() {
           {/* ── Search results ── */}
           {isSearchMode ? (
             <div>
-              <div className="flex items-center gap-2 mb-5">
-                {searchQ.isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                ) : (
-                  <Search className="h-4 w-4 text-primary" />
-                )}
-                <span className="text-sm font-semibold text-foreground">
+              <div className="ks-group-head">
+                <h2 className="ks-group-title flex items-center gap-2">
+                  {searchQ.isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-ink-muted" />
+                  ) : (
+                    <Search className="h-4 w-4 text-ink-muted" />
+                  )}
                   {searchQ.isLoading
                     ? `Searching for "${debouncedSearch}"…`
                     : searchQ.data?.length
                     ? `${searchQ.data.length} result${searchQ.data.length !== 1 ? 's' : ''} for "${debouncedSearch}"`
                     : `Results for "${debouncedSearch}"`}
-                </span>
+                </h2>
               </div>
               {searchQ.isError ? (
-                <div className="flex items-center gap-3 rounded-2xl bg-destructive/10 border border-destructive/20 p-5 text-sm text-destructive">
+                <div className="flex items-center gap-3 rounded-[2px] border border-[oklch(52%_.16_35_/_.3)] bg-paper-raised p-5 text-sm text-[oklch(52%_.16_35)]">
                   <AlertCircle className="h-5 w-5 shrink-0" />
                   <span>Search failed — please try again.</span>
                 </div>
               ) : searchQ.isLoading ? (
-                <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start">
+                <div className="ks-card-grid">
                   {[1, 2, 3, 4, 5, 6].map((i) => <CardSkeleton key={i} />)}
                 </div>
               ) : (searchQ.data?.length ?? 0) === 0 ? (
@@ -718,7 +585,7 @@ export default function CurrentAffairsPublicPage() {
                   <SearchEmptyState query={debouncedSearch} />
                 </div>
               ) : (
-                <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start">
+                <div className="ks-card-grid">
                   {searchQ.data!.map((article) => (
                     <ArticleCard key={article.id} article={article} />
                   ))}
@@ -730,19 +597,14 @@ export default function CurrentAffairsPublicPage() {
 
           {/* ── GS legend ── */}
           {!isLoading && !isError && !hasFilter && (
-            <div className="flex flex-wrap gap-3 mb-6">
+            <div className="flex flex-wrap gap-x-5 gap-y-2 mb-6">
               {Object.entries(GS_CONFIG).map(([key, cfg]) => (
                 <div
                   key={key}
-                  className="flex items-center gap-1.5 text-[11px] font-medium"
-                  style={{ color: '#6B63A0' }}
+                  className="flex items-center gap-2 text-xs text-ink-muted"
                 >
-                  <span
-                    className="h-2.5 w-2.5 rounded-full shrink-0"
-                    style={{ background: cfg.color }}
-                  />
-                  <span className="font-bold" style={{ color: cfg.color }}>{key}</span>
-                  <span className="hidden sm:inline">— {cfg.label.split(' · ')[1]}</span>
+                  <span className="ks-tag">{key}</span>
+                  <span className="hidden sm:inline">{cfg.label.split(' · ')[1]}</span>
                 </div>
               ))}
             </div>
@@ -750,20 +612,25 @@ export default function CurrentAffairsPublicPage() {
 
           {/* ── Articles ── */}
           {isError ? (
-            <div className="flex items-center gap-3 rounded-2xl bg-destructive/10 border border-destructive/20 p-5 text-sm text-destructive">
+            <div className="flex items-center gap-3 rounded-[2px] border border-[oklch(52%_.16_35_/_.3)] bg-paper-raised p-5 text-sm text-[oklch(52%_.16_35)]">
               <AlertCircle className="h-5 w-5 shrink-0" />
               <div>
                 <p className="font-semibold">Could not load articles</p>
-                <p className="text-xs mt-0.5 opacity-80">The pipeline may still be processing — check back shortly after 6 AM IST.</p>
+                <p className="text-xs mt-0.5 text-ink-muted">The pipeline may still be processing — check back shortly after 6 AM IST.</p>
               </div>
             </div>
           ) : isLoading ? (
-            <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start">
+            <div className="ks-card-grid">
               {[1, 2, 3, 4, 5, 6].map((i) => <CardSkeleton key={i} />)}
             </div>
           ) : (
             <>
-              <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start">
+              <div className="ks-group-head">
+                <h2 className="ks-group-title">
+                  {view === 'recent' ? 'Latest digests' : archiveMonth.label}
+                </h2>
+              </div>
+              <div className="ks-card-grid">
                 {visibleGroups.length === 0
                   ? <EmptyState filtered={hasFilter} />
                   : visibleGroups.map((g) => <DateCard key={g.dateKey} group={g} />)
@@ -775,15 +642,15 @@ export default function CurrentAffairsPublicPage() {
                 <div className="flex flex-col items-center gap-3 mt-8">
                   <button
                     onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-                    className="inline-flex items-center gap-2 text-sm font-bold px-7 py-3 rounded-2xl border-2 bg-white text-primary border-primary/30 transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer"
+                    className="btn-outline btn-sm"
                   >
                     <ChevronDown className="h-4 w-4" />
                     Load More
-                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                    <span className="ks-tag">
                       {Math.min(PAGE_SIZE, dateGroups.length - visibleCount)} more days
                     </span>
                   </button>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
                     Showing {visibleCount} of {dateGroups.length} days
                   </p>
                 </div>
@@ -793,28 +660,17 @@ export default function CurrentAffairsPublicPage() {
 
           {/* ── Sign-up nudge ── */}
           {!isLoading && !isError && dateGroups.length > 0 && (
-            <div
-              className="mt-12 rounded-2xl overflow-hidden relative"
-              style={{ background: 'linear-gradient(135deg, #5C4509 0%, #8A6A12 50%, #C79A2E 100%)' }}
-            >
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)',
-                  backgroundSize: '28px 28px',
-                }}
-              />
-              <div className="relative px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="mt-12 rounded-[2px] border border-rule bg-paper-deep">
+              <div className="px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-6">
                 <div>
-                  <p className="text-white font-bold text-base">Want the full prep toolkit?</p>
-                  <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                  <p className="text-ink font-semibold text-base">Want the full prep toolkit?</p>
+                  <p className="text-sm mt-1 text-ink-muted">
                     Sign up free — get Mains angles, AI Mentor access, MCQs &amp; personalised study plans.
                   </p>
                 </div>
                 <Link
                   href="/signup"
-                  className="shrink-0 inline-flex items-center gap-2 font-bold px-6 py-3 rounded-xl text-sm bg-white text-primary hover:opacity-95 transition-opacity"
-                  style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}
+                  className="btn-ink shrink-0"
                 >
                   Get Started Free
                   <ArrowRight className="h-4 w-4" />

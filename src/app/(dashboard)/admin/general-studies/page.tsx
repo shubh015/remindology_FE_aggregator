@@ -26,11 +26,8 @@ function ToastList({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: num
       {toasts.map((t) => (
         <div
           key={t.id}
-          className="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-lg pointer-events-auto animate-in slide-in-from-bottom-4 duration-200"
-          style={{
-            background: t.type === 'success' ? 'rgba(5,150,105,0.95)' : 'rgba(220,38,38,0.95)',
-            color: '#FFFFFF', backdropFilter: 'blur(8px)', minWidth: 280,
-          }}
+          className={`flex items-center gap-3 px-4 py-3 rounded-[3px] shadow-lift-2 pointer-events-auto animate-in slide-in-from-bottom-4 duration-200 text-paper ${t.type === 'success' ? 'bg-ink' : 'bg-[oklch(52%_.16_35)]'}`}
+          style={{ minWidth: 280 }}
         >
           {t.type === 'success' ? <CheckCircle2 className="h-4 w-4 shrink-0" /> : <AlertCircle className="h-4 w-4 shrink-0" />}
           <span className="text-sm font-semibold flex-1">{t.message}</span>
@@ -65,24 +62,24 @@ function ConfirmDialog({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} />
-      <div className="relative bg-card border border-border rounded-2xl p-6 shadow-xl max-w-sm w-full space-y-4">
+      <div className="absolute inset-0 bg-ink/40" onClick={onCancel} />
+      <div className="relative bg-paper-raised border border-rule rounded-[3px] p-6 shadow-lift-2 max-w-sm w-full space-y-4">
         <div>
-          <p className="font-semibold text-foreground">{heading}</p>
-          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{body}</p>
+          <p className="font-semibold text-ink">{heading}</p>
+          <p className="text-xs text-ink-muted mt-1 leading-relaxed">{body}</p>
         </div>
         <div className="flex gap-2 justify-end">
           <button
             onClick={onCancel}
             disabled={loading}
-            className="px-4 py-2 text-sm font-semibold rounded-xl border border-border hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50"
+            className="px-4 py-2 text-sm font-semibold rounded-md border border-rule hover:bg-paper-deep transition-colors cursor-pointer disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="px-4 py-2 text-sm font-semibold rounded-xl text-white hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 text-sm font-semibold rounded-md text-paper hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 flex items-center gap-2"
             style={{ background: confirmBg }}
           >
             {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
@@ -95,7 +92,7 @@ function ConfirmDialog({
 }
 
 const selectCls =
-  'flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
+  'flex h-9 w-full rounded-md border border-rule-strong bg-paper-raised px-3 py-1 text-sm text-ink transition-colors focus-visible:outline-none focus-visible:border-ink disabled:cursor-not-allowed disabled:opacity-50';
 
 const EMPTY_FORM = { subjectSlug: '', categorySlug: '', title: '', rawContent: '' };
 
@@ -227,23 +224,23 @@ export default function AdminGeneralStudiesPage() {
 
         {/* Admin badge */}
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20">
+          <div className="flex items-center gap-2 font-label text-[11px] uppercase tracking-[0.14em] px-2.5 py-1 rounded-[2px] bg-paper-deep text-ink border border-rule">
             <ShieldCheck className="h-3.5 w-3.5" />
             Admin · General Studies Publisher
           </div>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-ink-muted">
             Editing raw content later won't regenerate the AI output — review before publishing.
           </span>
         </div>
 
         {/* ── Create form ── */}
         <form onSubmit={handleSubmit}>
-          <div className="rounded-2xl border border-border bg-card p-6 space-y-5" style={{ boxShadow: '0 2px 12px rgba(124,58,237,0.06)' }}>
+          <div className="rounded-[2px] border border-rule bg-paper-raised p-6 space-y-5">
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Subject <span className="text-destructive">*</span>
+                <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+                  Subject <span className="text-[oklch(52%_.16_35)]">*</span>
                 </label>
                 <select
                   value={form.subjectSlug}
@@ -259,13 +256,13 @@ export default function AdminGeneralStudiesPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Category <span className="text-muted-foreground/60">(optional)</span>
+                <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+                  Category <span className="text-ink-muted">(optional)</span>
                 </label>
                 {addingCategory ? (
                   <div className="space-y-1.5">
                     {categories && categories.length === 0 && (
-                      <p className="text-[11px] text-amber-600">This subject has no categories yet — add one, or cancel to post without a category.</p>
+                      <p className="text-[11px] text-ink">This subject has no categories yet — add one, or cancel to post without a category.</p>
                     )}
                     <div className="flex items-center gap-1.5">
                       <Input
@@ -279,15 +276,14 @@ export default function AdminGeneralStudiesPage() {
                         type="button"
                         onClick={handleAddCategory}
                         disabled={createCategoryMutation.isPending || !newCategoryName.trim()}
-                        className="shrink-0 h-9 px-3 rounded-md text-xs font-bold text-white cursor-pointer disabled:opacity-50"
-                        style={{ background: '#7C3AED' }}
+                        className="shrink-0 h-9 px-3 rounded-md text-xs font-semibold bg-ink text-paper cursor-pointer disabled:opacity-50"
                       >
                         {createCategoryMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Add'}
                       </button>
                       <button
                         type="button"
                         onClick={() => { setAddingCategory(false); setNewCategoryName(''); }}
-                        className="shrink-0 h-9 w-9 rounded-md flex items-center justify-center text-muted-foreground hover:bg-secondary cursor-pointer"
+                        className="shrink-0 h-9 w-9 rounded-md flex items-center justify-center text-ink-muted hover:bg-paper-deep cursor-pointer"
                       >
                         <X className="h-4 w-4" />
                       </button>
@@ -319,7 +315,7 @@ export default function AdminGeneralStudiesPage() {
                       onClick={() => setAddingCategory(true)}
                       disabled={!form.subjectSlug}
                       title="Add a new category"
-                      className="shrink-0 h-9 w-9 rounded-md border border-input flex items-center justify-center text-muted-foreground hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="shrink-0 h-9 w-9 rounded-md border border-rule-strong flex items-center justify-center text-ink-muted hover:bg-paper-deep transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Plus className="h-4 w-4" />
                     </button>
@@ -329,8 +325,8 @@ export default function AdminGeneralStudiesPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                Title <span className="text-destructive">*</span>
+              <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+                Title <span className="text-[oklch(52%_.16_35)]">*</span>
               </label>
               <Input
                 value={form.title}
@@ -341,8 +337,8 @@ export default function AdminGeneralStudiesPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                Raw Content <span className="text-destructive">*</span>
+              <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+                Raw Content <span className="text-[oklch(52%_.16_35)]">*</span>
               </label>
               <Textarea
                 value={form.rawContent}
@@ -352,23 +348,22 @@ export default function AdminGeneralStudiesPage() {
                 disabled={createArticleMutation.isPending}
                 className="resize-y min-h-32"
               />
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-[10px] text-ink-muted">
                 {form.rawContent.trim().split(/\s+/).filter(Boolean).length} words
               </p>
             </div>
 
             <div className="pt-1 flex items-center justify-between gap-4">
               {createArticleMutation.isPending && (
-                <p className="text-xs text-muted-foreground flex items-center gap-2">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+                <p className="text-xs text-ink-muted flex items-center gap-2">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-ink" />
                   AI is generating the article… this takes a few seconds
                 </p>
               )}
               <button
                 type="submit"
                 disabled={!canSubmit || createArticleMutation.isPending}
-                className="ml-auto flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)', boxShadow: '0 4px 16px rgba(124,58,237,0.3)' }}
+                className="ml-auto flex items-center gap-2 px-6 py-2.5 rounded-md text-sm font-semibold bg-ink text-paper transition-colors hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {createArticleMutation.isPending
                   ? <><Loader2 className="h-4 w-4 animate-spin" />Generating…</>
@@ -381,12 +376,11 @@ export default function AdminGeneralStudiesPage() {
         {/* ── Drafts list ── */}
         <section className="space-y-3">
           <div className="flex items-center gap-2">
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            <h2 className="text-sm font-bold text-foreground">Drafts</h2>
+            <FileText className="h-4 w-4 text-ink-muted" />
+            <h2 className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">Drafts</h2>
             {draftCount > 0 && (
               <span
-                className="h-4.5 min-w-4.5 px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center"
-                style={{ background: '#D97706' }}
+                className="h-4.5 min-w-4.5 px-1 rounded-[2px] font-label text-[10px] tabular-nums bg-ink text-paper flex items-center justify-center"
               >
                 {draftCount}
               </span>
@@ -395,13 +389,13 @@ export default function AdminGeneralStudiesPage() {
 
           {draftsLoading ? (
             <div className="space-y-3">
-              {[1, 2].map((i) => <Skeleton key={i} className="h-24 rounded-2xl" />)}
+              {[1, 2].map((i) => <Skeleton key={i} className="h-24 rounded-[2px]" />)}
             </div>
           ) : !drafts || drafts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card p-10 text-center gap-2">
-              <BookOpen className="h-8 w-8 text-muted-foreground/25" />
-              <p className="text-sm font-semibold text-foreground">No drafts pending review</p>
-              <p className="text-xs text-muted-foreground">Create one above to get started.</p>
+            <div className="flex flex-col items-center justify-center rounded-[2px] border border-dashed border-rule bg-paper-raised p-10 text-center gap-2">
+              <BookOpen className="h-8 w-8 text-ink-faint" />
+              <p className="text-sm font-semibold text-ink">No drafts pending review</p>
+              <p className="text-xs text-ink-muted">Create one above to get started.</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -413,26 +407,25 @@ export default function AdminGeneralStudiesPage() {
                 return (
                   <div
                     key={draft.id}
-                    className="rounded-2xl border border-border bg-card p-5 space-y-3 transition-opacity"
-                    style={{ opacity: busy ? 0.6 : 1, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
+                    className="ks-card p-5 space-y-3 transition-opacity"
+                    style={{ opacity: busy ? 0.6 : 1 }}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0 space-y-1">
-                        <p className="text-sm font-bold text-foreground leading-snug">{draft.title}</p>
-                        <p className="text-[11px] text-muted-foreground">
+                        <p className="text-sm font-semibold text-ink leading-snug">{draft.title}</p>
+                        <p className="text-[11px] text-ink-muted">
                           {subject?.name ?? '—'} · {draft.readTimeMins} min read
                         </p>
                       </div>
                       <div
-                        className="h-7 px-2.5 rounded-lg flex items-center text-[10px] font-bold shrink-0"
-                        style={{ background: 'rgba(217,119,6,0.1)', color: '#D97706', border: '1px solid rgba(217,119,6,0.25)' }}
+                        className="ks-tag shrink-0"
                       >
                         Draft
                       </div>
                     </div>
 
                     {draft.summary && (
-                      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 border-l-2 border-primary/20 pl-3">
+                      <p className="text-xs text-ink-muted leading-relaxed line-clamp-2 border-l-2 border-ink pl-3">
                         {draft.summary}
                       </p>
                     )}
@@ -441,7 +434,7 @@ export default function AdminGeneralStudiesPage() {
                       <button
                         onClick={() => router.push(`/admin/general-studies/drafts/${draft.id}`)}
                         disabled={busy}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border border-border text-foreground hover:bg-secondary transition-colors disabled:cursor-not-allowed cursor-pointer"
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-rule text-ink hover:bg-paper-deep transition-colors disabled:cursor-not-allowed cursor-pointer"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                         Edit
@@ -449,8 +442,7 @@ export default function AdminGeneralStudiesPage() {
                       <button
                         onClick={() => publishMutation.mutate(draft.id)}
                         disabled={busy}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:opacity-90 disabled:cursor-not-allowed cursor-pointer"
-                        style={{ background: 'linear-gradient(135deg, #059669, #0891B2)', boxShadow: '0 2px 8px rgba(5,150,105,0.25)' }}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold bg-ink text-paper transition-colors hover:bg-ink/90 disabled:cursor-not-allowed cursor-pointer"
                       >
                         {isPublishing
                           ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Publishing…</>
@@ -459,7 +451,7 @@ export default function AdminGeneralStudiesPage() {
                       <button
                         onClick={() => setDeleteTarget({ id: draft.id, title: draft.title })}
                         disabled={busy}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border border-destructive/30 text-destructive hover:bg-destructive/8 transition-colors disabled:cursor-not-allowed cursor-pointer"
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-[oklch(52%_.16_35)]/30 text-[oklch(52%_.16_35)] hover:bg-[oklch(52%_.16_35)]/10 transition-colors disabled:cursor-not-allowed cursor-pointer"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                         Delete
@@ -478,7 +470,7 @@ export default function AdminGeneralStudiesPage() {
           heading="Delete draft?"
           body={`"${deleteTarget.title}" will be permanently deleted.`}
           confirmLabel="Delete"
-          confirmBg="#DC2626"
+          confirmBg="oklch(52% .16 35)"
           onConfirm={() => deleteMutation.mutate(deleteTarget.id)}
           onCancel={() => setDeleteTarget(null)}
           loading={deleteMutation.isPending}

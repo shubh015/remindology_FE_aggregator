@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from 'react';
 
-const CONFETTI_COLORS = ['#7C3AED', '#10B981', '#F59E0B', '#3B82F6', '#EC4899', '#EF4444', '#06B6D4'];
+const CONFETTI_COLORS = [
+  'var(--color-ink)', 'var(--color-ink-muted)', 'var(--color-gold)', 'var(--color-ink-faint)',
+  'var(--color-paper-gray)', 'var(--color-gold-deep)', 'var(--color-ink-soft)',
+];
 
 interface ConfettiPiece {
   id: number; originLeft: string; color: string; size: number;

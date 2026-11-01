@@ -24,17 +24,17 @@ function DetectivePanel({ wrongExplanations, selected }: {
   if (!wrongMsg) return null;
 
   return (
-    <div className="rounded-xl border border-amber-500/25 bg-amber-500/6 overflow-hidden">
+    <div className="rounded-[2px] border border-gold/55 bg-gold/10 overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-bold text-amber-700 cursor-pointer"
+        className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold text-ink cursor-pointer"
       >
         <span>🔍 Prelims Detective — Why was your choice wrong?</span>
         {open ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
       </button>
       {open && (
-        <div className="px-4 pb-3 border-t border-amber-500/15">
-          <p className="text-xs text-muted-foreground leading-relaxed mt-2">{wrongMsg}</p>
+        <div className="px-4 pb-3 border-t border-gold/30">
+          <p className="text-xs text-ink-soft leading-relaxed mt-2">{wrongMsg}</p>
         </div>
       )}
     </div>
@@ -55,7 +55,7 @@ export function MCQsTab({ contentId }: ContentTabProps) {
     return (
       <div className="space-y-4 py-4">
         {[1, 2].map((i) => (
-          <div key={i} className="space-y-3 p-6 border border-border rounded-xl bg-card">
+          <div key={i} className="space-y-3 p-6 ks-card">
             <Skeleton className="h-5 w-3/4" />
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-10 w-full" />
@@ -68,16 +68,16 @@ export function MCQsTab({ contentId }: ContentTabProps) {
 
   if (!Array.isArray(mcqs) || mcqs.length === 0) {
     return (
-      <div className="flex min-h-65 flex-col items-center justify-center rounded-xl border border-dashed border-border p-8 text-center bg-card mt-2">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+      <div className="flex min-h-65 flex-col items-center justify-center rounded-[2px] border border-dashed border-rule-strong p-8 text-center bg-paper-raised mt-2">
+        <div className="flex h-10 w-10 items-center justify-center rounded-[3px] border border-rule bg-paper-deep text-ink mb-4">
           <HelpCircle className="h-5 w-5" />
         </div>
-        <h3 className="text-base font-semibold text-foreground mb-1.5">No practice questions yet</h3>
-        <p className="text-sm text-muted-foreground max-w-xs mb-6 leading-relaxed">
+        <h3 className="text-base font-semibold text-ink mb-1.5">No practice questions yet</h3>
+        <p className="text-sm text-ink-muted max-w-xs mb-6 leading-relaxed">
           Generate exam-calibrated MCQs with AI-powered explanations for each wrong option.
         </p>
         {isGenerateError && (
-          <div className="mb-4 flex items-start gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive border border-destructive/20 max-w-xs text-left">
+          <div className="mb-4 flex items-start gap-2 rounded-[2px] bg-[oklch(52%_.16_35/.06)] p-3 text-sm text-[oklch(52%_.16_35)] border border-[oklch(52%_.16_35/.25)] max-w-xs text-left">
             <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
             <span>
               {(generateError as { response?: { data?: { message?: string } } })?.response?.data?.message ||
@@ -85,11 +85,11 @@ export function MCQsTab({ contentId }: ContentTabProps) {
             </span>
           </div>
         )}
-        <Button onClick={() => generate()} disabled={isGenerating || isAiLimitReached} className="cursor-pointer text-sm font-semibold gap-2 rounded-xl px-5">
+        <Button onClick={() => generate()} disabled={isGenerating || isAiLimitReached} className="cursor-pointer text-sm font-semibold gap-2 px-5">
           {isGenerating ? <><Loader2 className="h-4 w-4 animate-spin" />Generating MCQs…</> : <><Sparkles className="h-4 w-4" />Generate MCQs</>}
         </Button>
         {isAiLimitReached && (
-          <p className="text-[11px] text-muted-foreground mt-2">Daily AI limit reached · Resets at midnight</p>
+          <p className="font-label text-[11px] text-ink-muted mt-2">Daily AI limit reached · Resets at midnight</p>
         )}
       </div>
     );
@@ -101,19 +101,19 @@ export function MCQsTab({ contentId }: ContentTabProps) {
   return (
     <div className="space-y-5 py-3">
       {/* Score bar */}
-      <div className="flex items-center justify-between p-4 rounded-xl bg-primary/5 border border-primary/20">
+      <div className="flex items-center justify-between p-4 ks-card bg-paper-deep">
         <div>
-          <p className="text-sm font-semibold text-foreground">Interactive Practice Quiz</p>
-          <p className="text-xs text-muted-foreground mt-0.5">Answered {answeredCount} of {mcqs.length} · Prelims Detective enabled</p>
+          <p className="text-sm font-semibold text-ink">Interactive Practice Quiz</p>
+          <p className="font-label text-[11px] text-ink-muted mt-0.5">Answered {answeredCount} of {mcqs.length} · Prelims Detective enabled</p>
         </div>
         <div className="flex items-center gap-4">
           {answeredCount > 0 && (
-            <span className="text-sm font-bold text-primary">
+            <span className="text-sm font-semibold tabular-nums text-ink">
               {correctCount} / {answeredCount} ({Math.round((correctCount / answeredCount) * 100)}%)
             </span>
           )}
           {answeredCount > 0 && (
-            <Button onClick={() => setSelectedAnswers({})} variant="outline" size="sm" className="h-8 gap-1.5 text-sm font-semibold cursor-pointer rounded-lg">
+            <Button onClick={() => setSelectedAnswers({})} variant="outline" size="sm" className="h-8 gap-1.5 text-sm font-medium cursor-pointer">
               <RotateCcw className="h-3.5 w-3.5" />Restart
             </Button>
           )}
@@ -128,11 +128,11 @@ export function MCQsTab({ contentId }: ContentTabProps) {
           const isCorrect  = selected === mcq.correctAnswer;
 
           return (
-            <Card key={mcq.id} className="border-border bg-card shadow-sm overflow-hidden">
+            <Card key={mcq.id} className="overflow-hidden">
               <CardContent className="p-6 space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-primary uppercase tracking-wider">Question {idx + 1}</span>
-                  <Badge variant={mcq.difficulty === 'EASY' ? 'success' : mcq.difficulty === 'MEDIUM' ? 'warning' : 'destructive'} className="text-xs font-semibold">
+                  <span className="font-label text-[11px] font-medium text-ink-muted uppercase tracking-[0.14em]">Question {idx + 1}</span>
+                  <Badge variant={mcq.difficulty === 'EASY' ? 'success' : mcq.difficulty === 'MEDIUM' ? 'warning' : 'destructive'} >
                     {mcq.difficulty}
                   </Badge>
                 </div>
@@ -145,22 +145,22 @@ export function MCQsTab({ contentId }: ContentTabProps) {
                     const isCurrentCorrect  = option === mcq.correctAnswer;
                     const isCurrentSelected = selected === option;
 
-                    let wrapStyle    = 'border-border bg-card hover:bg-secondary/50 text-foreground';
-                    let badgeStyle   = 'bg-secondary text-muted-foreground border-border';
+                    let wrapStyle    = 'border-rule bg-paper-raised hover:border-rule-strong hover:bg-paper-deep text-ink-soft';
+                    let badgeStyle   = 'bg-paper-deep text-ink-muted border-rule';
                     let icon: React.ReactNode = null;
 
                     if (isAnswered) {
                       if (isCurrentCorrect) {
-                        wrapStyle  = 'bg-emerald-500/8 border-emerald-500/60 text-emerald-800 dark:text-emerald-300';
-                        badgeStyle = 'bg-emerald-500 text-white border-emerald-500';
-                        icon = <Check className="h-4 w-4 text-emerald-500 shrink-0" />;
+                        wrapStyle  = 'bg-paper-deep border-ink text-ink';
+                        badgeStyle = 'bg-ink text-paper border-ink';
+                        icon = <Check className="h-4 w-4 text-ink shrink-0" />;
                       } else if (isCurrentSelected) {
-                        wrapStyle  = 'bg-destructive/8 border-destructive/60 text-destructive';
-                        badgeStyle = 'bg-destructive text-white border-destructive';
-                        icon = <X className="h-4 w-4 text-destructive shrink-0" />;
+                        wrapStyle  = 'bg-[oklch(52%_.16_35/.06)] border-[oklch(52%_.16_35/.6)] text-[oklch(52%_.16_35)]';
+                        badgeStyle = 'bg-[oklch(52%_.16_35)] text-paper border-[oklch(52%_.16_35)]';
+                        icon = <X className="h-4 w-4 text-[oklch(52%_.16_35)] shrink-0" />;
                       } else {
-                        wrapStyle  = 'opacity-40 border-border bg-muted/30 text-muted-foreground';
-                        badgeStyle = 'bg-muted text-muted-foreground border-border';
+                        wrapStyle  = 'opacity-45 border-rule bg-paper-deep text-ink-muted';
+                        badgeStyle = 'bg-paper-gray text-ink-muted border-rule';
                       }
                     }
 
@@ -170,13 +170,13 @@ export function MCQsTab({ contentId }: ContentTabProps) {
                         onClick={() => handleSelectOption(mcq.id, option)}
                         disabled={isAnswered}
                         className={cn(
-                          'w-full flex items-center gap-3 text-left px-3.5 py-3 rounded-xl border-2 transition-all duration-150',
-                          !isAnswered && 'cursor-pointer hover:scale-[1.005] active:scale-[0.998]',
+                          'w-full flex items-center gap-3 text-left px-3.5 py-3 rounded-[3px] border transition-colors duration-150 ease-ks',
+                          !isAnswered && 'cursor-pointer',
                           wrapStyle,
                         )}
                       >
                         <span className={cn(
-                          'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-xs font-extrabold transition-colors',
+                          'flex h-7 w-7 shrink-0 items-center justify-center rounded-[3px] border font-label text-xs font-semibold transition-colors',
                           badgeStyle,
                         )}>
                           {letter}
@@ -191,9 +191,9 @@ export function MCQsTab({ contentId }: ContentTabProps) {
                 {isAnswered && (
                   <div className="space-y-2">
                     {/* Explanation */}
-                    <div className={cn('p-4 rounded-lg border text-sm leading-relaxed space-y-2', isCorrect ? 'bg-emerald-500/6 border-emerald-500/25' : 'bg-muted/50 border-border/80')}>
-                      <p className="font-semibold text-foreground">{isCorrect ? '✓ Correct!' : '✗ Incorrect'}</p>
-                      <ExplanationText text={mcq.explanation} className="text-sm text-muted-foreground leading-relaxed" />
+                    <div className={cn('p-4 rounded-[2px] border text-sm leading-relaxed space-y-2', isCorrect ? 'bg-paper-deep border-rule-strong' : 'bg-paper-deep border-rule')}>
+                      <p className={cn('font-semibold', isCorrect ? 'text-ink' : 'text-[oklch(52%_.16_35)]')}>{isCorrect ? '✓ Correct!' : '✗ Incorrect'}</p>
+                      <ExplanationText text={mcq.explanation} className="text-sm text-ink-soft leading-relaxed" />
                     </div>
 
                     {/* Prelims Detective — wrong option breakdown */}

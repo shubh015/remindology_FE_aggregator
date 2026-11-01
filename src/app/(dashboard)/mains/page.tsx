@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { Header } from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { useMainsQuestions, useMainsSubmit, useMainsPdfSubmit, useMainsCustomPdfSubmit } from '@/features/mains/hooks/use-mains';
@@ -41,7 +40,7 @@ function TimerDisplay({ seconds }: { seconds: number }) {
   const secs   = (seconds % 60).toString().padStart(2, '0');
   const urgent = seconds > 0 && seconds < 60;
   return (
-    <div className={cn('flex items-center gap-1.5 font-mono text-sm font-bold tabular-nums', urgent ? 'text-red-600' : 'text-foreground')}>
+    <div className={cn('flex items-center gap-1.5 font-label text-sm font-medium tabular-nums', urgent ? 'text-[oklch(52%_.16_35)]' : 'text-ink')}>
       <Timer className={cn('h-4 w-4', urgent && 'animate-pulse')} />
       {mins}:{secs}
     </div>
@@ -73,7 +72,7 @@ function ScanningAnimation({ pageCount }: { pageCount: number }) {
   }, []);
 
   return (
-    <div className="rounded-2xl border border-primary/20 bg-card overflow-hidden">
+    <div className="ks-card !block">
       {/* CSS keyframes scoped to this component */}
       <style>{`
         @keyframes rm-scan {
@@ -91,13 +90,13 @@ function ScanningAnimation({ pageCount }: { pageCount: number }) {
       `}</style>
 
       {/* Document mockup */}
-      <div className="relative mx-5 mt-5 rounded-2xl bg-background border border-border overflow-hidden" style={{ height: 148 }}>
+      <div className="relative mx-5 mt-5 rounded-[2px] bg-paper border border-rule overflow-hidden" style={{ height: 148 }}>
         {/* Fake handwriting lines */}
         <div className="p-4 space-y-2.5">
           {LINE_WIDTHS.map((w, i) => (
             <div
               key={i}
-              className="h-1.5 rounded-full bg-border"
+              className="h-1.5 rounded-full bg-rule-strong"
               style={{
                 width: `${w}%`,
                 animation: `rm-line-pulse 2.2s ease-in-out ${i * 0.28}s infinite`,
@@ -110,18 +109,14 @@ function ScanningAnimation({ pageCount }: { pageCount: number }) {
         <div
           style={{
             position: 'absolute',
-            left: 12, right: 12, height: 2, borderRadius: 1,
-            background: 'linear-gradient(to right, transparent 0%, rgba(124,58,237,0.9) 25%, rgba(192,38,211,1) 50%, rgba(124,58,237,0.9) 75%, transparent 100%)',
-            boxShadow: '0 0 14px 5px rgba(124,58,237,0.3)',
+            left: 12, right: 12, height: 1, borderRadius: 1,
+            background: 'var(--color-ink)',
             animation: 'rm-scan 2.6s ease-in-out infinite',
           }}
         />
 
         {/* Badge */}
-        <div
-          className="absolute top-2.5 right-2.5 flex items-center gap-1 text-[10px] font-bold rounded-full px-2 py-0.5"
-          style={{ background: 'rgba(124,58,237,0.1)', color: 'rgba(124,58,237,0.8)', border: '1px solid rgba(124,58,237,0.2)' }}
-        >
+        <div className="ks-tag absolute top-2.5 right-2.5">
           <ScanLine className="h-2.5 w-2.5" />
           {pageCount} {pageCount === 1 ? 'page' : 'pages'}
         </div>
@@ -136,10 +131,10 @@ function ScanningAnimation({ pageCount }: { pageCount: number }) {
           return (
             <div key={i} className={cn('flex items-center gap-3 transition-opacity duration-500', future && 'opacity-30')}>
               <div className={cn(
-                'h-7 w-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold transition-all duration-300',
-                done   && 'bg-emerald-500 text-white',
-                active && 'bg-primary text-white',
-                future && 'bg-secondary text-muted-foreground',
+                'h-7 w-7 rounded-full flex items-center justify-center shrink-0 font-label text-xs transition-colors duration-200 ease-ks',
+                done   && 'bg-ink text-paper',
+                active && 'bg-ink text-paper',
+                future && 'bg-paper-gray text-ink-muted',
               )}>
                 {done   && <CheckCircle2 className="h-3.5 w-3.5" />}
                 {active && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
@@ -147,17 +142,17 @@ function ScanningAnimation({ pageCount }: { pageCount: number }) {
               </div>
               <span className={cn(
                 'text-sm flex-1 transition-all duration-300',
-                done   && 'text-muted-foreground line-through decoration-muted-foreground/40',
-                active && 'text-foreground font-semibold',
-                future && 'text-muted-foreground',
+                done   && 'text-ink-muted line-through decoration-ink-muted/40',
+                active && 'text-ink font-semibold',
+                future && 'text-ink-muted',
               )}>
                 {label}
                 {active && i === 1 && pageCount > 1 && (
-                  <span className="text-muted-foreground font-normal ml-1">({pageCount} pages)</span>
+                  <span className="text-ink-muted font-normal ml-1">({pageCount} pages)</span>
                 )}
               </span>
               {active && (
-                <span className="text-[11px] text-primary/70 font-medium animate-pulse shrink-0">
+                <span className="font-label text-[11px] text-ink-muted shrink-0">
                   processing…
                 </span>
               )}
@@ -178,35 +173,35 @@ function ScoreCard({ result, onBack }: {
   const [showExtracted, setShowExtracted] = useState(false);
   const ev  = result.evaluation;
   const pct = Math.round((result.score / result.outOf) * 100);
-  const scoreColor = pct >= 70 ? 'text-emerald-600' : pct >= 40 ? 'text-amber-600' : 'text-red-600';
+  const scoreColor = pct >= 40 ? 'text-ink' : 'text-[oklch(52%_.16_35)]';
 
   return (
     <div className="space-y-5">
 
       {/* OCR extracted text */}
       {result.extractedText && (
-        <div className="rounded-2xl border border-border bg-card overflow-hidden">
+        <div className="ks-card !block">
           <button
             type="button"
             onClick={() => setShowExtracted((v) => !v)}
-            className="w-full flex items-center justify-between px-5 py-4 hover:bg-secondary/50 transition-colors cursor-pointer"
+            className="w-full flex items-center justify-between px-5 py-4 hover:bg-paper-deep transition-colors duration-150 ease-ks cursor-pointer"
           >
-            <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <ScanLine className="h-4 w-4 text-primary" />
+            <span className="flex items-center gap-2 text-sm font-semibold text-ink">
+              <ScanLine className="h-4 w-4 text-ink" />
               What AI read from your answer
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+              <span className="ks-tag ks-tag-outline">
                 Verify OCR
               </span>
             </span>
-            <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform duration-200', showExtracted && 'rotate-180')} />
+            <ChevronDown className={cn('h-4 w-4 text-ink-muted transition-transform duration-200 ease-ks', showExtracted && 'rotate-180')} />
           </button>
           {showExtracted && (
-            <div className="px-5 pb-5 border-t border-border">
-              <p className="text-[11px] text-muted-foreground mt-3 mb-2">
+            <div className="px-5 pb-5 border-t border-rule">
+              <p className="text-[11px] text-ink-muted mt-3 mb-2">
                 Text AI extracted from your handwritten answer. If something looks off, your handwriting may not have been read correctly.
               </p>
-              <div className="rounded-xl bg-secondary/50 border border-border p-4 max-h-64 overflow-y-auto">
-                <p className="text-xs leading-relaxed text-foreground whitespace-pre-wrap font-mono">
+              <div className="rounded-[3px] bg-paper-deep border border-rule p-4 max-h-64 overflow-y-auto">
+                <p className="text-xs leading-relaxed text-ink-soft whitespace-pre-wrap font-label">
                   {result.extractedText}
                 </p>
               </div>
@@ -216,71 +211,71 @@ function ScoreCard({ result, onBack }: {
       )}
 
       {/* Score */}
-      <div className="rounded-2xl border border-border bg-card p-6 text-center space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Your Score</p>
-        <p className={`text-5xl font-bold ${scoreColor}`}>
-          {result.score}<span className="text-2xl text-muted-foreground">/{result.outOf}</span>
+      <div className="ks-card !block p-6 text-center space-y-2">
+        <p className="font-label text-[11px] text-ink-muted uppercase tracking-[0.14em]">Your Score</p>
+        <p className={`text-5xl font-semibold tabular-nums ${scoreColor}`}>
+          {result.score}<span className="text-2xl text-ink-muted">/{result.outOf}</span>
         </p>
-        <p className="text-xs text-muted-foreground">{result.wordCount} words · {pct}%</p>
+        <p className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted tabular-nums">{result.wordCount} words · {pct}%</p>
       </div>
 
       {/* Breakdown */}
-      <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
-        <p className="text-sm font-bold text-foreground flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-primary" />Paragraph Breakdown
+      <div className="ks-card !block p-5 space-y-3">
+        <p className="text-sm font-semibold text-ink flex items-center gap-2">
+          <TrendingUp className="h-4 w-4 text-ink" />Paragraph Breakdown
         </p>
         {(Object.entries(ev.breakdown) as [string, { score: number; feedback: string }][]).map(([key, val]) => (
           <div key={key} className="space-y-1">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-foreground capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
-              <span className="font-bold text-primary">{val.score} pts</span>
+              <span className="font-semibold text-ink capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+              <span className="font-label text-ink tabular-nums">{val.score} pts</span>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">{val.feedback}</p>
+            <p className="text-xs text-ink-muted leading-relaxed">{val.feedback}</p>
           </div>
         ))}
       </div>
 
       {/* Strengths + Gaps */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-2">
-          <p className="text-xs font-bold text-emerald-700 flex items-center gap-1.5">
+        <div className="ks-card !block p-4 space-y-2">
+          <p className="text-xs font-semibold text-ink flex items-center gap-1.5">
             <CheckCircle2 className="h-3.5 w-3.5" />Strengths
           </p>
           <ul className="space-y-1">
-            {ev.keyStrengths.map((s, i) => <li key={i} className="text-xs text-muted-foreground">· {s}</li>)}
+            {ev.keyStrengths.map((s, i) => <li key={i} className="text-xs text-ink-soft">· {s}</li>)}
           </ul>
         </div>
-        <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4 space-y-2">
-          <p className="text-xs font-bold text-red-700 flex items-center gap-1.5">
+        <div className="ks-card !block p-4 space-y-2">
+          <p className="text-xs font-semibold text-[oklch(52%_.16_35)] flex items-center gap-1.5">
             <AlertCircle className="h-3.5 w-3.5" />Critical Gaps
           </p>
           <ul className="space-y-1">
-            {ev.criticalGaps.map((g, i) => <li key={i} className="text-xs text-muted-foreground">· {g}</li>)}
+            {ev.criticalGaps.map((g, i) => <li key={i} className="text-xs text-ink-soft">· {g}</li>)}
           </ul>
         </div>
       </div>
 
       {/* Missing keywords */}
       {ev.missingKeywords.length > 0 && (
-        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 space-y-2">
-          <p className="text-xs font-bold text-amber-700">Missing Keywords</p>
+        <div className="ks-card !block p-4 space-y-2">
+          <p className="text-xs font-semibold text-ink">Missing Keywords</p>
           <div className="flex flex-wrap gap-1.5">
             {ev.missingKeywords.map((kw) => (
-              <span key={kw} className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700">{kw}</span>
+              <span key={kw} className="ks-tag ks-tag-gold">{kw}</span>
             ))}
           </div>
         </div>
       )}
 
       {/* Improved outline */}
-      <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 space-y-2">
-        <p className="text-xs font-bold text-primary flex items-center gap-1.5">
+      <div className="rounded-[2px] border border-rule border-l-2 border-l-ink bg-paper-deep p-4 space-y-2">
+        <p className="text-xs font-semibold text-ink flex items-center gap-1.5">
           <Sparkles className="h-3.5 w-3.5" />AI-Suggested Outline
         </p>
-        <p className="text-xs text-foreground leading-relaxed">{ev.improvedOutline}</p>
+        <p className="text-xs text-ink-soft leading-relaxed">{ev.improvedOutline}</p>
       </div>
 
-      <Button variant="outline" onClick={onBack} className="w-full cursor-pointer rounded-xl gap-2 font-semibold">
+      <Button variant="outline" onClick={onBack} className="w-full cursor-pointer rounded-[3px] gap-2 font-semibold">
         <ChevronLeft className="h-4 w-4" />Try Another Question
       </Button>
     </div>
@@ -312,27 +307,27 @@ function MultiFileZone({
         onDrop={onDrop}
         onClick={onPickMore}
         className={cn(
-          'rounded-2xl border-2 border-dashed cursor-pointer transition-all duration-200 select-none',
+          'rounded-[2px] border border-dashed cursor-pointer transition-colors duration-150 ease-ks select-none',
           isDragOver
-            ? 'border-primary bg-primary/5 scale-[1.01]'
-            : 'border-border bg-secondary/20 hover:border-primary/50 hover:bg-primary/2',
+            ? 'border-ink bg-paper-deep'
+            : 'border-rule-strong bg-paper-raised hover:border-edge hover:bg-paper-deep',
           disabled && 'pointer-events-none opacity-50',
         )}
       >
         <div className="flex flex-col items-center justify-center gap-3 py-12 px-6 text-center">
           <div className={cn(
-            'h-16 w-16 rounded-2xl flex items-center justify-center transition-colors',
-            isDragOver ? 'bg-primary/15' : 'bg-secondary',
+            'h-12 w-12 rounded-[3px] border border-rule flex items-center justify-center transition-colors',
+            isDragOver ? 'bg-paper-gray' : 'bg-paper-deep',
           )}>
-            <Upload className={cn('h-7 w-7 transition-colors', isDragOver ? 'text-primary' : 'text-muted-foreground')} />
+            <Upload className={cn('h-6 w-6 transition-colors', isDragOver ? 'text-ink' : 'text-ink-soft')} />
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-foreground">
+            <p className="text-sm font-semibold text-ink">
               {isDragOver ? 'Drop your pages here' : 'Drag & drop or click to upload'}
             </p>
-            <p className="text-xs text-muted-foreground">PDF, JPG, PNG, WEBP · Max 20 MB per page · Up to 3 pages</p>
+            <p className="text-xs text-ink-muted">PDF, JPG, PNG, WEBP · Max 20 MB per page · Up to 3 pages</p>
           </div>
-          <p className="text-[11px] text-muted-foreground/70 max-w-xs leading-relaxed">
+          <p className="text-[11px] text-ink-muted max-w-xs leading-relaxed">
             Photograph each page of your answer clearly before uploading
           </p>
         </div>
@@ -352,31 +347,28 @@ function MultiFileZone({
         <div
           key={i}
           className={cn(
-            'flex items-center gap-3 p-3.5 rounded-2xl border border-border bg-card transition-opacity',
+            'flex items-center gap-3 p-3.5 rounded-[2px] border border-rule bg-paper-raised transition-opacity',
             disabled && 'opacity-60',
           )}
         >
           {/* Thumbnail */}
-          <div className="h-12 w-12 rounded-xl overflow-hidden shrink-0 bg-secondary flex items-center justify-center">
+          <div className="h-12 w-12 rounded-[3px] overflow-hidden shrink-0 bg-paper-deep border border-rule flex items-center justify-center">
             {previewUrls[i] ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={previewUrls[i]!} alt={`Page ${i + 1}`} className="h-full w-full object-cover" />
             ) : (
-              <FileText className="h-5 w-5 text-red-500" />
+              <FileText className="h-5 w-5 text-ink" />
             )}
           </div>
           {/* Info */}
           <div className="flex-1 min-w-0 space-y-0.5">
             <div className="flex items-center gap-2">
-              <span
-                className="text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0"
-                style={{ background: 'rgba(124,58,237,0.1)', color: '#7C3AED' }}
-              >
+              <span className="ks-tag ks-tag-ink shrink-0">
                 Page {i + 1}
               </span>
-              <p className="text-xs font-semibold text-foreground truncate">{f.name}</p>
+              <p className="text-xs font-semibold text-ink truncate">{f.name}</p>
             </div>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-[11px] text-ink-muted tabular-nums">
               {formatBytes(f.size)}
               <span className="mx-1">·</span>
               {f.type === 'application/pdf' ? 'PDF' : 'Image'}
@@ -387,7 +379,7 @@ function MultiFileZone({
             <button
               type="button"
               onClick={() => onRemove(i)}
-              className="shrink-0 h-7 w-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/8 transition-colors cursor-pointer"
+              className="shrink-0 h-7 w-7 rounded-[3px] flex items-center justify-center text-ink-muted hover:text-[oklch(52%_.16_35)] hover:bg-paper-deep transition-colors duration-150 ease-ks cursor-pointer"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -400,20 +392,20 @@ function MultiFileZone({
         <button
           type="button"
           onClick={onPickMore}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl border border-dashed border-border hover:border-primary/40 bg-secondary/10 hover:bg-primary/2 transition-all cursor-pointer"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-[2px] border border-dashed border-rule-strong hover:border-edge bg-paper-raised hover:bg-paper-deep transition-colors duration-150 ease-ks cursor-pointer"
         >
-          <div className="h-7 w-7 rounded-lg bg-secondary flex items-center justify-center shrink-0">
-            <Plus className="h-3.5 w-3.5 text-muted-foreground" />
+          <div className="h-7 w-7 rounded-[3px] border border-rule bg-paper-deep flex items-center justify-center shrink-0">
+            <Plus className="h-3.5 w-3.5 text-ink" />
           </div>
-          <span className="text-xs font-semibold text-muted-foreground">
+          <span className="text-xs font-semibold text-ink-soft">
             Add page {files.length + 1}
-            <span className="text-muted-foreground/60 font-normal ml-1.5">({MAX_PAGES - files.length} more allowed)</span>
+            <span className="text-ink-muted font-normal ml-1.5">({MAX_PAGES - files.length} more allowed)</span>
           </span>
         </button>
       ) : files.length === MAX_PAGES ? (
-        <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-          <span className="text-xs font-semibold text-emerald-700">All 3 pages added</span>
+        <div className="flex items-center gap-2 px-4 py-2.5 rounded-[2px] bg-paper-raised border border-rule">
+          <CheckCircle2 className="h-3.5 w-3.5 text-ink shrink-0" />
+          <span className="text-xs font-semibold text-ink">All 3 pages added</span>
         </div>
       ) : null}
     </div>
@@ -497,23 +489,23 @@ function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, i
     <div className="space-y-4">
 
       {/* Question card */}
-      <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
+      <div className="ks-card !block p-5 space-y-3">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge variant="secondary" className="text-[10px] font-bold">{question.topic_tag}</Badge>
-            <Badge variant="outline" className="text-[10px]">{question.marks} marks</Badge>
-            <Badge variant="outline" className="text-[10px]">{question.word_limit} words</Badge>
+            <span className="ks-tag">{question.topic_tag}</span>
+            <span className="ks-tag ks-tag-outline">{question.marks} marks</span>
+            <span className="ks-tag ks-tag-outline">{question.word_limit} words</span>
           </div>
           <TimerDisplay seconds={elapsed} />
         </div>
-        <p className="text-sm font-semibold text-foreground leading-snug">{question.question_text}</p>
+        <p className="text-base font-semibold text-ink leading-snug">{question.question_text}</p>
         {question.source && (
-          <p className="text-[11px] text-muted-foreground">Source: {question.source}</p>
+          <p className="font-label text-[11px] text-ink-muted">Source: {question.source}</p>
         )}
       </div>
 
       {/* Mode toggle */}
-      <div className="flex gap-1 p-1 rounded-2xl bg-secondary/60 border border-border w-fit">
+      <div className="flex gap-1 p-1 rounded-[3px] bg-paper-deep border border-rule w-fit">
         {([
           { id: 'type'   as InputMode, label: 'Type Answer',       Icon: PenLine },
           { id: 'upload' as InputMode, label: 'Upload Handwritten', Icon: FileUp  },
@@ -524,8 +516,8 @@ function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, i
             onClick={() => { setMode(id); setFileError(''); }}
             disabled={isSubmitting}
             className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer disabled:opacity-50',
-              mode === id ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground',
+              'flex items-center gap-2 px-4 py-2 rounded-[2px] text-sm font-semibold transition-colors duration-150 ease-ks cursor-pointer disabled:opacity-50',
+              mode === id ? 'bg-paper-raised text-ink border border-rule-strong' : 'text-ink-muted border border-transparent hover:text-ink',
             )}
           >
             <Icon className="h-3.5 w-3.5" />
@@ -539,8 +531,8 @@ function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, i
         <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-muted-foreground">Your Answer</span>
-              <span className={cn('font-bold', overLimit ? 'text-red-600' : 'text-muted-foreground')}>
+              <span className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">Your Answer</span>
+              <span className={cn('font-label tabular-nums', overLimit ? 'text-[oklch(52%_.16_35)]' : 'text-ink-muted')}>
                 {wordCount}/{question.word_limit} words
               </span>
             </div>
@@ -555,14 +547,14 @@ function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, i
           <Button
             onClick={() => onTextSubmit(text, elapsed)}
             disabled={isSubmitting || wordCount < 30 || isAiLimitReached}
-            className="w-full cursor-pointer font-semibold text-sm h-11 rounded-xl gap-2"
+            className="w-full cursor-pointer font-semibold text-sm h-11 rounded-[3px] gap-2"
           >
             {isSubmittingText
               ? <><Loader2 className="h-4 w-4 animate-spin" />Evaluating…</>
               : <><Sparkles className="h-4 w-4" />Submit for AI Evaluation</>}
           </Button>
           {isAiLimitReached && (
-            <p className="text-center text-[11px] text-muted-foreground">Daily AI limit reached · Resets at midnight</p>
+            <p className="text-center text-[11px] text-ink-muted">Daily AI limit reached · Resets at midnight</p>
           )}
         </div>
       )}
@@ -602,8 +594,8 @@ function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, i
 
               {/* Tips — only when nothing uploaded yet */}
               {files.length === 0 && (
-                <div className="rounded-xl bg-amber-500/5 border border-amber-500/15 p-4 space-y-2">
-                  <p className="text-[11px] font-bold text-amber-700 uppercase tracking-wide">Tips for best OCR accuracy</p>
+                <div className="rounded-[2px] bg-paper-raised border border-rule p-4 space-y-2">
+                  <p className="font-label text-[11px] text-ink-muted uppercase tracking-[0.14em]">Tips for best OCR accuracy</p>
                   <ul className="space-y-1.5">
                     {[
                       'Write clearly — block or printed letters read better than cursive',
@@ -611,7 +603,7 @@ function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, i
                       'Good lighting matters — avoid shadows, use natural or bright light',
                       'Each page is a separate image; photograph them individually',
                     ].map((tip) => (
-                      <li key={tip} className="text-[11px] text-amber-800/70 flex items-start gap-1.5">
+                      <li key={tip} className="text-[11px] text-ink-soft flex items-start gap-1.5">
                         <span className="mt-0.5 shrink-0">·</span>
                         <span>{tip}</span>
                       </li>
@@ -624,7 +616,7 @@ function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, i
 
           {/* Validation error */}
           {fileError && (
-            <div className="flex items-center gap-2 rounded-xl bg-destructive/8 border border-destructive/20 px-4 py-3 text-xs text-destructive font-medium">
+            <div className="flex items-center gap-2 rounded-[2px] bg-paper-raised border border-rule px-4 py-3 text-xs text-[oklch(52%_.16_35)] font-medium">
               <AlertCircle className="h-3.5 w-3.5 shrink-0" />
               {fileError}
             </div>
@@ -632,29 +624,29 @@ function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, i
 
           {/* API / scanning failure */}
           {!isSubmittingPdf && pdfError && (
-            <div className="rounded-2xl border border-destructive/25 bg-destructive/5 p-4 space-y-3">
+            <div className="rounded-[2px] border border-[oklch(52%_.16_35_/_0.3)] bg-paper-raised p-4 space-y-3">
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
-                <p className="text-sm font-semibold text-destructive">Upload failed</p>
+                <AlertCircle className="h-4 w-4 text-[oklch(52%_.16_35)] shrink-0" />
+                <p className="text-sm font-semibold text-[oklch(52%_.16_35)]">Upload failed</p>
               </div>
-              <p className="text-xs text-destructive/80 leading-relaxed pl-6">{pdfError}</p>
+              <p className="text-xs text-ink-soft leading-relaxed pl-6">{pdfError}</p>
               {retrySecondsLeft > 0 ? (
                 <div className="pl-6 space-y-2">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Auto-retry available in</span>
-                    <span className="font-bold tabular-nums text-destructive">
+                    <span className="text-ink-muted">Auto-retry available in</span>
+                    <span className="font-label tabular-nums text-ink">
                       0:{String(retrySecondsLeft).padStart(2, '0')}
                     </span>
                   </div>
-                  <div className="h-1.5 rounded-full bg-destructive/15 overflow-hidden">
+                  <div className="h-1.5 rounded-full bg-paper-gray overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-destructive/50 transition-all duration-1000 ease-linear"
+                      className="h-full rounded-full bg-ink transition-all duration-1000 ease-linear"
                       style={{ width: `${(retrySecondsLeft / 60) * 100}%` }}
                     />
                   </div>
                 </div>
               ) : (
-                <p className="text-[11px] text-muted-foreground pl-6">Your pages are still attached — try submitting again.</p>
+                <p className="text-[11px] text-ink-muted pl-6">Your pages are still attached — try submitting again.</p>
               )}
             </div>
           )}
@@ -665,7 +657,7 @@ function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, i
               <Button
                 onClick={() => files.length > 0 && retrySecondsLeft === 0 && !isAiLimitReached && onPdfSubmit(files, elapsed)}
                 disabled={isSubmitting || files.length === 0 || retrySecondsLeft > 0 || isAiLimitReached}
-                className="w-full cursor-pointer font-semibold text-sm h-11 rounded-xl gap-2"
+                className="w-full cursor-pointer font-semibold text-sm h-11 rounded-[3px] gap-2"
               >
                 {retrySecondsLeft > 0 ? (
                   <>
@@ -680,7 +672,7 @@ function AnswerEditor({ question, onTextSubmit, onPdfSubmit, isSubmittingText, i
                 )}
               </Button>
               {isAiLimitReached && (
-                <p className="text-center text-[11px] text-muted-foreground">Daily AI limit reached · Resets at midnight</p>
+                <p className="text-center text-[11px] text-ink-muted">Daily AI limit reached · Resets at midnight</p>
               )}
             </>
           )}
@@ -712,13 +704,13 @@ function CustomQuestionForm({ onStart }: { onStart: (q: MainsQuestion) => void }
   return (
     <div className="space-y-5">
       {/* Info header */}
-      <div className="flex items-start gap-3 p-4 rounded-2xl bg-primary/5 border border-primary/15">
-        <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-          <FileUp className="h-4.5 w-4.5 text-primary" />
+      <div className="ks-card p-4 !flex items-start gap-3">
+        <div className="h-8 w-8 rounded-[3px] border border-rule bg-paper-deep flex items-center justify-center shrink-0 mt-0.5">
+          <FileUp className="h-4 w-4 text-ink" />
         </div>
         <div>
-          <p className="text-sm font-bold text-foreground">Upload handwritten answer for any question</p>
-          <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+          <p className="text-sm font-semibold text-ink">Upload handwritten answer for any question</p>
+          <p className="text-xs text-ink-muted mt-0.5 leading-relaxed">
             Works with questions from coaching material, test series, past papers, or anything you write yourself. Upload up to 3 pages.
           </p>
         </div>
@@ -726,8 +718,8 @@ function CustomQuestionForm({ onStart }: { onStart: (q: MainsQuestion) => void }
 
       {/* Question text */}
       <div className="space-y-1.5">
-        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-          Your Question <span className="text-destructive">*</span>
+        <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+          Your Question <span className="text-[oklch(52%_.16_35)]">*</span>
         </label>
         <Textarea
           value={questionText}
@@ -741,7 +733,7 @@ function CustomQuestionForm({ onStart }: { onStart: (q: MainsQuestion) => void }
       {/* Marks + Word limit */}
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Marks</label>
+          <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">Marks</label>
           <Input
             type="number"
             value={marks}
@@ -749,10 +741,10 @@ function CustomQuestionForm({ onStart }: { onStart: (q: MainsQuestion) => void }
             min={5} max={25} step={5}
             className="text-center font-semibold"
           />
-          <p className="text-[10px] text-muted-foreground text-center">5 – 25 marks</p>
+          <p className="text-[11px] text-ink-muted text-center tabular-nums">5 – 25 marks</p>
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Word Limit</label>
+          <label className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">Word Limit</label>
           <Input
             type="number"
             value={wordLimit}
@@ -760,7 +752,7 @@ function CustomQuestionForm({ onStart }: { onStart: (q: MainsQuestion) => void }
             min={100} max={600} step={50}
             className="text-center font-semibold"
           />
-          <p className="text-[10px] text-muted-foreground text-center">100 – 600 words</p>
+          <p className="text-[11px] text-ink-muted text-center tabular-nums">100 – 600 words</p>
         </div>
       </div>
 
@@ -769,11 +761,7 @@ function CustomQuestionForm({ onStart }: { onStart: (q: MainsQuestion) => void }
         type="button"
         onClick={handleStart}
         disabled={!questionText.trim()}
-        className="w-full flex items-center justify-center gap-2 h-12 rounded-2xl text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-        style={{
-          background: 'linear-gradient(135deg, #7C3AED, #C026D3)',
-          boxShadow: questionText.trim() ? '0 4px 20px rgba(124,58,237,0.3)' : 'none',
-        }}
+        className="btn-ink w-full !rounded-[3px] disabled:opacity-40 disabled:cursor-not-allowed"
       >
         <FileUp className="h-4 w-4" />
         Proceed to Upload
@@ -787,39 +775,38 @@ function CustomQuestionForm({ onStart }: { onStart: (q: MainsQuestion) => void }
 function MainsLimitModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-sm space-y-5 p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40">
+      <div className="bg-paper-raised border border-rule rounded-[3px] shadow-lift-2 w-full max-w-sm space-y-5 p-6">
 
         {/* Icon + close */}
         <div className="flex items-start justify-between gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-            style={{ background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.25)' }}>
-            <Lock className="h-5 w-5" style={{ color: '#7C3AED' }} />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[3px] border border-rule bg-paper-deep">
+            <Lock className="h-5 w-5 text-ink" />
           </div>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer mt-0.5">
+          <button onClick={onClose} className="text-ink-muted hover:text-ink transition-colors duration-150 ease-ks cursor-pointer mt-0.5">
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Copy */}
         <div className="space-y-1.5">
-          <p className="text-base font-bold text-foreground leading-snug">
+          <p className="text-base font-semibold text-ink leading-snug">
             You&apos;ve used your free evaluation
           </p>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm text-ink-muted leading-relaxed">
             The free tier includes 1 mains evaluation. Upgrade to Pro for unlimited AI-scored answer evaluations, detailed feedback, and more.
           </p>
         </div>
 
         {/* Usage indicator */}
-        <div className="rounded-xl bg-secondary/60 border border-border p-3 flex items-center gap-3">
+        <div className="rounded-[2px] bg-paper-deep border border-rule p-3 flex items-center gap-3">
           <div className="flex-1">
-            <div className="flex justify-between text-xs font-semibold text-foreground mb-1.5">
+            <div className="flex justify-between text-xs font-semibold text-ink tabular-nums mb-1.5">
               <span>Evaluations used</span>
               <span>1 / 1</span>
             </div>
-            <div className="h-1.5 rounded-full bg-border overflow-hidden">
-              <div className="h-full rounded-full bg-red-500 w-full" />
+            <div className="h-1.5 rounded-full bg-paper-gray overflow-hidden">
+              <div className="h-full rounded-full bg-ink w-full" />
             </div>
           </div>
         </div>
@@ -828,15 +815,14 @@ function MainsLimitModal({ open, onClose }: { open: boolean; onClose: () => void
         <div className="space-y-2 pt-1">
           <button
             onClick={onClose}
-            className="w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-white transition-opacity hover:opacity-90 cursor-pointer"
-            style={{ background: 'linear-gradient(135deg, #7C3AED, #C026D3)' }}
+            className="btn-ink w-full !rounded-[3px]"
           >
             <Zap className="h-4 w-4" />
             Upgrade to Pro
           </button>
           <button
             onClick={onClose}
-            className="w-full py-2.5 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer"
+            className="w-full py-2.5 text-xs font-semibold text-ink-muted hover:text-ink transition-colors duration-150 ease-ks cursor-pointer"
           >
             Maybe later
           </button>
@@ -926,13 +912,13 @@ export default function MainsPage() {
       <Header
         title="Answer Writing"
         action={selected && !isSuccess ? (
-          <button onClick={handleBack} className="flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer">
+          <button onClick={handleBack} className="flex items-center gap-1 text-xs font-semibold text-ink-muted hover:text-ink transition-colors duration-150 ease-ks cursor-pointer">
             <ChevronLeft className="h-3.5 w-3.5" />Back
           </button>
         ) : (
           <Link
             href="/mains/analytics"
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-1.5 text-xs font-semibold text-ink-muted hover:text-ink transition-colors duration-150 ease-ks"
           >
             <BarChart3 className="h-3.5 w-3.5" />
             Progress
@@ -966,7 +952,7 @@ export default function MainsPage() {
         ) : (
           <>
             {/* ── Tab bar ── */}
-            <div className="flex gap-1 p-1 rounded-2xl bg-secondary/60 border border-border">
+            <div className="flex gap-1 p-1 rounded-[3px] bg-paper-deep border border-rule">
               {([
                 { id: 'bank'   as ListingTab, label: 'Question Bank',    Icon: PenLine },
                 { id: 'custom' as ListingTab, label: 'Upload My Answer',  Icon: FileUp  },
@@ -976,10 +962,10 @@ export default function MainsPage() {
                   type="button"
                   onClick={() => setListingTab(id)}
                   className={cn(
-                    'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer',
+                    'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[2px] text-sm font-semibold transition-colors duration-150 ease-ks cursor-pointer',
                     listingTab === id
-                      ? 'bg-card text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground',
+                      ? 'bg-paper-raised text-ink border border-rule-strong'
+                      : 'text-ink-muted border border-transparent hover:text-ink',
                   )}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -991,16 +977,16 @@ export default function MainsPage() {
             {/* ── Question bank tab ── */}
             {listingTab === 'bank' && (
               <>
-                <p className="text-xs text-muted-foreground px-1">
+                <p className="text-xs text-ink-muted px-1">
                   Select a question to start timed writing. Use the <strong>Upload My Answer</strong> tab to submit a handwritten answer for your own question.
                 </p>
 
                 {isLoading ? (
                   <div className="space-y-3">
-                    {[1, 2, 3].map((i) => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)}
+                    {[1, 2, 3].map((i) => <Skeleton key={i} className="h-24 w-full rounded-[2px]" />)}
                   </div>
                 ) : isError ? (
-                  <div className="flex items-center gap-2 rounded-xl bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive">
+                  <div className="flex items-center gap-2 rounded-[2px] bg-paper-raised border border-rule p-4 text-sm text-[oklch(52%_.16_35)]">
                     <AlertCircle className="h-4 w-4 shrink-0" />
                     <span>Failed to load questions. Please try again.</span>
                   </div>
@@ -1010,20 +996,20 @@ export default function MainsPage() {
                       <button
                         key={q.id}
                         onClick={() => { setSelected(q); setIsCustomQuestion(false); }}
-                        className="w-full text-left rounded-2xl border border-border bg-card hover:border-primary/30 hover:shadow-sm transition-all p-5 group cursor-pointer"
+                        className="ks-card !block w-full text-left p-5 group cursor-pointer"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 space-y-2">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <Badge variant="secondary" className="text-[10px] font-bold">{q.topic_tag}</Badge>
-                              <Badge variant="outline" className="text-[10px]">{q.marks} marks · {q.word_limit} words</Badge>
-                              {q.source && <span className="text-[10px] text-muted-foreground">{q.source}</span>}
+                              <span className="ks-tag">{q.topic_tag}</span>
+                              <span className="ks-tag ks-tag-outline">{q.marks} marks · {q.word_limit} words</span>
+                              {q.source && <span className="ks-card-meta">{q.source}</span>}
                             </div>
-                            <p className="text-sm font-semibold text-foreground leading-snug group-hover:text-primary transition-colors">
+                            <p className="text-sm font-semibold text-ink leading-snug">
                               {q.question_text}
                             </p>
                           </div>
-                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-180 shrink-0 mt-1 group-hover:text-primary transition-colors" />
+                          <ChevronLeft className="h-4 w-4 text-ink-muted rotate-180 shrink-0 mt-1 group-hover:text-ink group-hover:translate-x-0.5 transition-[color,transform] duration-150 ease-ks" />
                         </div>
                       </button>
                     ))}

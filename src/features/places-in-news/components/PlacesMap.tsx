@@ -6,9 +6,9 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ArrowRight } from 'lucide-react';
-import { CATEGORY_CONFIG } from '../category-config';
+import { CATEGORY_CONFIG, categoryGlyphSvg } from '../category-config';
 import { useIsHoverCapable } from '../hooks/use-is-hover-capable';
-import type { PlaceInNewsMapPoint } from '@/types/features';
+import type { PlaceCategory, PlaceInNewsMapPoint } from '@/types/features';
 
 // Default center: roughly the geographic centre of India, so an empty or
 // still-loading map isn't just a blank grey rectangle.
@@ -18,17 +18,22 @@ const INDIA_ZOOM = 5;
 // pulse=true adds a ping ring behind the pin — used on touch devices, which have no
 // hover affordance, to visually invite a tap. Desktop pins stay static since hovering
 // over them already reveals the card.
-function pinIcon(color: string, pulse: boolean): L.DivIcon {
+// Monochrome pin: paper teardrop with an ink border; the category is told apart by
+// the glyph (shape + filled/hollow) drawn in its centre.
+function pinIcon(category: PlaceCategory, pulse: boolean): L.DivIcon {
   return L.divIcon({
     className: '',
     html: `
       <div style="position:relative; width:26px; height:26px;">
-        ${pulse ? `<div class="marker-pulse-ring" style="background:${color};"></div>` : ''}
+        ${pulse ? `<div class="marker-pulse-ring" style="background:var(--color-ink);"></div>` : ''}
         <div style="
           position:relative; width: 26px; height: 26px; border-radius: 50% 50% 50% 0;
-          background: ${color}; transform: rotate(-45deg);
-          border: 2px solid #FFFFFF; box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+          background: var(--color-paper-raised); transform: rotate(-45deg);
+          border: 1.5px solid var(--color-ink); box-shadow: var(--shadow-lift-1);
         "></div>
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+          ${categoryGlyphSvg(category, 11)}
+        </div>
       </div>
     `,
     iconSize: [26, 26],
@@ -58,7 +63,7 @@ export function PlacesMap({ points }: { points: PlaceInNewsMapPoint[] }) {
   const icons = useMemo(() => {
     const cache = new Map<string, L.DivIcon>();
     for (const cat of Object.keys(CATEGORY_CONFIG) as (keyof typeof CATEGORY_CONFIG)[]) {
-      cache.set(cat, pinIcon(CATEGORY_CONFIG[cat].color, !hoverCapable));
+      cache.set(cat, pinIcon(cat, !hoverCapable));
     }
     return cache;
   }, [hoverCapable]);
@@ -84,7 +89,7 @@ export function PlacesMap({ points }: { points: PlaceInNewsMapPoint[] }) {
         maxBounds={[[-90, -180], [90, 180]]}
         maxBoundsViscosity={1.0}
         scrollWheelZoom
-        style={{ height: '100%', width: '100%', borderRadius: 16 }}
+        style={{ height: '100%', width: '100%', borderRadius: 2 }}
       >
         {/* Esri World Physical Map — pure shaded-relief terrain, no political boundaries
             rendered at all (see PhysicalMap.tsx for the fuller rationale). Reused here so
@@ -102,7 +107,7 @@ export function PlacesMap({ points }: { points: PlaceInNewsMapPoint[] }) {
             <Marker
               key={p.id}
               position={[p.lat, p.lng]}
-              icon={icons.get(p.category) ?? pinIcon(cfg.color, !hoverCapable)}
+              icon={icons.get(p.category) ?? pinIcon(p.category, !hoverCapable)}
               eventHandlers={hoverCapable ? {
                 mouseover: (e) => e.target.openPopup(),
                 mouseout: (e) => e.target.closePopup(),
@@ -110,23 +115,27 @@ export function PlacesMap({ points }: { points: PlaceInNewsMapPoint[] }) {
             >
               <Popup autoPan={false}>
                 <div style={{ minWidth: 200 }}>
-                  <p style={{ fontWeight: 700, fontSize: 13, marginBottom: 4, color: '#1A1836' }}>{p.name}</p>
+                  <p style={{ fontWeight: 600, fontSize: 13, marginBottom: 4, color: 'var(--color-ink)' }}>{p.name}</p>
                   <span
                     style={{
-                      display: 'inline-block', fontSize: 10, fontWeight: 700,
-                      padding: '2px 8px', borderRadius: 999, marginBottom: 6,
-                      background: `${cfg.color}14`, color: cfg.color, border: `1px solid ${cfg.color}33`,
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      fontFamily: 'var(--font-label)', fontSize: 10, fontWeight: 500,
+                      letterSpacing: '0.12em', textTransform: 'uppercase',
+                      padding: '2px 8px', borderRadius: 2, marginBottom: 6,
+                      background: 'var(--color-paper-gray)', color: 'var(--color-ink-soft)',
+                      border: '1px solid var(--color-rule-strong)',
                     }}
                   >
+                    <span dangerouslySetInnerHTML={{ __html: categoryGlyphSvg(p.category, 9) }} />
                     {cfg.label}
                   </span>
-                  <p style={{ fontSize: 12, lineHeight: 1.5, color: '#4B5563', marginBottom: p.currentAffairId ? 8 : 0 }}>
+                  <p style={{ fontSize: 12, lineHeight: 1.5, color: 'var(--color-ink-muted)', marginBottom: p.currentAffairId ? 8 : 0 }}>
                     {p.context}
                   </p>
                   {p.currentAffairId && (
                     <Link
                       href={`/current-affairs/${p.currentAffairId}`}
-                      style={{ fontSize: 12, fontWeight: 700, color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                      style={{ fontFamily: 'var(--font-label)', fontSize: 12, color: 'var(--color-ink)', textDecoration: 'underline', textUnderlineOffset: 4, display: 'inline-flex', alignItems: 'center', gap: 4 }}
                     >
                       Read the article <ArrowRight size={12} />
                     </Link>

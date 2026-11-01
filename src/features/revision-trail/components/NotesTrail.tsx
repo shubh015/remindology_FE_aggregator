@@ -33,8 +33,8 @@ export function NotesTrail({ notes }: { notes: SavedNote[] }) {
           <path
             d={layout.pathD}
             fill="none"
-            stroke="hsl(var(--border))"
-            strokeWidth={2.5}
+            stroke="var(--color-rule-strong)"
+            strokeWidth={1.5}
             strokeDasharray="6 6"
             strokeLinecap="round"
           />
@@ -58,22 +58,22 @@ export function NotesTrail({ notes }: { notes: SavedNote[] }) {
               <span className="relative flex items-center justify-center">
                 {!isRevised && (
                   <span
-                    className="absolute h-9 w-9 rounded-full bg-primary/40"
+                    className="absolute h-9 w-9 rounded-full bg-gold/50"
                     style={{ animation: 'pulseRing 2.2s ease-out infinite' }}
                   />
                 )}
                 <span
                   className={cn(
-                    'relative flex h-9 w-9 items-center justify-center rounded-full border-2 text-xs font-bold shadow-sm transition-transform group-hover:scale-110',
+                    'relative flex h-9 w-9 items-center justify-center rounded-full border font-label text-xs font-semibold tabular-nums transition-colors duration-150 ease-ks',
                     isRevised
-                      ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-600'
-                      : 'bg-primary text-primary-foreground border-primary',
+                      ? 'bg-paper-raised border-rule-strong text-ink group-hover:border-ink'
+                      : 'bg-ink text-paper border-ink group-hover:bg-ink-soft',
                   )}
                 >
                   {isRevised ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
                 </span>
               </span>
-              <span className="max-w-24 truncate text-[11px] font-medium text-muted-foreground text-center">
+              <span className="max-w-24 truncate text-[11px] font-medium text-ink-muted text-center group-hover:text-ink">
                 {note.noteText}
               </span>
             </button>

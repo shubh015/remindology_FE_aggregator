@@ -57,22 +57,19 @@ export function ExplanationText({
   return (
     <div className="space-y-2">
       {parsed.intro && <p className={introCls}>{parsed.intro}</p>}
-      <div className="rounded-lg border border-border/60 divide-y divide-border/40 overflow-hidden">
+      <div className="rounded-[3px] border border-border divide-y divide-border overflow-hidden">
         {parsed.verdicts.map((v, i) => (
           <div
             key={i}
-            className={cn(
-              'flex items-start gap-2 px-3 py-2',
-              v.isCorrect ? 'bg-emerald-500/5' : 'bg-red-500/5',
-            )}
+            className="flex items-start gap-2 px-3 py-2"
           >
             {v.isCorrect
-              ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
-              : <XCircle className="h-3.5 w-3.5 text-red-500 shrink-0 mt-0.5" />}
+              ? <CheckCircle2 className="h-3.5 w-3.5 text-foreground shrink-0 mt-0.5" />
+              : <XCircle className="h-3.5 w-3.5 text-[oklch(52%_.16_35)] shrink-0 mt-0.5" />}
             <p className="text-xs leading-relaxed min-w-0">
               <span className={cn(
-                'font-bold uppercase tracking-wide mr-1',
-                v.isCorrect ? 'text-emerald-600' : 'text-red-600',
+                'font-semibold uppercase tracking-wide mr-1',
+                v.isCorrect ? 'text-foreground' : 'text-[oklch(52%_.16_35)]',
               )}>
                 Statement {v.num}:
               </span>

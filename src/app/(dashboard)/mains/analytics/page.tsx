@@ -35,15 +35,15 @@ function StatCard({
   accent: string;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 flex flex-col gap-3">
-      <div className={cn('flex h-9 w-9 items-center justify-center rounded-xl', accent)}>
+    <div className="ks-card p-5 !flex flex-col gap-3">
+      <div className={cn('flex h-8 w-8 items-center justify-center rounded-[3px]', accent)}>
         <Icon className="h-4 w-4" />
       </div>
       <div>
-        <p className="text-2xl font-bold text-foreground leading-none">{value}</p>
-        {sub && <p className="text-[11px] text-muted-foreground mt-0.5">{sub}</p>}
+        <p className="text-2xl font-semibold tabular-nums text-ink leading-none">{value}</p>
+        {sub && <p className="font-label text-[10px] uppercase tracking-[0.14em] text-ink-muted mt-1">{sub}</p>}
       </div>
-      <p className="text-xs text-muted-foreground font-medium">{label}</p>
+      <p className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">{label}</p>
     </div>
   );
 }
@@ -82,8 +82,8 @@ function TrendChart({ data }: { data: MainsAnalyticsTrend[] }) {
   const hoveredPoint = hovered !== null ? points[hovered] : null;
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
-      <p className="text-sm font-semibold text-foreground mb-4">Score trend</p>
+    <div className="ks-card !block p-5">
+      <p className="text-sm font-semibold text-ink mb-4">Score trend</p>
       <div className="w-full overflow-x-auto">
         <svg
           viewBox={`0 0 ${CHART_W} ${CHART_H}`}
@@ -111,18 +111,10 @@ function TrendChart({ data }: { data: MainsAnalyticsTrend[] }) {
           })}
 
           {/* Area fill */}
-          <path d={areaPath} fill="url(#trendGrad)" opacity={0.15} />
+          <path d={areaPath} fill="var(--color-ink)" opacity={0.05} />
 
           {/* Line */}
-          <path d={linePath} fill="none" stroke="#7C3AED" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
-
-          {/* Gradient def */}
-          <defs>
-            <linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#7C3AED" />
-              <stop offset="100%" stopColor="#7C3AED" stopOpacity={0} />
-            </linearGradient>
-          </defs>
+          <path d={linePath} fill="none" stroke="var(--color-ink)" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
 
           {/* Dots + hover targets */}
           {points.map((p, i) => (
@@ -135,8 +127,8 @@ function TrendChart({ data }: { data: MainsAnalyticsTrend[] }) {
               />
               <circle
                 cx={p.x} cy={p.y} r={hovered === i ? 5 : 3.5}
-                fill={hovered === i ? '#7C3AED' : '#fff'}
-                stroke="#7C3AED"
+                fill={hovered === i ? 'var(--color-ink)' : 'var(--color-paper-raised)'}
+                stroke="var(--color-ink)"
                 strokeWidth={2}
                 style={{ transition: 'r 0.1s' }}
               />
@@ -178,16 +170,16 @@ function TrendChart({ data }: { data: MainsAnalyticsTrend[] }) {
               <g style={{ pointerEvents: 'none' }}>
                 <rect
                   x={boxX} y={boxY} width={boxW} height={boxH}
-                  rx={6} ry={6}
-                  fill="#1e1b4b" opacity={0.92}
+                  rx={2} ry={2}
+                  fill="var(--color-ink)"
                 />
-                <text x={boxX + 8} y={boxY + 16} fontSize={10} fill="#c4b5fd" fontWeight={600}>
+                <text x={boxX + 8} y={boxY + 16} fontSize={10} fill="var(--color-paper)" opacity={0.7} fontWeight={500}>
                   {hoveredPoint.d.topic}
                 </text>
-                <text x={boxX + 8} y={boxY + 30} fontSize={11} fill="#ffffff" fontWeight={700}>
+                <text x={boxX + 8} y={boxY + 30} fontSize={11} fill="var(--color-paper)" fontWeight={600}>
                   {hoveredPoint.d.score}/{hoveredPoint.d.outOf} · {fmtPct(hoveredPoint.d.pct)}
                 </text>
-                <text x={boxX + 8} y={boxY + 42} fontSize={9} fill="#a5b4fc" opacity={0.8}>
+                <text x={boxX + 8} y={boxY + 42} fontSize={9} fill="var(--color-paper)" opacity={0.55}>
                   {fmtDate(hoveredPoint.d.date)}
                 </text>
               </g>
@@ -204,32 +196,29 @@ function TrendChart({ data }: { data: MainsAnalyticsTrend[] }) {
 function TopicRow({
   topic, avgPct, count, isWeak, isStrong,
 }: MainsAnalyticsByTopic & { isWeak: boolean; isStrong: boolean }) {
+  // Monochrome bars; strong topics are the single gold highlight series.
   const barColor = isStrong
-    ? 'bg-emerald-500'
+    ? 'bg-gold'
     : isWeak
-    ? 'bg-red-500'
-    : 'bg-violet-500';
+    ? 'bg-ink/30'
+    : 'bg-ink';
 
-  const labelColor = isStrong
-    ? 'text-emerald-600 dark:text-emerald-400'
-    : isWeak
-    ? 'text-red-500'
-    : 'text-foreground';
+  const labelColor = 'text-ink';
 
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0">
-          {isStrong && <span className="text-[10px] font-bold text-emerald-500 shrink-0">STRONG</span>}
-          {isWeak   && <span className="text-[10px] font-bold text-red-500 shrink-0">WEAK</span>}
+          {isStrong && <span className="ks-tag ks-tag-gold shrink-0">STRONG</span>}
+          {isWeak   && <span className="ks-tag ks-tag-alert shrink-0">WEAK</span>}
           <span className={cn('text-sm font-semibold truncate', labelColor)}>{topic}</span>
-          <span className="text-[10px] text-muted-foreground shrink-0">{count} {count === 1 ? 'answer' : 'answers'}</span>
+          <span className="text-[11px] text-ink-muted tabular-nums shrink-0">{count} {count === 1 ? 'answer' : 'answers'}</span>
         </div>
-        <span className="text-sm font-bold text-foreground shrink-0">{fmtPct(avgPct)}</span>
+        <span className="text-sm font-semibold tabular-nums text-ink shrink-0">{fmtPct(avgPct)}</span>
       </div>
-      <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
+      <div className="h-2 w-full rounded-full bg-paper-gray overflow-hidden">
         <div
-          className={cn('h-full rounded-full transition-all', barColor)}
+          className={cn('h-full rounded-full transition-[width] duration-200 ease-ks', barColor)}
           style={{ width: `${Math.min(avgPct, 100)}%` }}
         />
       </div>
@@ -249,7 +238,7 @@ export default function MainsAnalyticsPage() {
         action={
           <Link
             href="/mains"
-            className="flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground"
+            className="flex items-center gap-1 text-xs font-semibold text-ink-muted hover:text-ink transition-colors duration-150 ease-ks"
           >
             <ChevronLeft className="h-3.5 w-3.5" />Back
           </Link>
@@ -259,7 +248,7 @@ export default function MainsAnalyticsPage() {
       <div className="flex-1 p-6 sm:p-8 max-w-4xl w-full mx-auto space-y-6">
 
         {isError && (
-          <div className="flex items-center gap-3 rounded-2xl bg-destructive/10 border border-destructive/20 p-5 text-sm text-destructive">
+          <div className="flex items-center gap-3 rounded-[2px] bg-paper-raised border border-rule p-5 text-sm text-[oklch(52%_.16_35)]">
             <AlertCircle className="h-5 w-5 shrink-0" />
             <span>Could not load analytics. Please try again.</span>
           </div>
@@ -268,27 +257,27 @@ export default function MainsAnalyticsPage() {
         {isLoading && (
           <>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}
+              {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-32 rounded-[2px]" />)}
             </div>
-            <Skeleton className="h-56 rounded-2xl" />
-            <Skeleton className="h-48 rounded-2xl" />
+            <Skeleton className="h-56 rounded-[2px]" />
+            <Skeleton className="h-48 rounded-[2px]" />
           </>
         )}
 
         {data && data.totalAnswers === 0 && (
           <div className="flex flex-col items-center justify-center gap-5 py-20 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary">
-              <BarChart3 className="h-8 w-8 text-muted-foreground" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-[3px] border border-rule bg-paper-deep">
+              <BarChart3 className="h-6 w-6 text-ink" />
             </div>
             <div className="space-y-1">
-              <p className="text-base font-semibold text-foreground">No answers yet</p>
-              <p className="text-sm text-muted-foreground max-w-xs">
+              <p className="text-base font-semibold text-ink">No answers yet</p>
+              <p className="text-sm text-ink-muted max-w-xs">
                 Submit your first mains answer to see your progress and analytics here.
               </p>
             </div>
             <Link
               href="/mains"
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:opacity-90 transition-opacity"
+              className="btn-ink btn-sm"
             >
               <PenLine className="h-4 w-4" />
               Start Writing
@@ -304,26 +293,26 @@ export default function MainsAnalyticsPage() {
                 label="Answers submitted"
                 value={String(data.totalAnswers)}
                 icon={PenLine}
-                accent="bg-violet-500/10 text-violet-500"
+                accent="border border-rule bg-paper-deep text-ink"
               />
               <StatCard
                 label="Average score"
                 value={fmtPct(data.avgPct)}
                 icon={BarChart3}
-                accent="bg-blue-500/10 text-blue-500"
+                accent="border border-rule bg-paper-deep text-ink"
               />
               <StatCard
                 label="Best score"
                 value={fmtPct(data.bestPct)}
                 icon={Trophy}
-                accent="bg-amber-500/10 text-amber-500"
+                accent="border border-rule bg-paper-deep text-ink"
               />
               <StatCard
                 label="Time spent"
                 value={`${data.totalTimeMins}`}
                 sub="minutes"
                 icon={Clock}
-                accent="bg-emerald-500/10 text-emerald-500"
+                accent="border border-rule bg-paper-deep text-ink"
               />
             </div>
 
@@ -333,18 +322,18 @@ export default function MainsAnalyticsPage() {
               return (
                 <div
                   className={cn(
-                    'flex items-start gap-3 rounded-2xl border p-4',
+                    'flex items-start gap-3 rounded-[2px] border p-4 bg-paper-raised',
                     improved
-                      ? 'bg-emerald-500/8 border-emerald-500/20'
-                      : 'bg-amber-500/8 border-amber-500/20',
+                      ? 'border-rule'
+                      : 'border-[color-mix(in_oklch,var(--color-gold)_55%,transparent)]',
                   )}
                 >
                   {improved
-                    ? <TrendingUp className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
-                    : <TrendingDown className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />}
+                    ? <TrendingUp className="h-5 w-5 text-ink shrink-0 mt-0.5" />
+                    : <TrendingDown className="h-5 w-5 text-gold-deep shrink-0 mt-0.5" />}
                   <p className={cn(
                     'text-sm font-medium',
-                    improved ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700 dark:text-amber-400',
+                    improved ? 'text-ink' : 'text-ink-soft',
                   )}>
                     {improved
                       ? `You've improved by +${Math.abs(data.improvementPct).toFixed(1)}% compared to your first attempts 📈`
@@ -359,8 +348,8 @@ export default function MainsAnalyticsPage() {
 
             {/* ── Topic breakdown ── */}
             {data.byTopic.length > 0 && (
-              <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
-                <p className="text-sm font-semibold text-foreground">Performance by topic</p>
+              <div className="ks-card !block p-5 space-y-4">
+                <p className="text-sm font-semibold text-ink">Performance by topic</p>
                 <div className="space-y-4">
                   {[...data.byTopic]
                     .sort((a, b) => b.avgPct - a.avgPct)
@@ -374,16 +363,16 @@ export default function MainsAnalyticsPage() {
                     ))}
                 </div>
                 {(data.weakAreas.length > 0 || data.strongAreas.length > 0) && (
-                  <div className="pt-2 border-t border-border flex flex-wrap gap-4 text-xs text-muted-foreground">
+                  <div className="pt-2 border-t border-rule flex flex-wrap gap-4 text-xs text-ink-muted">
                     {data.strongAreas.length > 0 && (
                       <span>
-                        <span className="font-bold text-emerald-500">Strong: </span>
+                        <span className="font-semibold text-ink">Strong: </span>
                         {data.strongAreas.join(', ')}
                       </span>
                     )}
                     {data.weakAreas.length > 0 && (
                       <span>
-                        <span className="font-bold text-red-500">Needs work: </span>
+                        <span className="font-semibold text-[oklch(52%_.16_35)]">Needs work: </span>
                         {data.weakAreas.join(', ')}
                       </span>
                     )}

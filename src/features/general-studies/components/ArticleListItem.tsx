@@ -1,27 +1,39 @@
+import Link from 'next/link';
 import type { GSArticle } from '@/types/features';
-import { GSPlaceholderCard } from './GSPlaceholderCard';
-import { getGSIcon } from './gs-icons';
-
-const GS_PAPER_COLORS: Record<string, string> = {
-  GS1: '#7C3AED', GS2: '#0891B2', GS3: '#059669', GS4: '#DC2626',
-};
 
 function stripHtml(text: string | undefined | null): string {
   if (!text) return '';
   return text.includes('<') ? text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : text;
 }
 
+/**
+ * Rule-separated list row for a GS article. Every GS paper is styled the
+ * same; tags differ by label only. Wrap a list of these in a container with
+ * `border-b border-rule` to close the last row.
+ */
 export function ArticleListItem({ article }: { article: GSArticle }) {
-  const accentColor = GS_PAPER_COLORS[article.gsPaperTags?.[0]] ?? '#8A6A12';
-  const icon = getGSIcon(article.topicTags?.[0] ?? article.title);
+  const paperTag = article.gsPaperTags?.[0];
+  const topicTag = article.topicTags?.[0];
+  const description = stripHtml(article.summary);
 
   return (
-    <GSPlaceholderCard
-      title={article.title}
-      description={stripHtml(article.summary)}
+    <Link
       href={`/general-studies/articles/${article.slug}`}
-      accentColor={accentColor}
-      icon={icon}
-    />
+      className="group grid gap-2 py-5 border-t border-rule transition-colors duration-150 ease-ks"
+    >
+      {(paperTag || topicTag) && (
+        <div className="ks-card-head">
+          {paperTag && <span className="ks-tag">{paperTag}</span>}
+          {topicTag && <span className="ks-tag ks-tag-outline">{topicTag}</span>}
+        </div>
+      )}
+      <p className="ks-card-title group-hover:underline underline-offset-4 decoration-1">
+        {article.title}
+      </p>
+      {description && <p className="ks-card-desc line-clamp-2">{description}</p>}
+      {article.readTimeMins > 0 && (
+        <span className="ks-card-meta">{article.readTimeMins} min read</span>
+      )}
+    </Link>
   );
 }

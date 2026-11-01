@@ -23,15 +23,15 @@ function fmtDate(iso: string) {
 }
 
 function accuracyColor(pct: number): string {
-  if (pct >= 70) return 'bg-emerald-500';
-  if (pct >= 50) return 'bg-amber-500';
-  return 'bg-red-500';
+  if (pct >= 70) return 'bg-ink';
+  if (pct >= 50) return 'bg-ink/60';
+  return 'bg-ink/30';
 }
 
 function accuracyTextColor(pct: number): string {
-  if (pct >= 70) return 'text-emerald-600 dark:text-emerald-400';
-  if (pct >= 50) return 'text-amber-600 dark:text-amber-400';
-  return 'text-red-500';
+  if (pct >= 70) return 'text-ink';
+  if (pct >= 50) return 'text-ink-soft';
+  return 'text-[oklch(52%_.16_35)]';
 }
 
 // ── Stat tile ─────────────────────────────────────────────────────
@@ -46,15 +46,15 @@ function StatTile({
   accent: string;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 flex flex-col gap-3">
-      <div className={cn('flex h-9 w-9 items-center justify-center rounded-xl', accent)}>
+    <div className="ks-card p-5 !flex flex-col gap-3">
+      <div className={cn('flex h-8 w-8 items-center justify-center rounded-[3px]', accent)}>
         <Icon className="h-4 w-4" />
       </div>
       <div>
-        <p className="text-2xl font-bold text-foreground leading-none">{value}</p>
-        {sub && <p className="text-[11px] text-muted-foreground mt-0.5">{sub}</p>}
+        <p className="text-2xl font-semibold tabular-nums text-ink leading-none">{value}</p>
+        {sub && <p className="text-[11px] text-ink-muted mt-0.5">{sub}</p>}
       </div>
-      <p className="text-xs text-muted-foreground font-medium">{label}</p>
+      <p className="font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted">{label}</p>
     </div>
   );
 }
@@ -88,10 +88,10 @@ function TrendChart({ data }: { data: McqAnalyticsTrend[] }) {
   const hoveredPt = hovered !== null ? pts[hovered] : null;
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="ks-card !block p-5">
       <div className="flex items-center gap-2 mb-4">
-        <TrendingUp className="h-4 w-4 text-primary" />
-        <p className="text-sm font-semibold text-foreground">Daily accuracy trend</p>
+        <TrendingUp className="h-4 w-4 text-ink" />
+        <p className="text-sm font-semibold text-ink">Daily accuracy trend</p>
       </div>
       <div className="w-full overflow-x-auto">
         <svg
@@ -114,14 +114,8 @@ function TrendChart({ data }: { data: McqAnalyticsTrend[] }) {
           })}
 
           {/* Area + line */}
-          <defs>
-            <linearGradient id="mcqTrendGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#7C3AED" />
-              <stop offset="100%" stopColor="#7C3AED" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <path d={areaPath} fill="url(#mcqTrendGrad)" opacity={0.12} />
-          <path d={linePath} fill="none" stroke="#7C3AED" strokeWidth={2.5}
+          <path d={areaPath} fill="var(--color-ink)" opacity={0.05} />
+          <path d={linePath} fill="none" stroke="var(--color-ink)" strokeWidth={2}
             strokeLinejoin="round" strokeLinecap="round" />
 
           {/* Dots */}
@@ -130,8 +124,8 @@ function TrendChart({ data }: { data: McqAnalyticsTrend[] }) {
               <circle cx={p.x} cy={p.y} r={14} fill="transparent"
                 style={{ cursor: 'pointer' }} onMouseEnter={() => setHovered(i)} />
               <circle cx={p.x} cy={p.y} r={hovered === i ? 5 : 3.5}
-                fill={hovered === i ? '#7C3AED' : '#fff'}
-                stroke="#7C3AED" strokeWidth={2} style={{ transition: 'r 0.1s' }} />
+                fill={hovered === i ? 'var(--color-gold)' : 'var(--color-paper-raised)'}
+                stroke={hovered === i ? 'var(--color-gold-deep)' : 'var(--color-ink)'} strokeWidth={2} style={{ transition: 'r 0.1s' }} />
             </g>
           ))}
 
@@ -157,11 +151,11 @@ function TrendChart({ data }: { data: McqAnalyticsTrend[] }) {
             const by = hoveredPt.y - bh - 10 < PAD.top ? hoveredPt.y + 12 : hoveredPt.y - bh - 10;
             return (
               <g style={{ pointerEvents: 'none' }}>
-                <rect x={bx} y={by} width={bw} height={bh} rx={6} fill="#1e1b4b" opacity={0.92} />
-                <text x={bx + 8} y={by + 16} fontSize={10} fill="#c4b5fd" fontWeight={600}>
+                <rect x={bx} y={by} width={bw} height={bh} rx={2} fill="var(--color-ink)" />
+                <text x={bx + 8} y={by + 16} fontSize={10} fill="var(--color-paper)" opacity={0.7} fontWeight={500}>
                   {fmtDate(hoveredPt.d.date)}
                 </text>
-                <text x={bx + 8} y={by + 31} fontSize={11} fill="#ffffff" fontWeight={700}>
+                <text x={bx + 8} y={by + 31} fontSize={11} fill="var(--color-paper)" fontWeight={600}>
                   {hoveredPt.d.correct}/{hoveredPt.d.total} · {fmtPct(hoveredPt.d.accuracyPct)}
                 </text>
               </g>
@@ -183,16 +177,16 @@ function PaperBar({ paper, correct, total, accuracyPct }: {
     <div className="space-y-1.5">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-foreground">{paper}</span>
-          <span className="text-[10px] text-muted-foreground">{correct}/{total} correct</span>
+          <span className="font-label text-xs text-ink">{paper}</span>
+          <span className="text-[11px] text-ink-muted tabular-nums">{correct}/{total} correct</span>
         </div>
-        <span className={cn('text-xs font-bold', accuracyTextColor(accuracyPct))}>
+        <span className={cn('text-xs font-semibold tabular-nums', accuracyTextColor(accuracyPct))}>
           {fmtPct(accuracyPct)}
         </span>
       </div>
-      <div className="h-2.5 w-full rounded-full bg-secondary overflow-hidden">
+      <div className="h-2 w-full rounded-full bg-paper-gray overflow-hidden">
         <div
-          className={cn('h-full rounded-full transition-all duration-500', barClass)}
+          className={cn('h-full rounded-full transition-[width] duration-200 ease-ks', barClass)}
           style={{ width: `${Math.min(accuracyPct, 100)}%` }}
         />
       </div>
@@ -210,18 +204,18 @@ function TopicRow({ row, weakTopics, strongTopics }: {
   const isWeak   = weakTopics.has(row.topic);
   const isStrong = strongTopics.has(row.topic);
   return (
-    <tr className="border-b border-border hover:bg-secondary/20 transition-colors">
+    <tr className="border-b border-rule last:border-0 hover:bg-paper-deep transition-colors duration-150 ease-ks">
       <td className="px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-foreground">{row.topic}</span>
-          {isWeak   && <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-red-500/10 text-red-500 border border-red-500/20">WEAK</span>}
-          {isStrong && <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">STRONG</span>}
+          <span className="text-sm font-semibold text-ink">{row.topic}</span>
+          {isWeak   && <span className="ks-tag ks-tag-alert">WEAK</span>}
+          {isStrong && <span className="ks-tag ks-tag-ink">STRONG</span>}
         </div>
       </td>
-      <td className="px-4 py-3 text-sm text-center text-foreground font-medium">{row.total}</td>
-      <td className="px-4 py-3 text-sm text-center text-foreground font-medium">{row.correct}</td>
+      <td className="px-4 py-3 text-sm text-center text-ink-soft font-medium tabular-nums">{row.total}</td>
+      <td className="px-4 py-3 text-sm text-center text-ink-soft font-medium tabular-nums">{row.correct}</td>
       <td className="px-4 py-3 text-right">
-        <span className={cn('text-sm font-bold', accuracyTextColor(row.accuracyPct))}>
+        <span className={cn('text-sm font-semibold tabular-nums', accuracyTextColor(row.accuracyPct))}>
           {fmtPct(row.accuracyPct)}
         </span>
       </td>
@@ -249,7 +243,7 @@ export default function SubjectMCQsPage() {
 
         {/* Error */}
         {isError && (
-          <div className="flex items-center gap-3 rounded-2xl bg-destructive/10 border border-destructive/20 p-5 text-sm text-destructive">
+          <div className="flex items-center gap-3 rounded-[2px] bg-paper-raised border border-rule p-5 text-sm text-[oklch(52%_.16_35)]">
             <AlertCircle className="h-5 w-5 shrink-0" />
             <span>Could not load analytics. Please try again.</span>
           </div>
@@ -259,23 +253,23 @@ export default function SubjectMCQsPage() {
         {isLoading && (
           <>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}
+              {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-32 rounded-[2px]" />)}
             </div>
-            <Skeleton className="h-48 rounded-2xl" />
-            <Skeleton className="h-56 rounded-2xl" />
-            <Skeleton className="h-48 rounded-2xl" />
+            <Skeleton className="h-48 rounded-[2px]" />
+            <Skeleton className="h-56 rounded-[2px]" />
+            <Skeleton className="h-48 rounded-[2px]" />
           </>
         )}
 
         {/* Empty state */}
         {data && data.overall.totalAttempted === 0 && (
           <div className="flex flex-col items-center justify-center gap-5 py-24 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary">
-              <BookOpenCheck className="h-8 w-8 text-muted-foreground" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-[3px] border border-rule bg-paper-deep">
+              <BookOpenCheck className="h-6 w-6 text-ink" />
             </div>
             <div className="space-y-1">
-              <p className="text-base font-semibold text-foreground">Not enough data yet</p>
-              <p className="text-sm text-muted-foreground max-w-sm">
+              <p className="text-base font-semibold text-ink">Not enough data yet</p>
+              <p className="text-sm text-ink-muted max-w-sm">
                 Answer MCQs in the Contents section to start tracking your accuracy and progress.
               </p>
             </div>
@@ -291,34 +285,34 @@ export default function SubjectMCQsPage() {
                 label="Questions attempted"
                 value={String(data.overall.totalAttempted)}
                 icon={BookOpenCheck}
-                accent="bg-violet-500/10 text-violet-500"
+                accent="border border-rule bg-paper-deep text-ink"
               />
               <StatTile
                 label="Accuracy"
                 value={fmtPct(data.overall.accuracyPct)}
                 icon={Target}
-                accent="bg-blue-500/10 text-blue-500"
+                accent="border border-rule bg-paper-deep text-ink"
               />
               <StatTile
                 label="Correct answers"
                 value={String(data.overall.totalCorrect)}
                 icon={CheckCircle2}
-                accent="bg-emerald-500/10 text-emerald-500"
+                accent="border border-rule bg-paper-deep text-ink"
               />
               <StatTile
                 label="Avg time / question"
                 value={`${data.overall.avgTimeSecs.toFixed(1)}s`}
                 icon={Clock}
-                accent="bg-amber-500/10 text-amber-500"
+                accent="border border-rule bg-paper-deep text-ink"
               />
             </div>
 
             {/* 2. Accuracy by GS Paper */}
             {data.byPaper.length > 0 && (
-              <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+              <div className="ks-card !block p-5 space-y-4">
                 <div className="flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4 text-primary" />
-                  <p className="text-sm font-semibold text-foreground">Accuracy by GS Paper</p>
+                  <BarChart3 className="h-4 w-4 text-ink" />
+                  <p className="text-sm font-semibold text-ink">Accuracy by GS Paper</p>
                 </div>
                 <div className="space-y-4">
                   {data.byPaper.map((p) => (
@@ -336,18 +330,18 @@ export default function SubjectMCQsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                 {data.weakAreas.length > 0 && (
-                  <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-5 space-y-3">
-                    <p className="text-xs font-bold uppercase tracking-wider text-red-500">
+                  <div className="ks-card !block p-5 space-y-3">
+                    <p className="font-label text-[11px] uppercase tracking-[0.14em] text-[oklch(52%_.16_35)]">
                       Weak Areas &lt;50% accuracy
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {data.weakAreas.map((a) => (
                         <span
                           key={a.topic}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[2px] text-xs font-semibold bg-paper-deep text-ink border border-rule"
                         >
                           {a.topic}
-                          <span className="font-bold opacity-70">{fmtPct(a.accuracyPct)}</span>
+                          <span className="font-label font-normal text-ink-muted tabular-nums">{fmtPct(a.accuracyPct)}</span>
                         </span>
                       ))}
                     </div>
@@ -355,18 +349,18 @@ export default function SubjectMCQsPage() {
                 )}
 
                 {data.strongAreas.length > 0 && (
-                  <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5 space-y-3">
-                    <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                  <div className="ks-card !block p-5 space-y-3">
+                    <p className="font-label text-[11px] uppercase tracking-[0.14em] text-ink">
                       Strong Areas ≥70% accuracy
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {data.strongAreas.map((a) => (
                         <span
                           key={a.topic}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[2px] text-xs font-semibold bg-paper-deep text-ink border border-rule"
                         >
                           {a.topic}
-                          <span className="font-bold opacity-70">{fmtPct(a.accuracyPct)}</span>
+                          <span className="font-label font-normal text-ink-muted tabular-nums">{fmtPct(a.accuracyPct)}</span>
                         </span>
                       ))}
                     </div>
@@ -377,19 +371,19 @@ export default function SubjectMCQsPage() {
 
             {/* 5. Topic breakdown table */}
             {sortedTopics.length > 0 && (
-              <div className="rounded-2xl border border-border bg-card overflow-hidden">
-                <div className="px-5 py-4 border-b border-border">
-                  <p className="text-sm font-semibold text-foreground">Topic breakdown</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">Sorted by accuracy — weakest first</p>
+              <div className="ks-card !block">
+                <div className="px-5 py-4 border-b border-rule">
+                  <p className="text-sm font-semibold text-ink">Topic breakdown</p>
+                  <p className="text-[11px] text-ink-muted mt-0.5">Sorted by accuracy — weakest first</p>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-border bg-secondary/40">
-                        <th className="text-left px-4 py-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Topic</th>
-                        <th className="text-center px-4 py-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Attempted</th>
-                        <th className="text-center px-4 py-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Correct</th>
-                        <th className="text-right px-4 py-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Accuracy</th>
+                      <tr className="border-b border-rule bg-paper-deep">
+                        <th className="text-left px-4 py-3 font-label text-[11px] font-normal uppercase tracking-[0.14em] text-ink-muted">Topic</th>
+                        <th className="text-center px-4 py-3 font-label text-[11px] font-normal uppercase tracking-[0.14em] text-ink-muted">Attempted</th>
+                        <th className="text-center px-4 py-3 font-label text-[11px] font-normal uppercase tracking-[0.14em] text-ink-muted">Correct</th>
+                        <th className="text-right px-4 py-3 font-label text-[11px] font-normal uppercase tracking-[0.14em] text-ink-muted">Accuracy</th>
                       </tr>
                     </thead>
                     <tbody>

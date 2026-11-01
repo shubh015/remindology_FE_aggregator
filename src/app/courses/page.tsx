@@ -1,15 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { GraduationCap, ArrowRight, AlertCircle } from 'lucide-react';
+import { GraduationCap, AlertCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCourses } from '@/features/courses/hooks/use-courses';
 
 function CourseCardSkeleton() {
   return (
-    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="ks-card-grid">
       {[1, 2, 3, 4, 5, 6].map((i) => (
-        <Skeleton key={i} className="h-32 rounded-2xl" />
+        <Skeleton key={i} className="h-64 rounded-[2px]" />
       ))}
     </div>
   );
@@ -22,81 +22,56 @@ export default function CoursesIndexPage() {
     <div>
 
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden bg-background">
-        <div
-          className="absolute pointer-events-none"
-          style={{ top: 0, right: '-8%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(138,106,18,0.06) 0%, transparent 68%)' }}
-        />
-
-        <div className="relative max-w-7xl mx-auto px-6 pt-14 pb-16">
-          <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full mb-4 bg-primary/8 border border-primary/18 text-primary">
+      <section className="bg-paper border-b border-rule">
+        <div className="ks-container pt-14 pb-14">
+          <span className="eyebrow mb-4 inline-flex items-center gap-2">
             <GraduationCap className="h-3.5 w-3.5" />
             Courses
-          </div>
-          <h1 className="tracking-tight mb-4">
-            <span className="block font-semibold text-muted-foreground mb-1" style={{ fontSize: 'clamp(0.9rem, 1.8vw, 1.05rem)' }}>
-              Exam pattern, booklists &amp; notifications
-            </span>
-            <span className="block font-black text-foreground" style={{ fontSize: 'var(--text-display-md)', lineHeight: 1.05, letterSpacing: '-0.01em' }}>
-              Everything about your <span className="text-primary">exam</span>, in one place
-            </span>
-          </h1>
-          <p className="text-sm max-w-xl text-muted-foreground">
+          </span>
+          <h1 className="doc-title mb-4">Everything about your exam, in one place</h1>
+          <p className="doc-lede max-w-xl text-ink-muted">
             Exam pattern, recommended booklist, key facts, year-wise question breakdown &amp; the latest notifications.
           </p>
         </div>
       </section>
 
       {/* ── Courses grid ── */}
-      <section className="bg-white">
-        <div className="max-w-7xl mx-auto px-6 py-14">
+      <section className="bg-paper">
+        <div className="ks-container py-14">
           {isLoading ? (
             <CourseCardSkeleton />
           ) : isError ? (
-            <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-600">
+            <div className="flex items-center gap-2 rounded-[3px] bg-paper-raised border border-rule p-4 text-sm text-[oklch(52%_.16_35)]">
               <AlertCircle className="h-4 w-4 shrink-0" />
               Could not load courses. Please try again later.
             </div>
           ) : !courses || courses.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border p-14 text-center gap-2">
-              <GraduationCap className="h-8 w-8 text-muted-foreground/40" />
-              <p className="text-sm font-semibold text-muted-foreground">Courses are coming soon</p>
+            <div className="flex flex-col items-center justify-center rounded-[3px] border border-dashed border-rule-strong p-14 text-center gap-2">
+              <GraduationCap className="h-8 w-8 text-ink-muted" />
+              <p className="text-sm font-semibold text-ink-muted">Courses are coming soon</p>
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {courses.map((course) => {
-                const accent = course.color || '#8A6A12';
-                return (
-                  <Link
-                    key={course.id}
-                    href={`/courses/${course.slug}`}
-                    className="group rounded-2xl bg-white p-5 transition-all hover:-translate-y-0.5"
-                    style={{ border: `1px solid ${accent}33`, boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}
-                  >
-                    <div
-                      className="h-10 w-10 rounded-xl flex items-center justify-center mb-3"
-                      style={{ background: `${accent}15`, color: accent }}
-                    >
-                      <GraduationCap className="h-5 w-5" />
-                    </div>
-                    <p className="font-bold mb-1.5 text-foreground" style={{ fontSize: '1.05rem' }}>
-                      {course.name}
-                    </p>
-                    {course.shortDescription && (
-                      <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 mb-3">
-                        {course.shortDescription}
-                      </p>
-                    )}
-                    <span
-                      className="inline-flex items-center gap-1 text-xs font-semibold transition-colors"
-                      style={{ color: accent }}
-                    >
-                      View details
-                      <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+            <div className="ks-card-grid">
+              {courses.map((course) => (
+                <Link
+                  key={course.id}
+                  href={`/courses/${course.slug}`}
+                  className="ks-card"
+                >
+                  <div className="ks-card-visual h-[120px]! flex items-center justify-center">
+                    <span className="font-display font-light text-6xl text-ink leading-none" aria-hidden="true">
+                      {course.name.charAt(0).toUpperCase()}
                     </span>
-                  </Link>
-                );
-              })}
+                  </div>
+                  <div className="ks-card-body">
+                    <h3 className="ks-card-title">{course.name}</h3>
+                    {course.shortDescription && (
+                      <p className="ks-card-desc line-clamp-2">{course.shortDescription}</p>
+                    )}
+                    <span className="ks-card-link">View details</span>
+                  </div>
+                </Link>
+              ))}
             </div>
           )}
         </div>

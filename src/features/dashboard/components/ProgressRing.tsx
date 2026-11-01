@@ -14,12 +14,12 @@ export function ProgressRing({ pct, size = 88, strokeWidth = 7 }: ProgressRingPr
       <circle
         cx={size / 2} cy={size / 2} r={radius}
         fill="none" strokeWidth={strokeWidth}
-        className="stroke-primary/15"
+        className="stroke-paper-gray"
       />
       <circle
         cx={size / 2} cy={size / 2} r={radius}
         fill="none" strokeWidth={strokeWidth}
-        className="stroke-primary transition-all duration-700"
+        className="stroke-ink transition-all duration-700"
         strokeDasharray={circumference}
         strokeDashoffset={offset}
         strokeLinecap="round"

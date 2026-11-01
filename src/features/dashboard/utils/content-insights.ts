@@ -8,20 +8,20 @@ export type SubjectKey =
 
 export interface SubjectMeta {
   label: string;
-  color: string;       // Tailwind bg class
+  color: string;       // Tailwind bg class (monochrome: identical for every subject)
   textColor: string;   // Tailwind text class
   pattern: RegExp;
 }
 
 export const SUBJECT_META: Record<SubjectKey, SubjectMeta> = {
-  GS1:             { label: 'GS Paper I',       color: 'bg-violet-500',  textColor: 'text-violet-600',  pattern: /gs[\s-]?1\b|gs[\s-]?paper[\s-]?1|history|geography|society|culture|art\b/i },
-  GS2:             { label: 'GS Paper II',      color: 'bg-blue-500',    textColor: 'text-blue-600',    pattern: /gs[\s-]?2\b|gs[\s-]?paper[\s-]?2|polity|governance|constitution|\bir\b|international/i },
-  GS3:             { label: 'GS Paper III',     color: 'bg-emerald-500', textColor: 'text-emerald-600', pattern: /gs[\s-]?3\b|gs[\s-]?paper[\s-]?3|econom|environment|science|technology/i },
-  GS4:             { label: 'GS Paper IV',      color: 'bg-amber-500',   textColor: 'text-amber-600',   pattern: /gs[\s-]?4\b|gs[\s-]?paper[\s-]?4|ethics|integrity|aptitude/i },
-  'Current Affairs': { label: 'Current Affairs', color: 'bg-rose-500',   textColor: 'text-rose-600',    pattern: /current affairs|editorial|daily|weekly\s+wrap|news/i },
-  Essay:           { label: 'Essay',            color: 'bg-indigo-500',  textColor: 'text-indigo-600',  pattern: /essay/i },
-  CSAT:            { label: 'CSAT',             color: 'bg-teal-500',    textColor: 'text-teal-600',    pattern: /csat|comprehension/i },
-  General:         { label: 'General',          color: 'bg-slate-400',   textColor: 'text-slate-500',   pattern: /$^/ },
+  GS1:             { label: 'GS Paper I',       color: 'bg-ink', textColor: 'text-ink', pattern: /gs[\s-]?1\b|gs[\s-]?paper[\s-]?1|history|geography|society|culture|art\b/i },
+  GS2:             { label: 'GS Paper II',      color: 'bg-ink', textColor: 'text-ink', pattern: /gs[\s-]?2\b|gs[\s-]?paper[\s-]?2|polity|governance|constitution|\bir\b|international/i },
+  GS3:             { label: 'GS Paper III',     color: 'bg-ink', textColor: 'text-ink', pattern: /gs[\s-]?3\b|gs[\s-]?paper[\s-]?3|econom|environment|science|technology/i },
+  GS4:             { label: 'GS Paper IV',      color: 'bg-ink', textColor: 'text-ink', pattern: /gs[\s-]?4\b|gs[\s-]?paper[\s-]?4|ethics|integrity|aptitude/i },
+  'Current Affairs': { label: 'Current Affairs', color: 'bg-ink', textColor: 'text-ink', pattern: /current affairs|editorial|daily|weekly\s+wrap|news/i },
+  Essay:           { label: 'Essay',            color: 'bg-ink', textColor: 'text-ink', pattern: /essay/i },
+  CSAT:            { label: 'CSAT',             color: 'bg-ink', textColor: 'text-ink', pattern: /csat|comprehension/i },
+  General:         { label: 'General',          color: 'bg-ink', textColor: 'text-ink', pattern: /$^/ },
 };
 
 export const SUBJECT_ORDER: SubjectKey[] = [

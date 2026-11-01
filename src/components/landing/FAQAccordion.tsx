@@ -4,64 +4,40 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { FAQS } from './faq-data';
 
-const TEXT_DARK = '#16233E';
-const TEXT_MID  = '#5B6478';
-
 export function FAQAccordion() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="space-y-3">
-        {FAQS.map((faq, i) => (
-          <div
-            key={i}
-            className="rounded-2xl overflow-hidden"
-            style={{
-              border: open === i
-                ? '1px solid rgba(138,106,18,0.3)'
-                : '1px solid rgba(22,35,62,0.1)',
-              background: open === i ? 'rgba(138,106,18,0.04)' : '#FFFFFF',
-              transition: 'border-color 0.2s, background 0.2s',
-            }}
-          >
+    <div className="max-w-3xl mx-auto border-b border-rule">
+      {FAQS.map((faq, i) => {
+        const isOpen = open === i;
+        return (
+          <div key={i} className="border-t border-rule">
             <button
-              onClick={() => setOpen(open === i ? null : i)}
-              className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left"
-              style={{ cursor: 'pointer', background: 'transparent', border: 'none' }}
+              type="button"
+              onClick={() => setOpen(isOpen ? null : i)}
+              aria-expanded={isOpen}
+              className="w-full flex items-center justify-between gap-6 py-5 text-left cursor-pointer bg-transparent border-0"
             >
-              <span
-                className="text-sm font-semibold leading-snug"
-                style={{ color: open === i ? '#8A6A12' : TEXT_DARK, transition: 'color 0.2s' }}
-              >
+              <span className="text-[17px] font-medium leading-snug text-ink">
                 {faq.q}
               </span>
               <ChevronDown
-                className="shrink-0 h-4 w-4"
-                style={{
-                  color: open === i ? '#8A6A12' : '#9A9DA6',
-                  transform: open === i ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.25s ease, color 0.2s',
-                }}
+                className={`shrink-0 h-4 w-4 text-ink-muted transition-transform duration-200 ease-out ${isOpen ? 'rotate-180' : 'rotate-0'}`}
+                aria-hidden="true"
               />
             </button>
 
-            {open === i && (
-              <div
-                className="px-6 pb-5"
-                style={{ borderTop: '1px solid rgba(22,35,62,0.08)' }}
-              >
-                <p
-                  className="text-sm leading-relaxed pt-4"
-                  style={{ color: TEXT_MID }}
-                >
+            {isOpen && (
+              <div className="pb-6 pr-10">
+                <p className="text-[15px] leading-[1.7] text-ink-muted">
                   {faq.a}
                 </p>
               </div>
             )}
           </div>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }

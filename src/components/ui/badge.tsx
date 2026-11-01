@@ -9,14 +9,14 @@ function Badge({ className, variant = 'default', ...props }: BadgeProps) {
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+        "inline-flex items-center gap-1 rounded-[2px] border px-2 py-0.5 font-label text-[10.5px] font-medium uppercase tracking-[0.12em] transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
         {
-          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80": variant === 'default',
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80": variant === 'secondary',
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80": variant === 'destructive',
-          "text-foreground border-border": variant === 'outline',
-          "border-transparent bg-emerald-500/15 text-emerald-700 dark:text-emerald-400": variant === 'success',
-          "border-transparent bg-amber-500/15 text-amber-700 dark:text-amber-400": variant === 'warning',
+          "border-ink bg-ink text-paper": variant === 'default',
+          "border-rule bg-paper-gray text-ink-soft": variant === 'secondary',
+          "border-[oklch(52%_.16_35/.3)] bg-[oklch(52%_.16_35/.1)] text-[oklch(52%_.16_35)]": variant === 'destructive',
+          "border-rule-strong bg-transparent text-ink-muted": variant === 'outline',
+          "border-rule-strong bg-paper-gray text-ink": variant === 'success',
+          "border-gold/55 bg-gold/15 text-ink": variant === 'warning',
         },
         className
       )}

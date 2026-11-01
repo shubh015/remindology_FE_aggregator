@@ -41,16 +41,16 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback;
       }
       return (
-        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-lg border border-dashed border-destructive/30 p-8 text-center bg-destructive/5">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/15 text-destructive">
-            <AlertCircle className="h-6 w-6" />
+        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-[3px] border border-dashed border-rule-strong p-8 text-center bg-paper-raised">
+          <div className="flex h-10 w-10 items-center justify-center rounded-[3px] border border-rule bg-paper-deep text-destructive">
+            <AlertCircle className="h-5 w-5" />
           </div>
-          <h3 className="mt-4 text-lg font-semibold tracking-tight">Something went wrong</h3>
-          <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+          <h3 className="mt-4 text-lg font-semibold tracking-tight text-ink">Something went wrong</h3>
+          <p className="mt-2 max-w-sm text-sm text-ink-muted">
             An unexpected error occurred while processing this request.
           </p>
           {this.state.error && (
-            <pre className="mt-4 max-h-[100px] w-full overflow-auto rounded-md bg-muted p-3 text-left text-xs font-mono text-muted-foreground">
+            <pre className="mt-4 max-h-[100px] w-full overflow-auto rounded-[3px] border border-rule bg-paper-deep p-3 text-left text-xs font-label text-ink-muted">
               {this.state.error.message}
             </pre>
           )}

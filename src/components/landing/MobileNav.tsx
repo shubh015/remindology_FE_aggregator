@@ -13,7 +13,9 @@ const NAV_LINKS = [
   ['FAQ', '#faq'],
 ] as const;
 
-export function MobileNav() {
+// `variant` is accepted for backwards compatibility; only the monochrome style exists now.
+export function MobileNav(props: { variant?: 'default' | 'mono' } = {}) {
+  void props;
   const [open, setOpen] = useState(false);
 
   // Close on Escape key
@@ -26,10 +28,10 @@ export function MobileNav() {
   }, []);
 
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       <button
         onClick={() => setOpen(o => !o)}
-        className="p-2 rounded-lg transition-colors hover:bg-black/5 text-foreground"
+        className={'h-9 w-9 inline-flex items-center justify-center rounded-full transition-colors hover:bg-paper-deep text-ink'}
         aria-label={open ? 'Close menu' : 'Open menu'}
         aria-expanded={open}
       >
@@ -46,14 +48,14 @@ export function MobileNav() {
           />
 
           {/* Drawer */}
-          <div className="absolute left-0 right-0 top-full z-50 bg-background/98 backdrop-blur-xl border-b border-border shadow-xl">
+          <div className={'absolute left-0 right-0 top-full mt-2 z-50 bg-paper-raised border border-rule rounded-[18px] shadow-lift-2 overflow-hidden'}>
             <nav className="px-5 py-3 flex flex-col">
               {NAV_LINKS.map(([label, href]) => (
                 <a
                   key={label}
                   href={href}
                   onClick={() => setOpen(false)}
-                  className="text-[15px] font-medium py-4 px-2 transition-colors hover:text-foreground text-foreground/72 border-b border-foreground/8"
+                  className={'text-[15px] py-4 px-2 transition-colors text-ink-soft hover:text-ink border-b border-rule'}
                 >
                   {label}
                 </a>

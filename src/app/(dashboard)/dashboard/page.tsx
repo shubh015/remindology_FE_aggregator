@@ -42,7 +42,7 @@ export default function DashboardPage() {
           <Button
             onClick={() => setIsUploadOpen(true)}
             size="sm"
-            className="cursor-pointer font-semibold gap-2 px-4 h-9 text-sm rounded-xl shadow-sm shadow-primary/20"
+            className="cursor-pointer font-semibold gap-2 px-4 h-9 text-sm rounded-[3px]"
           >
             <PlusCircle className="h-4 w-4" />
             Upload Content

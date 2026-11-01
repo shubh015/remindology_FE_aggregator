@@ -14,7 +14,16 @@ export interface TocItem {
  * the same conditional checks that decide what's in the JSX, don't
  * re-derive the logic here.
  */
-export function TableOfContents({ items, accentColor }: { items: TocItem[]; accentColor: string }) {
+export function TableOfContents({
+  items,
+  label,
+}: {
+  items: TocItem[];
+  /** Optional heading rendered as a `.doc-nav-label` above the links. */
+  label?: string;
+  /** @deprecated No longer used: the TOC is monochrome. Kept for API compatibility. */
+  accentColor?: string;
+}) {
   const [activeId, setActiveId] = useState('');
 
   useEffect(() => {
@@ -39,32 +48,23 @@ export function TableOfContents({ items, accentColor }: { items: TocItem[]; acce
   if (items.length === 0) return null;
 
   return (
-    <nav className="space-y-1" aria-label="Table of contents">
-      {items.map((item) => {
-        const active = item.id === activeId;
-        return (
-          <a
-            key={item.id}
-            href={`#${item.id}`}
-            className="block pl-3 pr-2.5 py-1.5 rounded-r-lg text-sm transition-all"
-            style={active
-              ? {
-                  background: `linear-gradient(90deg, ${accentColor}18, ${accentColor}03)`,
-                  borderLeft: `2px solid ${accentColor}`,
-                  color: accentColor,
-                  fontWeight: 700,
-                }
-              : {
-                  background: 'transparent',
-                  borderLeft: `2px solid ${accentColor}15`,
-                  color: '#5B6478',
-                  fontWeight: 400,
-                }}
-          >
-            {item.label}
-          </a>
-        );
-      })}
+    <nav aria-label="Table of contents">
+      {label && <p className="doc-nav-label">{label}</p>}
+      <div className="grid gap-0.5">
+        {items.map((item) => {
+          const active = item.id === activeId;
+          return (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              className={active ? 'doc-nav-link is-active' : 'doc-nav-link'}
+              aria-current={active ? 'location' : undefined}
+            >
+              {item.label}
+            </a>
+          );
+        })}
+      </div>
     </nav>
   );
 }

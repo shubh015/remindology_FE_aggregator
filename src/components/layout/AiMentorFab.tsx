@@ -12,30 +12,20 @@ export function AiMentorFab() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 group">
-      {/* Subtle pulse ring */}
-      <span
-        className="absolute inset-0 rounded-2xl animate-ping opacity-20 pointer-events-none"
-        style={{ background: 'linear-gradient(135deg, #7C3AED, #6D28D9)', animationDuration: '2.5s' }}
-      />
-
       <Link
         href="/ai-mentor"
-        className="relative flex items-center gap-2.5 rounded-2xl px-4 py-3 text-white text-sm font-semibold shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
-        style={{
-          background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
-          boxShadow: '0 8px 28px rgba(124,58,237,0.45)',
-        }}
+        className="relative flex items-center gap-2.5 rounded-full bg-ink px-4 py-3 text-paper text-sm font-semibold shadow-lift-2 transition-colors duration-200 ease-ks hover:bg-ink-soft"
       >
-        <Sparkles className="h-4.5 w-4.5 text-white shrink-0" />
+        <Sparkles className="h-4.5 w-4.5 text-paper shrink-0" />
         <span>Ask Remi</span>
       </Link>
 
       {/* Tooltip */}
       <div className="absolute bottom-full right-0 mb-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none">
-        <div className="bg-popover text-popover-foreground border border-border text-[11px] font-semibold px-3 py-1.5 rounded-xl whitespace-nowrap shadow-md">
+        <div className="bg-paper-raised text-ink border border-rule text-[11px] font-medium px-3 py-1.5 rounded-[3px] whitespace-nowrap shadow-lift-2">
           Ask anything about your exam
         </div>
-        <div className="absolute top-full right-5 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-border" />
+        <div className="absolute top-full right-5 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-rule-strong" />
       </div>
     </div>
   );

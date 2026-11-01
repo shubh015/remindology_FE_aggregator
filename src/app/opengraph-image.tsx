@@ -4,6 +4,7 @@ export const alt = 'Remindology — AI-Powered UPSC Learning Platform';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
+// Minimal monochrome card matching the site: ink on paper, one gold dot.
 export default async function Image() {
   return new ImageResponse(
     (
@@ -13,51 +14,42 @@ export default async function Image() {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
           justifyContent: 'center',
-          background: '#16233E',
-          position: 'relative',
+          padding: '0 96px',
+          background: '#F7F7F7',
+          color: '#0B0B0B',
+          fontFamily: 'Helvetica, Arial, sans-serif',
         }}
       >
-        {/* Quiet brass wash, matching the site's hero background texture */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '-10%',
-            right: '-5%',
-            width: 700,
-            height: 700,
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(138,106,18,0.35) 0%, transparent 68%)',
-          }}
-        />
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 36, position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 22, marginBottom: 48 }}>
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: 84,
-              height: 84,
-              borderRadius: '50%',
-              background: '#24365C',
-              border: '3px solid #8A6A12',
-              color: '#D4AF37',
-              fontSize: 44,
-              fontWeight: 700,
-              fontFamily: 'Georgia, serif',
+              width: 64,
+              height: 64,
+              borderRadius: 6,
+              background: '#0B0B0B',
+              color: '#F7F7F7',
+              fontSize: 40,
+              fontWeight: 500,
             }}
           >
             R
           </div>
-          <div style={{ display: 'flex', fontSize: 64, fontWeight: 800, color: '#F7F4EC' }}>
-            Remindology
+          <div style={{ display: 'flex', fontSize: 34, fontWeight: 500, letterSpacing: 10 }}>
+            REMINDOLOGY
           </div>
         </div>
 
-        <div style={{ display: 'flex', fontSize: 32, fontWeight: 600, color: 'rgba(247,244,236,0.85)', position: 'relative' }}>
-          AI-Powered UPSC Learning Platform
+        <div style={{ display: 'flex', fontSize: 84, fontWeight: 300, lineHeight: 1.05, maxWidth: 900 }}>
+          Your personal learning intelligence.
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 44, fontSize: 24, color: '#646464', letterSpacing: 4 }}>
+          <div style={{ display: 'flex', width: 12, height: 12, borderRadius: 12, background: '#F2B620' }} />
+          AI-POWERED UPSC LEARNING PLATFORM
         </div>
       </div>
     ),

@@ -7,6 +7,7 @@ import {
   ArrowLeft, ArrowRight, Clock, AlertCircle, List, HelpCircle, BadgeCheck,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 import {
   useGSArticle, useGSSubjects, useGSCategories, useGSCategoryArticles, useGSSubjectArticles,
 } from '@/features/general-studies/hooks/use-general-studies';
@@ -15,17 +16,15 @@ import { TableOfContents, type TocItem } from '@/components/content/TableOfConte
 import { ArticleListItem } from '@/features/general-studies/components/ArticleListItem';
 import type { GSArticle } from '@/types/features';
 
-const BORDER_D   = '1px solid rgba(22,35,62,0.1)';
-const ACCENT     = '#8A6A12';
-const TEXT_BODY  = '#16233E';
-const TEXT_MUTED = '#5B6478';
-const SERIF      = { fontFamily: 'var(--font-serif-display), Georgia, serif' };
+// Monochrome docs style (impeccable.style/docs). All GS papers look
+// identical and differ by label only.
+const LABEL = 'font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted';
 
-const GS_CONFIG: Record<string, { color: string; label: string }> = {
-  GS1: { color: '#7C3AED', label: 'GS1 · Indian Heritage & Society' },
-  GS2: { color: '#0891B2', label: 'GS2 · Polity & International' },
-  GS3: { color: '#059669', label: 'GS3 · Economy & Environment' },
-  GS4: { color: '#DC2626', label: 'GS4 · Ethics & Integrity' },
+const GS_CONFIG: Record<string, { label: string }> = {
+  GS1: { label: 'GS1 · Indian Heritage & Society' },
+  GS2: { label: 'GS2 · Polity & International' },
+  GS3: { label: 'GS3 · Economy & Environment' },
+  GS4: { label: 'GS4 · Ethics & Integrity' },
 };
 
 function stripHtml(text: string | undefined | null): string {
@@ -33,16 +32,8 @@ function stripHtml(text: string | undefined | null): string {
   return text.includes('<') ? text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : text;
 }
 
-function SectionHeading({ children, color }: { children: string; color: string }) {
-  return (
-    <h2 style={{
-      fontSize: '0.68rem', fontWeight: 900, letterSpacing: '0.13em',
-      textTransform: 'uppercase', color,
-      borderBottom: `2px solid ${color}22`, paddingBottom: '0.45rem',
-    }}>
-      {children}
-    </h2>
-  );
+function SectionHeading({ children }: { children: string }) {
+  return <h2 className="doc-h2">{children}</h2>;
 }
 
 function slugify(heading: string): string {
@@ -51,11 +42,11 @@ function slugify(heading: string): string {
 
 function ArticleSkeleton() {
   return (
-    <div className="max-w-4xl mx-auto px-6 py-14 space-y-4">
-      <Skeleton className="h-8 w-2/3 rounded" />
-      <Skeleton className="h-4 w-full rounded" />
-      <Skeleton className="h-4 w-5/6 rounded" />
-      <Skeleton className="h-40 w-full rounded-2xl mt-6" />
+    <div className="ks-container py-14 space-y-4">
+      <Skeleton className="h-9 w-2/3 rounded-[2px]" />
+      <Skeleton className="h-4 w-full max-w-[68ch] rounded-[2px]" />
+      <Skeleton className="h-4 w-5/6 max-w-[60ch] rounded-[2px]" />
+      <Skeleton className="h-40 w-full max-w-[68ch] rounded-[2px] mt-6" />
     </div>
   );
 }
@@ -82,7 +73,7 @@ export function GSArticleDetailClient() {
   if (isLoading) {
     return (
       <div>
-        <section className="bg-background">
+        <section>
           <ArticleSkeleton />
         </section>
       </div>
@@ -92,14 +83,11 @@ export function GSArticleDetailClient() {
   if (isError || !article) {
     return (
       <div>
-        <section style={{ background: '#FFFFFF', minHeight: '60vh' }}>
+        <section className="min-h-[60vh]">
           <div className="max-w-3xl mx-auto px-6 py-20 flex flex-col items-center gap-4 text-center">
-            <AlertCircle className="h-12 w-12" style={{ color: '#DC2626', opacity: 0.5 }} />
-            <p className="text-lg font-semibold text-foreground">Article not found</p>
-            <Link
-              href="/general-studies"
-              className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl text-white bg-primary"
-            >
+            <AlertCircle className="h-10 w-10 text-[oklch(52%_.16_35)]" />
+            <p className="doc-h3">Article not found</p>
+            <Link href="/general-studies" className="btn-ink btn-sm gap-2">
               <ArrowLeft className="h-4 w-4" />Back to General Studies
             </Link>
           </div>
@@ -123,84 +111,59 @@ export function GSArticleDetailClient() {
   ];
 
   return (
-    <div>
+    <div className="font-ui text-ink-soft">
 
-      <style>{`
-        @keyframes gs-fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .gs-article { animation: gs-fade-in 0.45s ease both; animation-delay: 0.08s; }
-        .gs-sidebar { animation: gs-fade-in 0.45s ease both; animation-delay: 0.18s; }
-      `}</style>
-
-      {/* ── Hero ── */}
-      <section className="relative overflow-hidden bg-background">
-        <div
-          className="absolute pointer-events-none"
-          style={{ top: 0, right: '-10%', width: 440, height: 440, borderRadius: '50%', background: 'radial-gradient(circle, rgba(138,106,18,0.06) 0%, transparent 68%)' }}
-        />
-
-        <div className="relative max-w-6xl mx-auto px-6 pt-10 pb-14">
+      {/* ── Header ── */}
+      <header className="ks-container">
+        <div className="pt-10 pb-8 border-b border-rule">
 
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-xs mb-6 flex-wrap text-muted-foreground">
-            <Link href="/general-studies" className="hover:text-foreground transition-colors flex items-center gap-1">
+          <div className={cn('flex items-center gap-2 mb-8 flex-wrap', LABEL)}>
+            <Link href="/general-studies" className="hover:text-ink transition-colors duration-150 flex items-center gap-1.5">
               <ArrowLeft className="h-3.5 w-3.5" />
               General Studies
             </Link>
             {subject && (
               <>
-                <span>/</span>
-                <Link href={`/general-studies/${subject.slug}`} className="hover:text-foreground transition-colors">
+                <span aria-hidden="true">/</span>
+                <Link href={`/general-studies/${subject.slug}`} className="hover:text-ink transition-colors duration-150">
                   {subject.name}
                 </Link>
               </>
             )}
             {category && subject && (
               <>
-                <span>/</span>
-                <Link href={`/general-studies/${subject.slug}/${category.slug}`} className="hover:text-foreground transition-colors">
+                <span aria-hidden="true">/</span>
+                <Link href={`/general-studies/${subject.slug}/${category.slug}`} className="hover:text-ink transition-colors duration-150">
                   {category.name}
                 </Link>
               </>
             )}
           </div>
 
-          {/* Kicker — masthead-style section label, newspaper convention */}
-          <p
-            className="flex items-center gap-2.5 text-[11px] font-bold uppercase mb-4"
-            style={{ color: ACCENT, letterSpacing: '0.16em' }}
-          >
-            <span className="inline-block h-px w-6" style={{ background: ACCENT }} />
-            General Studies
-          </p>
+          {/* Kicker */}
+          <p className="eyebrow mb-4">General Studies</p>
 
-          {/* GS tags */}
-          <div className="flex flex-wrap gap-2 mb-5">
-            {(article.gsPaperTags ?? []).map((tag) => {
-              const cfg = GS_CONFIG[tag];
-              return cfg ? (
-                <span
-                  key={tag}
-                  className="text-xs font-bold px-3 py-1 rounded-full"
-                  style={{ background: `${cfg.color}18`, color: cfg.color, border: `1px solid ${cfg.color}35` }}
-                >
-                  {tag} · {cfg.label.split('· ')[1]}
-                </span>
-              ) : null;
-            })}
-          </div>
+          {/* GS tags — all papers look identical, differ by label only */}
+          {(article.gsPaperTags ?? []).some((tag) => GS_CONFIG[tag]) && (
+            <div className="flex flex-wrap gap-2 mb-5">
+              {(article.gsPaperTags ?? []).map((tag) => {
+                const cfg = GS_CONFIG[tag];
+                return cfg ? (
+                  <span key={tag} className="ks-tag">
+                    {tag} · {cfg.label.split('· ')[1]}
+                  </span>
+                ) : null;
+              })}
+            </div>
+          )}
 
-          <h1
-            className="font-semibold tracking-tight mb-6 text-foreground"
-            style={{ ...SERIF, fontSize: 'clamp(1.75rem, 4vw, 2.75rem)', lineHeight: 1.2 }}
-          >
+          <h1 className="doc-title max-w-4xl mb-6">
             {article.title}
           </h1>
 
-          {/* Dateline — newspaper byline strip, bordered top & bottom */}
-          <div
-            className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] uppercase py-3 text-muted-foreground"
-            style={{ borderTop: BORDER_D, borderBottom: BORDER_D, letterSpacing: '0.04em' }}
-          >
+          {/* Meta line */}
+          <div className={cn('flex flex-wrap items-center gap-x-4 gap-y-2', LABEL)}>
             <span>{publishedDate}</span>
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" />{article.readTimeMins} min read
@@ -208,189 +171,155 @@ export function GSArticleDetailClient() {
           </div>
 
           {/* Credibility line — AI-written study notes, not a human byline */}
-          <p className="flex items-center gap-1.5 text-[11px] mt-3 text-muted-foreground">
-            <BadgeCheck className="h-3.5 w-3.5" style={{ color: ACCENT }} />
+          <p className="doc-note flex items-center gap-1.5 text-[12px] mt-3">
+            <BadgeCheck className="h-3.5 w-3.5 text-ink-muted" />
             AI-written study notes, last updated {publishedDate}
           </p>
         </div>
-      </section>
+      </header>
 
       {/* ── Content ── */}
-      <section className="bg-white">
-        <div className="max-w-6xl mx-auto px-6 py-12">
-          <div className="grid lg:grid-cols-[1fr_240px] gap-12 items-start">
+      <div className="ks-container py-12">
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_240px] gap-12 items-start">
 
-            {/* ── Main article ── */}
-            <article className="gs-article space-y-10">
+          {/* ── Main article ── */}
+          <article className="min-w-0 max-w-[68ch] space-y-12">
 
-              {/* Mobile table of contents — the sidebar version is desktop-only */}
-              {tocItems.length > 1 && (
-                <details className="lg:hidden rounded-xl" style={{ border: BORDER_D }}>
-                  <summary
-                    className="flex items-center gap-2 px-4 py-3 text-sm font-bold cursor-pointer select-none"
-                    style={{ color: TEXT_BODY }}
-                  >
-                    <List className="h-4 w-4" style={{ color: ACCENT }} />
-                    On this page
-                  </summary>
-                  <div className="px-4 pb-4">
-                    <TableOfContents items={tocItems} accentColor={ACCENT} />
-                  </div>
-                </details>
-              )}
+            {/* Mobile table of contents — the sidebar version is desktop-only */}
+            {tocItems.length > 1 && (
+              <details className="lg:hidden rounded-[2px] border border-rule bg-paper-raised">
+                <summary className="flex items-center gap-2 px-4 py-3 text-sm font-semibold text-ink cursor-pointer select-none">
+                  <List className="h-4 w-4 text-ink-muted" />
+                  On this page
+                </summary>
+                <div className="px-4 pb-4">
+                  <TableOfContents items={tocItems} />
+                </div>
+              </details>
+            )}
 
-              {/* Summary */}
-              <section id="summary" className="space-y-3.5 scroll-mt-24">
-                <SectionHeading color={ACCENT}>Summary</SectionHeading>
-                <p
-                  className="first-letter:float-left first-letter:mr-2.5 first-letter:mt-1 first-letter:text-6xl first-letter:font-semibold first-letter:leading-[0.8] first-letter:font-serif-display first-letter:text-[#8A6A12]"
-                  style={{ fontSize: '1.0625rem', lineHeight: 1.75, color: TEXT_BODY, fontWeight: 450, maxWidth: 640 }}
-                >
-                  {stripHtml(article.summary)}
-                </p>
+            {/* Summary */}
+            <section id="summary" className="scroll-mt-24">
+              <SectionHeading>Summary</SectionHeading>
+              <p className="doc-lede max-w-none">
+                {stripHtml(article.summary)}
+              </p>
+            </section>
+
+            {/* Key Points */}
+            {(article.keyPoints?.length ?? 0) > 0 && (
+              <section id="key-points" className="scroll-mt-24">
+                <SectionHeading>Key Points</SectionHeading>
+                <ul className="space-y-3" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {(article.keyPoints ?? []).map((point, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <span className="h-1.5 w-1.5 rounded-full bg-ink-muted shrink-0 mt-[0.65rem]" />
+                      <span className="doc-prose">{stripHtml(point)}</span>
+                    </li>
+                  ))}
+                </ul>
               </section>
+            )}
 
-              {/* Key Points */}
-              {(article.keyPoints?.length ?? 0) > 0 && (
-                <section id="key-points" className="space-y-3.5 scroll-mt-24">
-                  <SectionHeading color={ACCENT}>Key Points</SectionHeading>
-                  <ul className="space-y-3.5" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                    {(article.keyPoints ?? []).map((point, i) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <span
-                          className="rounded-full shrink-0"
-                          style={{ width: 6, height: 6, marginTop: '0.55rem', background: ACCENT, opacity: 0.65 }}
-                        />
-                        <span style={{ fontSize: '1rem', lineHeight: 1.75, color: TEXT_BODY }}>{stripHtml(point)}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
+            {/* AI-picked sections — generic loop, never switch on heading text */}
+            {(article.sections ?? []).map((s) => (
+              <section key={s.heading} id={slugify(s.heading)} className="scroll-mt-24">
+                <SectionHeading>{s.heading}</SectionHeading>
+                {s.content.includes('<') ? (
+                  <div
+                    className="rich-editor-content doc-prose"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(s.content) }}
+                  />
+                ) : (
+                  <p className="doc-prose">{s.content}</p>
+                )}
+              </section>
+            ))}
 
-              {/* AI-picked sections — generic loop, never switch on heading text */}
-              {(article.sections ?? []).map((s) => (
-                <section key={s.heading} id={slugify(s.heading)} className="space-y-3.5 scroll-mt-24">
-                  <SectionHeading color={ACCENT}>{s.heading}</SectionHeading>
-                  {s.content.includes('<') ? (
-                    <div
-                      className="rich-editor-content"
-                      style={{ fontSize: '1rem', lineHeight: 1.78, color: TEXT_BODY }}
-                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(s.content) }}
-                    />
-                  ) : (
-                    <p style={{ fontSize: '1rem', lineHeight: 1.78, color: TEXT_BODY }}>{s.content}</p>
-                  )}
-                </section>
-              ))}
+            {/* Mains Angle Questions */}
+            {(article.mainsAngles?.length ?? 0) > 0 && (
+              <section id="mains-angles" className="scroll-mt-24">
+                <SectionHeading>Mains Angle Questions</SectionHeading>
+                <ol className="space-y-3" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {(article.mainsAngles ?? []).map((angle, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <span className="font-label text-[12px] text-ink-muted tabular-nums shrink-0 w-6 mt-[0.2rem]">
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <span className="doc-prose">{angle}</span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
 
-              {/* Mains Angle Questions */}
-              {(article.mainsAngles?.length ?? 0) > 0 && (
-                <section id="mains-angles" className="space-y-3.5 scroll-mt-24">
-                  <SectionHeading color={ACCENT}>Mains Angle Questions</SectionHeading>
-                  <ol className="space-y-2.5" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                    {(article.mainsAngles ?? []).map((angle, i) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <span
-                          className="h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-extrabold shrink-0"
-                          style={{ background: `${ACCENT}12`, color: ACCENT, marginTop: 2 }}
-                        >
-                          {i + 1}
-                        </span>
-                        <span style={{ fontSize: '0.975rem', lineHeight: 1.75, color: TEXT_BODY }}>{angle}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </section>
-              )}
-
-              {/* FAQs */}
-              {(article.faqs?.length ?? 0) > 0 && (
-                <section id="faqs" className="space-y-3.5 scroll-mt-24">
-                  <SectionHeading color={ACCENT}>Frequently Asked Questions</SectionHeading>
-                  <div className="space-y-4">
-                    {(article.faqs ?? []).map((faq, i) => (
-                      <div key={i} className="flex items-start gap-3">
-                        <HelpCircle className="h-4 w-4 shrink-0 mt-0.5" style={{ color: ACCENT, opacity: 0.6 }} />
-                        <div>
-                          <p className="font-bold mb-1 text-foreground" style={{ fontSize: '0.9rem' }}>
-                            {faq.question}
-                          </p>
-                          <p style={{ fontSize: '0.875rem', lineHeight: 1.8, color: TEXT_MUTED }}>
-                            {faq.answer}
-                          </p>
-                        </div>
+            {/* FAQs */}
+            {(article.faqs?.length ?? 0) > 0 && (
+              <section id="faqs" className="scroll-mt-24">
+                <SectionHeading>Frequently Asked Questions</SectionHeading>
+                <div className="space-y-5">
+                  {(article.faqs ?? []).map((faq, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <HelpCircle className="h-4 w-4 shrink-0 mt-1 text-ink-muted" />
+                      <div>
+                        <h3 className="doc-h3 mb-1">
+                          {faq.question}
+                        </h3>
+                        <p className="doc-prose text-[0.95rem]">
+                          {faq.answer}
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Topic tags */}
-              {(article.topicTags?.length ?? 0) > 0 && (
-                <div className="flex flex-wrap gap-1.5 pt-2" style={{ borderTop: `1px solid ${ACCENT}12` }}>
-                  {(article.topicTags ?? []).map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[11px] font-medium px-2.5 py-1 rounded-full"
-                      style={{ background: `${ACCENT}0A`, color: TEXT_MUTED, border: `1px solid ${ACCENT}18` }}
-                    >
-                      {tag}
-                    </span>
+                    </div>
                   ))}
                 </div>
-              )}
-
-              {/* Closing CTA */}
-              <div
-                className="rounded-2xl p-5 relative overflow-hidden"
-                style={{ background: ACCENT }}
-              >
-                <div
-                  className="absolute top-0 right-0 w-28 h-28 pointer-events-none"
-                  style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '50%', transform: 'translate(30%, -30%)' }}
-                />
-                <div className="relative">
-                  <p className="text-white font-bold text-sm mb-1">Practice with MCQs</p>
-                  <p className="text-xs mb-4 leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
-                    Turn this topic into revision notes, MCQs &amp; daily challenges — free with Remindology.
-                  </p>
-                  <Link
-                    href="/signup"
-                    className="inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-xl hover:opacity-90 transition-opacity"
-                    style={{ background: '#FFFFFF', color: ACCENT }}
-                  >
-                    Try for Free<ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
-              </div>
-
-              {/* Related articles — same category, or same subject when there are no categories */}
-              {relatedArticles.length > 0 && (
-                <section className="space-y-3.5 pt-2">
-                  <SectionHeading color={ACCENT}>{`More in ${category?.name ?? subject?.name ?? 'this topic'}`}</SectionHeading>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {relatedArticles.map((related) => (
-                      <ArticleListItem key={related.id} article={related} />
-                    ))}
-                  </div>
-                </section>
-              )}
-            </article>
-
-            {/* ── Sidebar: table of contents ── */}
-            {tocItems.length > 1 && (
-              <aside className="gs-sidebar hidden lg:block sticky top-24 space-y-3 rounded-2xl p-4" style={{ background: '#FFFFFF', border: BORDER_D }}>
-                <p className="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest" style={{ color: TEXT_MUTED }}>
-                  <List className="h-3 w-3" />
-                  On this page
-                </p>
-                <TableOfContents items={tocItems} accentColor={ACCENT} />
-              </aside>
+              </section>
             )}
-          </div>
+
+            {/* Topic tags */}
+            {(article.topicTags?.length ?? 0) > 0 && (
+              <div className="flex flex-wrap items-center gap-2 pt-6 border-t border-rule">
+                {(article.topicTags ?? []).map((tag) => (
+                  <span key={tag} className="ks-tag ks-tag-outline">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Closing CTA */}
+            <div className="ks-card">
+              <div className="ks-card-body">
+                <p className="ks-card-title text-[14px]">Practice with MCQs</p>
+                <p className="ks-card-desc text-[12.5px]">
+                  Turn this topic into revision notes, MCQs &amp; daily challenges — free with Remindology.
+                </p>
+                <Link href="/signup" className="btn-ink btn-sm gap-1.5 justify-self-start mt-2">
+                  Try for Free<ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Related articles — same category, or same subject when there are no categories */}
+            {relatedArticles.length > 0 && (
+              <section className="pt-2">
+                <SectionHeading>{`More in ${category?.name ?? subject?.name ?? 'this topic'}`}</SectionHeading>
+                <div className="mt-2 border-b border-rule">
+                  {relatedArticles.map((related) => (
+                    <ArticleListItem key={related.id} article={related} />
+                  ))}
+                </div>
+              </section>
+            )}
+          </article>
+
+          {/* ── Sidebar: table of contents ── */}
+          {tocItems.length > 1 && (
+            <aside className="hidden lg:block sticky top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
+              <TableOfContents items={tocItems} label="On this page" />
+            </aside>
+          )}
         </div>
-      </section>
+      </div>
     </div>
   );
 }

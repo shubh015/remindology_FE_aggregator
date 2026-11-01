@@ -18,13 +18,8 @@ import { RichEditor } from '@/components/editor/RichEditor';
 
 const GS_OPTIONS = ['GS1', 'GS2', 'GS3', 'GS4', 'ESSAY'] as const;
 
-const GS_COLORS: Record<string, { color: string; bg: string; border: string }> = {
-  GS1:   { color: '#7C3AED', bg: 'rgba(124,58,237,0.1)',  border: 'rgba(124,58,237,0.3)'  },
-  GS2:   { color: '#0891B2', bg: 'rgba(8,145,178,0.1)',   border: 'rgba(8,145,178,0.3)'   },
-  GS3:   { color: '#059669', bg: 'rgba(5,150,105,0.1)',   border: 'rgba(5,150,105,0.3)'   },
-  GS4:   { color: '#DC2626', bg: 'rgba(220,38,38,0.1)',   border: 'rgba(220,38,38,0.3)'   },
-  ESSAY: { color: '#D97706', bg: 'rgba(217,119,6,0.1)',   border: 'rgba(217,119,6,0.3)'   },
-};
+// Monochrome theme: every GS paper renders identically, differing by label only.
+const isKnownGsTag = (tag: string) => (GS_OPTIONS as readonly string[]).includes(tag);
 
 // ── Toast ─────────────────────────────────────────────────────────
 
@@ -37,13 +32,8 @@ function ToastList({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: num
       {toasts.map((t) => (
         <div
           key={t.id}
-          className="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-lg pointer-events-auto"
-          style={{
-            background: t.type === 'success' ? 'rgba(5,150,105,0.95)' : 'rgba(220,38,38,0.95)',
-            color: '#FFFFFF',
-            backdropFilter: 'blur(8px)',
-            minWidth: 280,
-          }}
+          className={`flex items-center gap-3 px-4 py-3 rounded-[3px] shadow-lift-2 pointer-events-auto text-paper ${t.type === 'success' ? 'bg-ink' : 'bg-[oklch(52%_.16_35)]'}`}
+          style={{ minWidth: 280 }}
         >
           {t.type === 'success'
             ? <CheckCircle2 className="h-4 w-4 shrink-0" />
@@ -102,11 +92,11 @@ function TagInput({
   };
 
   return (
-    <div className="flex flex-wrap gap-1.5 min-h-9 p-2 rounded-xl border border-input bg-background focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/40">
+    <div className="flex flex-wrap gap-1.5 min-h-9 p-2 rounded-md border border-rule-strong bg-paper-raised focus-within:border-ink">
       {tags.map((tag) => (
         <span
           key={tag}
-          className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg bg-primary/10 text-primary"
+          className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-[3px] bg-paper-gray text-ink"
         >
           {tag}
           <button
@@ -124,7 +114,7 @@ function TagInput({
         onKeyDown={handleKey}
         onBlur={() => input && add(input)}
         placeholder={tags.length ? '' : placeholder}
-        className="flex-1 min-w-24 bg-transparent text-sm outline-none placeholder:text-muted-foreground/50"
+        className="flex-1 min-w-24 bg-transparent text-sm outline-none placeholder:text-ink-muted"
       />
     </div>
   );
@@ -134,7 +124,7 @@ function TagInput({
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1.5">
+    <label className="block font-label text-[11px] uppercase tracking-[0.14em] text-ink-muted mb-1.5">
       {children}
     </label>
   );
@@ -142,24 +132,21 @@ function Label({ children }: { children: React.ReactNode }) {
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h3
-      className="text-sm font-bold uppercase tracking-widest mb-4"
-      style={{ color: '#7C3AED' }}
-    >
+    <h3 className="font-label text-[11px] uppercase tracking-[0.14em] text-ink mb-4">
       {children}
     </h3>
   );
 }
 
 function Divider() {
-  return <div className="border-t border-border my-6" />;
+  return <div className="border-t border-rule my-6" />;
 }
 
 const inputCls =
-  'w-full px-3 py-2 rounded-xl border border-input bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring focus:border-primary/40 transition-colors';
+  'w-full px-3 py-2 rounded-md border border-rule-strong bg-paper-raised text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:border-ink transition-colors';
 
 const textareaCls =
-  'w-full px-3 py-2 rounded-xl border border-input bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring focus:border-primary/40 transition-colors resize-y';
+  'w-full px-3 py-2 rounded-md border border-rule-strong bg-paper-raised text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:border-ink transition-colors resize-y';
 
 // ── Form state type ───────────────────────────────────────────────
 
@@ -206,7 +193,7 @@ function emptyForm(): FormState {
 function PreviewSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-bold" style={{ color: '#7C3AED' }}>{title}</h4>
+      <h4 className="doc-h3">{title}</h4>
       {children}
     </div>
   );
@@ -217,8 +204,8 @@ function BulletList({ items, html = false }: { items: string[]; html?: boolean }
   return (
     <ul className="space-y-1 list-none pl-0">
       {items.map((item, i) => (
-        <li key={i} className="flex items-start gap-2 text-sm text-foreground">
-          <span className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: '#7C3AED' }} />
+        <li key={i} className="flex items-start gap-2 text-sm text-ink-soft">
+          <span className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0 bg-ink-muted" />
           {html
             ? <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(item) }} />
             : <span>{item}</span>}
@@ -365,7 +352,7 @@ export default function DraftEditPage() {
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <Loader2 className="h-6 w-6 animate-spin text-ink" />
       </div>
     );
   }
@@ -373,11 +360,11 @@ export default function DraftEditPage() {
   if (isError || !article) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center p-6">
-        <AlertCircle className="h-10 w-10 text-destructive/60" />
+        <AlertCircle className="h-10 w-10 text-[oklch(52%_.16_35)]/60" />
         <p className="text-sm font-semibold">Could not load draft.</p>
         <button
           onClick={() => router.push('/admin/current-affairs')}
-          className="text-xs font-semibold text-primary underline cursor-pointer"
+          className="text-xs font-semibold text-ink underline cursor-pointer"
         >
           Back to drafts
         </button>
@@ -400,31 +387,31 @@ export default function DraftEditPage() {
   return (
     <div className="flex-1 flex flex-col">
       {/* ── Top bar ── */}
-      <div className="sticky top-0 z-20 flex items-center gap-3 px-5 py-3 border-b border-border bg-card/80 backdrop-blur-md">
+      <div className="sticky top-0 z-20 flex items-center gap-3 px-5 py-3 border-b border-rule bg-paper-raised">
         <button
           onClick={() => router.push('/admin/current-affairs')}
-          className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+          className="flex items-center gap-1.5 text-xs font-semibold text-ink-muted hover:text-ink transition-colors cursor-pointer shrink-0"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back
         </button>
 
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-muted-foreground truncate">
-            <span className="font-semibold text-foreground">Editing:</span> {truncatedTitle}
+          <p className="text-xs text-ink-muted truncate">
+            <span className="font-semibold text-ink">Editing:</span> {truncatedTitle}
           </p>
         </div>
 
         {/* Mode toggle */}
-        <div className="flex gap-0.5 p-0.5 rounded-xl bg-secondary/60 border border-border shrink-0">
+        <div className="flex gap-0.5 p-0.5 rounded-md bg-paper-deep border border-rule shrink-0">
           <button
             type="button"
             onClick={() => setMode('edit')}
             className={cn(
-              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer',
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-[3px] text-xs font-semibold transition-colors cursor-pointer',
               mode === 'edit'
-                ? 'bg-card text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground',
+                ? 'bg-paper-raised text-ink border border-rule'
+                : 'text-ink-muted hover:text-ink',
             )}
           >
             <Pencil className="h-3 w-3" />
@@ -434,10 +421,10 @@ export default function DraftEditPage() {
             type="button"
             onClick={() => setMode('preview')}
             className={cn(
-              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer',
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-[3px] text-xs font-semibold transition-colors cursor-pointer',
               mode === 'preview'
-                ? 'bg-card text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground',
+                ? 'bg-paper-raised text-ink border border-rule'
+                : 'text-ink-muted hover:text-ink',
             )}
           >
             <Eye className="h-3 w-3" />
@@ -449,7 +436,7 @@ export default function DraftEditPage() {
         <button
           onClick={() => saveMutation.mutate()}
           disabled={isBusy}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border border-border text-foreground hover:bg-secondary transition-colors disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer shrink-0"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-rule text-ink hover:bg-paper-deep transition-colors disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer shrink-0"
         >
           {saveMutation.isPending
             ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Saving…</>
@@ -460,8 +447,7 @@ export default function DraftEditPage() {
         <button
           onClick={() => publishMutation.mutate()}
           disabled={isBusy}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer shrink-0 hover:opacity-90 transition-opacity"
-          style={{ background: 'linear-gradient(135deg, #059669, #0891B2)', boxShadow: '0 2px 8px rgba(5,150,105,0.25)' }}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold bg-ink text-paper disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer shrink-0 hover:bg-ink/90 transition-colors"
         >
           {publishMutation.isPending
             ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />Publishing…</>
@@ -505,7 +491,6 @@ export default function DraftEditPage() {
                   <Label>GS Paper Tags</Label>
                   <div className="flex flex-wrap gap-2">
                     {GS_OPTIONS.map((tag) => {
-                      const cfg      = GS_COLORS[tag];
                       const isActive = form.gsPaperTags.includes(tag);
                       return (
                         <button
@@ -513,12 +498,11 @@ export default function DraftEditPage() {
                           type="button"
                           onClick={() => toggleGS(tag)}
                           className={cn(
-                            'text-xs font-bold px-3 py-1.5 rounded-xl border transition-all cursor-pointer',
+                            'font-label text-[11px] uppercase tracking-[0.1em] px-3 py-1.5 rounded-[3px] border transition-colors duration-150 ease-ks cursor-pointer',
                             isActive
-                              ? 'text-white border-transparent'
-                              : 'text-muted-foreground border-border bg-background hover:border-primary/30',
+                              ? 'bg-ink text-paper border-ink'
+                              : 'text-ink-muted border-rule-strong bg-paper-raised hover:border-ink hover:text-ink',
                           )}
-                          style={isActive ? { background: cfg.color } : {}}
                         >
                           {tag}
                         </button>
@@ -530,7 +514,7 @@ export default function DraftEditPage() {
                 <div>
                   <Label>
                     Topic Tags
-                    <span className="ml-1 font-normal normal-case tracking-normal text-muted-foreground/60">(Enter or comma to add)</span>
+                    <span className="ml-1 font-normal normal-case tracking-normal text-ink-muted">(Enter or comma to add)</span>
                   </Label>
                   <TagInput
                     tags={form.topicTags}
@@ -572,7 +556,7 @@ export default function DraftEditPage() {
                 <div>
                   <Label>
                     Key Facts
-                    <span className="ml-1 font-normal normal-case tracking-normal text-muted-foreground/60">Each bullet = one fact</span>
+                    <span className="ml-1 font-normal normal-case tracking-normal text-ink-muted">Each bullet = one fact</span>
                   </Label>
                   <RichEditor
                     value={form.keyFactsRaw}
@@ -605,11 +589,11 @@ export default function DraftEditPage() {
                 <div className="space-y-2">
                   <Label>
                     Key Features
-                    <span className="ml-1 font-normal normal-case tracking-normal text-muted-foreground/60">Detailed, structured breakdown of this development</span>
+                    <span className="ml-1 font-normal normal-case tracking-normal text-ink-muted">Detailed, structured breakdown of this development</span>
                   </Label>
 
                   {form.keyFeatures.map((feature, i) => (
-                    <div key={i} className="rounded-xl border border-border p-3 space-y-2 relative">
+                    <div key={i} className="rounded-[2px] border border-rule p-3 space-y-2 relative">
                       <div className="flex items-center gap-2">
                         <input
                           value={feature.heading}
@@ -619,12 +603,12 @@ export default function DraftEditPage() {
                             set('keyFeatures', updated);
                           }}
                           placeholder="Heading — e.g. What Changed, Key Provisions…"
-                          className="flex-1 bg-transparent text-sm font-semibold outline-none text-foreground placeholder:text-muted-foreground/50 placeholder:font-normal"
+                          className="flex-1 bg-transparent text-sm font-semibold outline-none text-ink placeholder:text-ink-muted placeholder:font-normal"
                         />
                         <button
                           type="button"
                           onClick={() => set('keyFeatures', form.keyFeatures.filter((_, j) => j !== i))}
-                          className="shrink-0 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+                          className="shrink-0 text-ink-muted hover:text-[oklch(52%_.16_35)] transition-colors cursor-pointer"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
@@ -645,7 +629,7 @@ export default function DraftEditPage() {
                   <button
                     type="button"
                     onClick={() => set('keyFeatures', [...form.keyFeatures, { heading: '', content: '' }])}
-                    className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:opacity-80 transition-opacity cursor-pointer"
+                    className="flex items-center gap-1.5 text-xs font-semibold text-ink hover:opacity-80 transition-opacity cursor-pointer"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     Add Feature
@@ -666,7 +650,7 @@ export default function DraftEditPage() {
                 <div>
                   <Label>
                     Mains Angles
-                    <span className="ml-1 font-normal normal-case tracking-normal text-muted-foreground/60">One per line</span>
+                    <span className="ml-1 font-normal normal-case tracking-normal text-ink-muted">One per line</span>
                   </Label>
                   <textarea
                     value={form.mainsAnglesRaw}
@@ -680,7 +664,7 @@ export default function DraftEditPage() {
                 <div>
                   <Label>
                     Way Forward
-                    <span className="ml-1 font-normal normal-case tracking-normal text-muted-foreground/60">One per line</span>
+                    <span className="ml-1 font-normal normal-case tracking-normal text-ink-muted">One per line</span>
                   </Label>
                   <textarea
                     value={form.wayForwardRaw}
@@ -694,7 +678,7 @@ export default function DraftEditPage() {
                 <div>
                   <Label>
                     Constitutional Provisions
-                    <span className="ml-1 font-normal normal-case tracking-normal text-muted-foreground/60">One per line</span>
+                    <span className="ml-1 font-normal normal-case tracking-normal text-ink-muted">One per line</span>
                   </Label>
                   <textarea
                     value={form.constitutionalProvisionsRaw}
@@ -715,18 +699,18 @@ export default function DraftEditPage() {
 
               <div className="space-y-2">
                 {form.prelimsFacts.length > 0 && (
-                  <div className="rounded-xl border border-border overflow-hidden">
+                  <div className="rounded-[2px] border border-rule overflow-hidden">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="bg-secondary/50 border-b border-border">
-                          <th className="px-3 py-2 text-left text-xs font-bold text-muted-foreground w-2/5">Label</th>
-                          <th className="px-3 py-2 text-left text-xs font-bold text-muted-foreground">Value</th>
+                        <tr className="bg-paper-deep border-b border-rule">
+                          <th className="px-3 py-2 text-left font-label text-[11px] font-normal uppercase tracking-[0.14em] text-ink-muted w-2/5">Label</th>
+                          <th className="px-3 py-2 text-left font-label text-[11px] font-normal uppercase tracking-[0.14em] text-ink-muted">Value</th>
                           <th className="px-3 py-2 w-8" />
                         </tr>
                       </thead>
                       <tbody>
                         {form.prelimsFacts.map((row, i) => (
-                          <tr key={i} className="border-b border-border last:border-0">
+                          <tr key={i} className="border-b border-rule last:border-0">
                             <td className="px-2 py-1.5">
                               <input
                                 value={row.label}
@@ -736,7 +720,7 @@ export default function DraftEditPage() {
                                   set('prelimsFacts', updated);
                                 }}
                                 placeholder="Label"
-                                className="w-full bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground/50"
+                                className="w-full bg-transparent text-sm outline-none text-ink placeholder:text-ink-muted"
                               />
                             </td>
                             <td className="px-2 py-1.5">
@@ -748,14 +732,14 @@ export default function DraftEditPage() {
                                   set('prelimsFacts', updated);
                                 }}
                                 placeholder="Value"
-                                className="w-full bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground/50"
+                                className="w-full bg-transparent text-sm outline-none text-ink placeholder:text-ink-muted"
                               />
                             </td>
                             <td className="px-2 py-1.5 text-center">
                               <button
                                 type="button"
                                 onClick={() => set('prelimsFacts', form.prelimsFacts.filter((_, j) => j !== i))}
-                                className="text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+                                className="text-ink-muted hover:text-[oklch(52%_.16_35)] transition-colors cursor-pointer"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </button>
@@ -769,7 +753,7 @@ export default function DraftEditPage() {
                 <button
                   type="button"
                   onClick={() => set('prelimsFacts', [...form.prelimsFacts, { label: '', value: '' }])}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:opacity-80 transition-opacity cursor-pointer"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-ink hover:opacity-80 transition-opacity cursor-pointer"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   Add Row
@@ -785,18 +769,18 @@ export default function DraftEditPage() {
 
               <div className="space-y-2">
                 {form.keyTerms.length > 0 && (
-                  <div className="rounded-xl border border-border overflow-hidden">
+                  <div className="rounded-[2px] border border-rule overflow-hidden">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="bg-secondary/50 border-b border-border">
-                          <th className="px-3 py-2 text-left text-xs font-bold text-muted-foreground w-2/5">Term</th>
-                          <th className="px-3 py-2 text-left text-xs font-bold text-muted-foreground">Definition</th>
+                        <tr className="bg-paper-deep border-b border-rule">
+                          <th className="px-3 py-2 text-left font-label text-[11px] font-normal uppercase tracking-[0.14em] text-ink-muted w-2/5">Term</th>
+                          <th className="px-3 py-2 text-left font-label text-[11px] font-normal uppercase tracking-[0.14em] text-ink-muted">Definition</th>
                           <th className="px-3 py-2 w-8" />
                         </tr>
                       </thead>
                       <tbody>
                         {form.keyTerms.map((row, i) => (
-                          <tr key={i} className="border-b border-border last:border-0">
+                          <tr key={i} className="border-b border-rule last:border-0">
                             <td className="px-2 py-1.5 align-top">
                               <input
                                 value={row.term}
@@ -806,7 +790,7 @@ export default function DraftEditPage() {
                                   set('keyTerms', updated);
                                 }}
                                 placeholder="Term"
-                                className="w-full bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground/50"
+                                className="w-full bg-transparent text-sm outline-none text-ink placeholder:text-ink-muted"
                               />
                             </td>
                             <td className="px-2 py-1.5 align-top">
@@ -819,14 +803,14 @@ export default function DraftEditPage() {
                                 }}
                                 placeholder="Definition"
                                 rows={2}
-                                className="w-full bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground/50 resize-y"
+                                className="w-full bg-transparent text-sm outline-none text-ink placeholder:text-ink-muted resize-y"
                               />
                             </td>
                             <td className="px-2 py-1.5 text-center align-top pt-2">
                               <button
                                 type="button"
                                 onClick={() => set('keyTerms', form.keyTerms.filter((_, j) => j !== i))}
-                                className="text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+                                className="text-ink-muted hover:text-[oklch(52%_.16_35)] transition-colors cursor-pointer"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </button>
@@ -840,7 +824,7 @@ export default function DraftEditPage() {
                 <button
                   type="button"
                   onClick={() => set('keyTerms', [...form.keyTerms, { term: '', definition: '' }])}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:opacity-80 transition-opacity cursor-pointer"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-ink hover:opacity-80 transition-opacity cursor-pointer"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   Add Row
@@ -853,12 +837,12 @@ export default function DraftEditPage() {
 
         {/* ══ PREVIEW MODE ══ */}
         {mode === 'preview' && (
-          <div className="rounded-2xl border border-border bg-card p-6 lg:p-8 space-y-6" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+          <div className="rounded-[2px] border border-rule bg-paper-raised p-6 lg:p-8 space-y-6">
 
             {/* 1. Title, date, source */}
             <div className="space-y-2">
-              <h1 className="text-xl font-bold text-foreground leading-snug">{form.title || '(No title)'}</h1>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
+              <h1 className="text-2xl font-semibold tracking-tight text-ink leading-snug">{form.title || '(No title)'}</h1>
+              <div className="flex items-center gap-2 text-xs text-ink-muted flex-wrap">
                 {form.publishedDate && (
                   <span>
                     {new Date(`${form.publishedDate}T00:00:00`).toLocaleDateString('en-IN', {
@@ -874,19 +858,17 @@ export default function DraftEditPage() {
             {(form.gsPaperTags.length > 0 || form.topicTags.length > 0) && (
               <div className="flex flex-wrap gap-1.5">
                 {form.gsPaperTags.map((tag) => {
-                  const cfg = GS_COLORS[tag];
-                  return cfg ? (
+                  return isKnownGsTag(tag) ? (
                     <span
                       key={tag}
-                      className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                      style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}
+                      className="ks-tag ks-tag-ink"
                     >
                       {tag}
                     </span>
                   ) : null;
                 })}
                 {form.topicTags.map((tag) => (
-                  <span key={tag} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">
+                  <span key={tag} className="ks-tag">
                     {tag}
                   </span>
                 ))}
@@ -897,7 +879,7 @@ export default function DraftEditPage() {
             {form.summary && form.summary !== '<p></p>' && (
               <PreviewSection title="Summary">
                 <div
-                  className="text-sm text-foreground leading-relaxed border-l-2 border-primary/20 pl-3 rich-editor-content"
+                  className="doc-prose border-l-2 border-rule-strong pl-3"
                   dangerouslySetInnerHTML={{ __html: sanitizeHtml(form.summary) }}
                 />
               </PreviewSection>
@@ -914,7 +896,7 @@ export default function DraftEditPage() {
             {form.whyInNews && form.whyInNews !== '<p></p>' && (
               <PreviewSection title="Why in News">
                 <div
-                  className="text-sm text-foreground leading-relaxed rich-editor-content"
+                  className="doc-prose"
                   dangerouslySetInnerHTML={{ __html: sanitizeHtml(form.whyInNews) }}
                 />
               </PreviewSection>
@@ -928,9 +910,9 @@ export default function DraftEditPage() {
                     .filter((f) => f.heading.trim() || f.content.trim())
                     .map((feature, i) => (
                       <div key={i}>
-                        <p className="text-sm font-bold text-foreground mb-1">{feature.heading}</p>
+                        <p className="text-sm font-semibold text-ink mb-1">{feature.heading}</p>
                         <div
-                          className="text-sm text-foreground leading-relaxed rich-editor-content"
+                          className="doc-prose"
                           dangerouslySetInnerHTML={{ __html: sanitizeHtml(feature.content) }}
                         />
                       </div>
@@ -942,15 +924,15 @@ export default function DraftEditPage() {
             {/* 7. Prelims Facts */}
             {previewPrelimsFacts.length > 0 && (
               <PreviewSection title="Prelims Facts">
-                <div className="rounded-xl border border-border overflow-hidden">
+                <div className="rounded-[2px] border border-rule overflow-hidden">
                   <table className="w-full text-sm">
                     <tbody>
                       {previewPrelimsFacts.map((row, i) => (
-                        <tr key={i} className="border-b border-border last:border-0">
-                          <td className="px-3 py-2 font-semibold text-foreground bg-secondary/30 w-2/5 align-top">
+                        <tr key={i} className="border-b border-rule last:border-0">
+                          <td className="px-3 py-2 font-label text-[11px] uppercase tracking-[0.1em] text-ink bg-paper-deep w-2/5 align-top">
                             {row.label}
                           </td>
-                          <td className="px-3 py-2 text-muted-foreground align-top">{row.value}</td>
+                          <td className="px-3 py-2 text-ink-muted align-top">{row.value}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -965,8 +947,8 @@ export default function DraftEditPage() {
                 <dl className="space-y-2">
                   {previewKeyTerms.map((kt, i) => (
                     <div key={i} className="text-sm">
-                      <dt className="font-semibold text-foreground inline">{kt.term}: </dt>
-                      <dd className="text-muted-foreground inline">{kt.definition}</dd>
+                      <dt className="font-semibold text-ink inline">{kt.term}: </dt>
+                      <dd className="text-ink-muted inline">{kt.definition}</dd>
                     </div>
                   ))}
                 </dl>
@@ -997,7 +979,7 @@ export default function DraftEditPage() {
             {/* 12. Syllabus Detail */}
             {form.syllabusDetail && (
               <PreviewSection title="Syllabus Detail">
-                <p className="text-sm text-foreground leading-relaxed">{form.syllabusDetail}</p>
+                <p className="text-sm text-ink leading-relaxed">{form.syllabusDetail}</p>
               </PreviewSection>
             )}
 

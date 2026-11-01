@@ -29,20 +29,14 @@ export default function AuthLayout({
   }, [isAuthenticated, needsOnboarding, postAuthRedirect, setPostAuthRedirect, router]);
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center p-6 overflow-hidden bg-background">
-
-      {/* Quiet accent wash — matches the rest of the public site's hero treatment */}
-      <div className="absolute pointer-events-none"
-        style={{ top: '-10%', right: '-5%', width: 480, height: 480, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(138,106,18,0.06) 0%, transparent 68%)' }} />
-
-      <div className="relative w-full max-w-sm space-y-6">
+    <div className="theme-mono flex min-h-screen items-center justify-center p-6 bg-paper">
+      <div className="w-full max-w-sm space-y-6">
         {/* Brand */}
         <div className="flex flex-col items-center space-y-2 text-center">
           <Link href="/" className="mb-1 inline-flex">
-            <Logo size={40} />
+            <Logo size={36} variant="mono" />
           </Link>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-ink-muted">
             AI study tool for every exam &amp; every student
           </p>
         </div>
